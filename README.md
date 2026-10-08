@@ -1,58 +1,114 @@
-# btcpay-docker-lnd-manager
+<p align="center">
+  <img src="docs/images/nerd_laptop.png" alt="Relaxing in a hammock with a laptop, while the backups run" width="460">
+</p>
 
-**English** · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md)
+<h1 align="center">btcpay-docker-lnd-manager</h1>
 
-Backups for the Lightning node (LND) of a BTCPay Server installed with btcpayserver-docker, plus
-tools to restore the wallet, and an optional watchtower on a second server.
+<p align="center">
+  <b>Safe, automatic backups for the Lightning node of your BTCPay Server, and the tools to get it back.</b>
+</p>
+
+<p align="center">
+  <b>English</b> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a>
+</p>
+
+---
+
+If your BTCPay Server's disk dies, the Lightning funds on it are only as safe as your last
+backup of the node. btcpay-docker-lnd-manager makes those backups by itself, every time they
+are needed, keeps them in two places, and walks you through getting your wallet and channels
+back. It runs next to a BTCPay Server installed the usual way (btcpayserver-docker), with LND.
+
+## What it does
+
+- **Backs up LND by itself.** A service watches LND's channel backup. Each time it changes (a
+  channel opens or closes), and once an hour in any case, it makes a new backup.
+- **Encrypted, signed, in two places.** Every backup is encrypted and signed with your GPG key,
+  then stored on an extra disk on the server and on a second server. The copy on the second
+  server is checked after it arrives.
+- **The second server is protected from the first.** The first server's key can only store,
+  list and fetch backups there: no shell, no deleting, no overwriting. A break-in on your BTCPay
+  server can't wipe the backups somewhere else.
+- **Gets your wallet back.** `lnd-wallet` restores the wallet from its seed, the channels from
+  the newest good backup, or makes a new wallet. It always keeps a copy of the current wallet
+  first, so every step can be undone.
+- **A dashboard on each server.** It shows what's working, when the last backup reached each
+  place, what's wrong, and what to do next. Type `/` for the commands: each one says what it
+  does, and what it stops, before it runs.
+- **Optional watchtower.** The second server can run Bitcoin Core and an LND watchtower that
+  guards your channels while your node is offline. The blockchain can be copied over instead of
+  downloaded for days, and new Bitcoin Core and LND releases are installed only after their
+  signatures check out.
+- **Four languages:** English, Spanish, French and German, for every screen, question and the
+  backup log.
 
 ## How it works
 
-There are three pieces:
+```mermaid
+flowchart LR
+    subgraph A["Server A: your BTCPay server"]
+        LND["LND<br/>(BTCPay's Lightning node)"]
+        SVC["Backup service<br/>encrypts and signs"]
+        VOL[("Extra disk<br/>(attached volume)")]
+        LND -- "channel backup changed" --> SVC
+        SVC -- "copy 1" --> VOL
+    end
+    subgraph B["Server B: somewhere else"]
+        GATE["Backup gate<br/>store / list / fetch only"]
+        STORE[("Backups<br/>10 newest + daily + monthly")]
+        TOWER["Watchtower<br/>(optional)"]
+        GATE --> STORE
+    end
+    SVC -- "copy 2, over SSH" --> GATE
+    LND -. "channel updates" .-> TOWER
+```
 
-- **Server A**: your BTCPay server, where LND runs.
-- **The attached volume**: an extra disk on Server A, used only for backups.
-- **Server B**: a second server somewhere else.
-
-A backup service on Server A watches LND's channel backup. After every change it makes an
-encrypted, signed copy with your GPG key. One copy goes to the attached volume and one to
-Server B.
-
-Server A's key can only store, list and fetch backups on Server B. It can't log in there or run
-anything else, so a break-in on Server A can't delete what Server B holds.
+- **Server A** is your BTCPay server. The backup service runs there as an account of its own,
+  not as root. The scripts root runs are installed so that only root can change them.
+- **The attached volume** is an extra disk on Server A, used only for backups.
+- **Server B** is a second server you control, anywhere else. Its "gate" is the only thing
+  Server A's key may run there. Server B keeps the 10 newest backups, one a day for 30 days,
+  and one a month for 12 months, and rotates them itself.
+- **To restore,** `lnd-wallet` looks on both places for the newest backup that decrypts, is
+  signed with your key and matches its checksum, and tells you which one it found before
+  anything changes.
 
 ## Screenshots
 
-The backup dashboard on Server A, `lnd-manager`:
+The backup dashboard on Server A:
 
-![lnd-manager](docs/images/dashboard.svg)
+![lnd-manager, the backup dashboard](docs/images/dashboard.png)
 
-Type `/` for the commands; each one says what it does, and what it stops, before it runs:
+Type `/` for the commands. Each one is explained before it runs:
 
-![The command list](docs/images/commands.svg)
+![The command list](docs/images/commands.png)
 
-| | |
+| Before anything changes, setup checks the server | The checklist shows what's done and what's next |
 |---|---|
-| ![Setup's check](docs/images/setup-check.svg) | ![The setup checklist](docs/images/checklist.svg) |
-| ![The wallet tools](docs/images/wallet.svg) | ![The Server B dashboard](docs/images/serverb-dashboard.svg) |
-
-In English, Spanish, French or German, chosen at the start of setup:
-
-| | |
-|---|---|
-| ![The language question](docs/images/languages.svg) | ![The dashboard in Spanish](docs/images/dashboard-es.svg) |
+| ![setup_script.sh --check](docs/images/setup-check.png) | ![/checklist](docs/images/checklist.png) |
+| **The wallet tools** | **The dashboard on Server B** |
+| ![lnd-wallet](docs/images/wallet.png) | ![serverb-dashboard](docs/images/serverb-dashboard.png) |
+| **Setup asks for the language first** | **Everything in that language, the log too** |
+| ![The language question](docs/images/languages.png) | ![The dashboard in Spanish](docs/images/dashboard-es.png) |
 
 ## Before you start
 
-- **Server A**: Ubuntu or Debian, with BTCPay installed the usual way (btcpayserver-docker) and
-  Lightning (LND) set up in BTCPay. You need an account with sudo.
+- **Server A**: Ubuntu or Debian (Raspberry Pi OS too), with BTCPay installed the usual way
+  (btcpayserver-docker) and Lightning (LND) set up in BTCPay. You need an account with sudo.
 - **An extra disk on Server A**: a block volume from your provider, or a second disk. Not the
   system disk. Setup shows how to prepare it if it is new.
-- **Server B**: any Ubuntu or Debian server you can reach over SSH.
+- **Server B**: any Ubuntu or Debian server you can reach over SSH. For the watchtower:
+  64-bit x86 or ARM, or 32-bit ARM.
 - **Your LND seed, written down.** In BTCPay: Server Settings → Services → LND Seed Backup.
 
 ## Install on Server A
 
-1. Copy this folder to Server A, into your home folder: `~/btcpay-docker-lnd-manager`.
+1. Get the project onto Server A, into your home folder:
+
+   ```
+   git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git ~/btcpay-docker-lnd-manager
+   ```
+
 2. Check that everything is ready. This changes nothing:
 
    ```
@@ -80,13 +136,16 @@ In English, Spanish, French or German, chosen at the start of setup:
      the backups.**
    - Confirming that your LND seed is written down.
    - **The backup service**, the last question. Answer `y`.
+
+   The words you type to confirm (`yes`, `STOP BTCPAY`, `I WROTE IT DOWN` …) are English in
+   every language: type them as shown.
 4. Get Server A's key onto Server B. Setup offers two ways:
    1. The Server B user exists and you know its password: setup copies the key itself.
    2. Otherwise setup makes `serverb-user-setup.sh`. Copy it to Server B yourself and run it
       there with `sudo bash serverb-user-setup.sh`, then run `./setup_script.sh` on Server A
       again.
 
-   Either way, setup then locks the key down so it can only reach the backups ("the gate").
+   Either way, setup then locks the key down so it can only reach the backups (the gate).
 5. Open the dashboard:
 
    ```
@@ -114,7 +173,7 @@ sudo lnd-wallet channels     # the funds and the channels
 Or use `/wallet` in the dashboard. The script finds the newest good backup on the attached
 volume or Server B, and keeps a safety copy of the current wallet before it changes anything.
 Restoring channels asks each channel peer to close its channel, and your share comes back
-on-chain.
+on-chain. Never run a restored node while the old one still runs with the same seed.
 
 ## Optional: a watchtower on Server B
 
@@ -143,12 +202,15 @@ updates by itself.
 
 Edit `config` in your working folder, then run `sudo ./install-scripts.sh` there. The scripts
 that run as root only use the copies it installs in `/usr/local/lib/btcpay-docker-lnd-manager`,
-so nobody else can change them. After updating the scripts, also run `/install` in the
-dashboard to update the backup service.
+so nobody else can change them. After updating the scripts (`git pull`), also run `/install` in
+the dashboard to update the backup service.
 
 The language is `UI_LANGUAGE` in `config`: `en` (English), or the code of any translation in
-`locale/` (`es` for Spanish).
+`locale/` (`es`, `fr`, `de`).
 
 ## License
 
-See `LICENSE`, or `/support` in the dashboard.
+Free for personal and business use up to USD 1,000,000 in annual sales income; above that, or
+inside another commercial node service or tool, a one-time payment in bitcoin. The full terms
+are in [LICENSE](LICENSE), and a summary is under `/support` in the dashboard. No warranty: use
+it at your own risk.

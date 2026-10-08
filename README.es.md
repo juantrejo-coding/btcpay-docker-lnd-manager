@@ -1,6 +1,18 @@
-# btcpay-docker-lnd-manager
+<p align="center">
+  <img src="docs/images/nerd_laptop.png" alt="Descansando en una hamaca con una laptop, mientras corren las copias" width="460">
+</p>
 
-[English](README.md) · **Español** · [Français](README.fr.md) · [Deutsch](README.de.md)
+<h1 align="center">btcpay-docker-lnd-manager</h1>
+
+<p align="center">
+  <b>Respaldos automáticos y seguros del nodo Lightning de su BTCPay Server, y las herramientas para recuperarlo.</b>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> · <b>Español</b> · <a href="README.fr.md">Français</a> · <a href="README.de.md">Deutsch</a>
+</p>
+
+---
 
 Copias de seguridad del nodo Lightning (LND) de un BTCPay Server instalado con
 btcpayserver-docker, herramientas para restaurar la billetera y, si lo desea, un watchtower en un
@@ -26,16 +38,16 @@ borrar lo que guarda el Servidor B.
 
 El panel de copias de seguridad en el Servidor A, `lnd-manager`:
 
-![lnd-manager](docs/images/dashboard-es.svg)
+![lnd-manager](docs/images/dashboard-es.png)
 
 Escriba `/` para ver los comandos; cada uno explica qué hace, y qué detiene, antes de ejecutarse:
 
-![La lista de comandos](docs/images/commands.svg)
+![La lista de comandos](docs/images/commands.png)
 
 | | |
 |---|---|
-| ![La pregunta del idioma](docs/images/languages.svg) | ![La lista de pasos](docs/images/checklist.svg) |
-| ![Las herramientas de la billetera](docs/images/wallet.svg) | ![El panel del Servidor B](docs/images/serverb-dashboard.svg) |
+| ![La pregunta del idioma](docs/images/languages.png) | ![La lista de pasos](docs/images/checklist.png) |
+| ![Las herramientas de la billetera](docs/images/wallet.png) | ![El panel del Servidor B](docs/images/serverb-dashboard.png) |
 
 ## Antes de empezar
 
@@ -48,7 +60,12 @@ Escriba `/` para ver los comandos; cada uno explica qué hace, y qué detiene, a
 
 ## Instalación en el Servidor A
 
-1. Copie esta carpeta al Servidor A, en su carpeta personal: `~/btcpay-docker-lnd-manager`.
+1. Descargue el proyecto en el Servidor A, en su carpeta personal:
+
+   ```
+   git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git ~/btcpay-docker-lnd-manager
+   ```
+
 2. Compruebe que todo está listo. Esto no cambia nada:
 
    ```

@@ -1,6 +1,18 @@
-# btcpay-docker-lnd-manager
+<p align="center">
+  <img src="docs/images/nerd_laptop.png" alt="Détente dans un hamac avec un ordinateur portable, pendant que les sauvegardes tournent" width="460">
+</p>
 
-[English](README.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md)
+<h1 align="center">btcpay-docker-lnd-manager</h1>
+
+<p align="center">
+  <b>Des sauvegardes sûres et automatiques du nœud Lightning de votre BTCPay Server, et les outils pour le récupérer.</b>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.es.md">Español</a> · <b>Français</b> · <a href="README.de.md">Deutsch</a>
+</p>
+
+---
 
 Des sauvegardes pour le nœud Lightning (LND) d'un BTCPay Server installé avec
 btcpayserver-docker, des outils pour restaurer le portefeuille et, en option, une watchtower sur un
@@ -26,16 +38,16 @@ serveur A ne peut donc pas supprimer ce que le serveur B conserve.
 
 Le tableau de bord des sauvegardes sur le serveur A, `lnd-manager` :
 
-![lnd-manager](docs/images/dashboard.svg)
+![lnd-manager](docs/images/dashboard.png)
 
 Tapez `/` pour voir les commandes ; chacune explique ce qu'elle fait, et ce qu'elle arrête, avant de s'exécuter :
 
-![La liste des commandes](docs/images/commands.svg)
+![La liste des commandes](docs/images/commands.png)
 
 | | |
 |---|---|
-| ![La question de la langue](docs/images/languages.svg) | ![La liste des étapes](docs/images/checklist.svg) |
-| ![Les outils du portefeuille](docs/images/wallet.svg) | ![Le tableau de bord du serveur B](docs/images/serverb-dashboard.svg) |
+| ![La question de la langue](docs/images/languages.png) | ![La liste des étapes](docs/images/checklist.png) |
+| ![Les outils du portefeuille](docs/images/wallet.png) | ![Le tableau de bord du serveur B](docs/images/serverb-dashboard.png) |
 
 ## Avant de commencer
 
@@ -49,7 +61,12 @@ Tapez `/` pour voir les commandes ; chacune explique ce qu'elle fait, et ce qu'e
 
 ## Installation sur le serveur A
 
-1. Copiez ce dossier sur le serveur A, dans votre dossier personnel : `~/btcpay-docker-lnd-manager`.
+1. Récupérez le projet sur le serveur A, dans votre dossier personnel :
+
+   ```
+   git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git ~/btcpay-docker-lnd-manager
+   ```
+
 2. Vérifiez que tout est prêt. Cette étape ne modifie rien :
 
    ```

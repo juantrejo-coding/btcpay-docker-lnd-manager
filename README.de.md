@@ -1,6 +1,18 @@
-# btcpay-docker-lnd-manager
+<p align="center">
+  <img src="docs/images/nerd_laptop.png" alt="Entspannt in der Hängematte mit dem Laptop, während die Backups laufen" width="460">
+</p>
 
-[English](README.md) · [Español](README.es.md) · [Français](README.fr.md) · **Deutsch**
+<h1 align="center">btcpay-docker-lnd-manager</h1>
+
+<p align="center">
+  <b>Sichere, automatische Backups für den Lightning-Node Ihres BTCPay Servers, und die Werkzeuge, um ihn zurückzuholen.</b>
+</p>
+
+<p align="center">
+  <a href="README.md">English</a> · <a href="README.es.md">Español</a> · <a href="README.fr.md">Français</a> · <b>Deutsch</b>
+</p>
+
+---
 
 Backups für den Lightning-Node (LND) eines mit btcpayserver-docker installierten BTCPay Server,
 dazu Werkzeuge zum Wiederherstellen der Wallet und, wenn Sie möchten, ein Watchtower auf einem
@@ -26,16 +38,16 @@ löschen, was Server B aufbewahrt.
 
 Das Backup-Dashboard auf Server A, `lnd-manager`:
 
-![lnd-manager](docs/images/dashboard.svg)
+![lnd-manager](docs/images/dashboard.png)
 
 Tippen Sie `/` für die Befehle; jeder erklärt, was er tut und was er stoppt, bevor er läuft:
 
-![Die Befehlsliste](docs/images/commands.svg)
+![Die Befehlsliste](docs/images/commands.png)
 
 | | |
 |---|---|
-| ![Die Sprachfrage](docs/images/languages.svg) | ![Die Checkliste](docs/images/checklist.svg) |
-| ![Die Wallet-Werkzeuge](docs/images/wallet.svg) | ![Das Dashboard auf Server B](docs/images/serverb-dashboard.svg) |
+| ![Die Sprachfrage](docs/images/languages.png) | ![Die Checkliste](docs/images/checklist.png) |
+| ![Die Wallet-Werkzeuge](docs/images/wallet.png) | ![Das Dashboard auf Server B](docs/images/serverb-dashboard.png) |
 
 ## Bevor Sie beginnen
 
@@ -48,7 +60,12 @@ Tippen Sie `/` für die Befehle; jeder erklärt, was er tut und was er stoppt, b
 
 ## Installation auf Server A
 
-1. Kopieren Sie diesen Ordner auf Server A, in Ihren Home-Ordner: `~/btcpay-docker-lnd-manager`.
+1. Holen Sie das Projekt auf Server A, in Ihren Home-Ordner:
+
+   ```
+   git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git ~/btcpay-docker-lnd-manager
+   ```
+
 2. Prüfen Sie, ob alles bereit ist. Dabei wird nichts geändert:
 
    ```
