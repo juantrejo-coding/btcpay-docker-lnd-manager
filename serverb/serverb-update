@@ -1,0 +1,112 @@
+#!/bin/bash
+# serverb-update: Bitcoin Core and LND updates for the Server B dashboard. Installed root-owned in
+# /usr/local/lib/serverb-dashboard by serverb-dashboard-setup.sh.
+#
+#   serverb-update check             the installed and the latest version of each, one line each:
+#                                    "bitcoind <installed> <latest>", "tower <installed> <latest>"
+#                                    ("-" where unknown). Needs no root; asks bitcoincore.org and
+#                                    api.github.com.
+#   serverb-update install bitcoind  as root (the dashboard: /update bitcoind, through
+#   serverb-update install tower     serverb-control): the latest release, checked like the setup
+#                                    scripts check it, then bitcoind or the watchtower restarted
+#
+# Nothing is installed unless the signatures and checksums match. Never a release candidate.
+
+# Good signatures each release needs, as in the setup scripts
+BITCOIN_CORE_MIN_SIGNATURES=3
+LND_MIN_SIGNATURES=2
+
+# @@INCLUDE i18n.sh
+# @@I18N
+# @@INCLUDE serverb-common.sh
+# @@INCLUDE serverb-releases.sh
+
+check() {
+    local installed latest
+    if [[ -x /usr/local/bin/bitcoind ]]; then
+        installed=$(bitcoin_core_installed)
+        latest=$(bitcoin_core_latest) || latest=""
+        # Data for the dashboard: never translated
+        printf 'bitcoind %s %s\n' "${installed:--}" "${latest:--}"
+    fi
+    if [[ -x /usr/local/bin/lnd ]]; then
+        installed=$(lnd_installed)
+        latest=$(lnd_latest) || latest=""
+        printf 'tower %s %s\n' "${installed:--}" "${latest:--}"
+    fi
+}
+
+# Restarts a service if it runs, and says whether it came back
+restart_service() {
+    local unit="$1"
+    if ! systemctl is-active --quiet "$unit"; then
+        say "ℹ️ %s wasn't running, so it wasn't started (the dashboard: /%s start)" "$unit" "$2"
+        return 0
+    fi
+    say "🔄 Restarting %s..." "$unit"
+    systemctl restart "$unit" || die "$(T "%s didn't restart: journalctl -u %s" "$unit" "$unit")"
+    sleep 5
+    systemctl is-active --quiet "$unit" || die "$(T "%s stopped after the restart: journalctl -u %s" "$unit" "$unit")"
+    say "✅ %s runs again" "$unit"
+}
+
+install_bitcoind() {
+    local before latest tower_ran
+    before=$(bitcoin_core_installed)
+    [[ -n "$before" ]] || die "$(T "Bitcoin Core isn't installed here: run serverb-bitcoind-setup.sh first")"
+    say "🔎 Looking up the latest Bitcoin Core release..."
+    latest=$(bitcoin_core_latest) || die "$(T "Could not find a Bitcoin Core release on bitcoincore.org/bin/")"
+    if ! newer_version "$before" "$latest"; then
+        say "✅ Bitcoin Core %s is the latest release: nothing to do" "$before"
+        return 0
+    fi
+    say "Bitcoin Core %s -> %s" "$before" "$latest"
+    if [[ "${before%%.*}" != "${latest%%.*}" ]]; then
+        say "ℹ️ A new major version. Its release notes: https://bitcoincore.org/en/releases/%s.0/" "${latest%%.*}"
+    fi
+    if (( ${before%%.*} < 28 && ${latest%%.*} >= 28 )); then
+        say "ℹ️ From 28 on, the watchtower can read bitcoind's cookie through its group: rerun"
+        say "   serverb-bitcoind-setup.sh afterwards, so bitcoin.conf gets rpccookieperms=group."
+    fi
+    bitcoin_core_install "$latest" "$BITCOIN_CORE_MIN_SIGNATURES"
+    tower_ran=false
+    systemctl is-active --quiet lnd-watchtower && tower_ran=true
+    restart_service bitcoind bitcoind
+    # The watchtower's LND exits when bitcoind goes away, and systemd would start it again only
+    # 30 seconds later: restart it now instead. Only if it ran: a tower you stopped stays stopped.
+    if $tower_ran; then
+        say "🔄 Restarting lnd-watchtower too (it loses bitcoind during the restart)..."
+        systemctl restart lnd-watchtower || die "$(T "lnd-watchtower didn't restart: journalctl -u lnd-watchtower")"
+        sleep 5
+        systemctl is-active --quiet lnd-watchtower || die "$(T "lnd-watchtower stopped after the restart: journalctl -u lnd-watchtower")"
+        say "✅ lnd-watchtower runs again"
+    fi
+}
+
+install_tower() {
+    local before latest
+    before=$(lnd_installed)
+    [[ -n "$before" ]] || die "$(T "LND isn't installed here: run serverb-watchtower-setup.sh first")"
+    say "🔎 Looking up the latest LND release..."
+    latest=$(lnd_latest) || die "$(T "Could not find the latest LND release on api.github.com")"
+    if ! newer_version "$before" "$latest"; then
+        say "✅ LND %s is the latest release: nothing to do" "$before"
+        return 0
+    fi
+    say "LND %s -> %s" "$before" "$latest"
+    say "ℹ️ LND updates its database at the first start, so the old version may not open it again."
+    lnd_install "$latest" "$LND_MIN_SIGNATURES"
+    restart_service lnd-watchtower tower
+}
+
+case "${1:-} ${2:-}" in
+    "check ") check ;;
+    "install bitcoind" | "install tower")
+        [[ $EUID -eq 0 ]] || die "$(T "Installing needs root: the dashboard runs it (/update %s)" "$2")"
+        # One update at a time
+        exec 9> /run/serverb-update.lock
+        flock -n 9 || die "$(T "Another update is running")"
+        if [[ "$2" == bitcoind ]]; then install_bitcoind; else install_tower; fi
+        ;;
+    *) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2 ;;
+esac

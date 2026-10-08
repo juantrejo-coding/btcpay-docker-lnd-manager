@@ -1,0 +1,3 @@
+# Written by setup_script.sh in the working folder (the checklist reads it)
+setup-state
+__pycache__/

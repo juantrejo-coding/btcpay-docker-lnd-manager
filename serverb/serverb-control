@@ -1,0 +1,196 @@
+#!/usr/bin/python3 -I
+"""serverb-control: the Server B dashboard's root helper (installed by serverb-dashboard-setup.sh).
+
+sudo lets the dashboard's admin user run this and nothing else as root, and this runs only fixed
+commands, without a shell or a pager (from a pager you could start a root shell):
+  serverb-control status                          bitcoind, the watchtower and the setup steps, as JSON
+  serverb-control start|stop|restart bitcoind|tower
+                                                  (restart bitcoind restarts a running tower too)
+  serverb-control log bitcoind|tower              the last lines of its log
+  serverb-control update bitcoind|tower           installs the latest release (serverb-update),
+                                                  then restarts it; shows its progress
+"""
+import datetime
+import json
+import os
+import pwd
+import re
+import stat
+import subprocess
+import sys
+
+SERVICES = {"bitcoind": "bitcoind", "tower": "lnd-watchtower"}
+# As the bitcoin user: it reads the RPC cookie in /var/lib/bitcoind, which that user owns (a link
+# there would otherwise make root read any file and send it to 127.0.0.1:8332)
+BITCOIN_CLI = ["/usr/sbin/runuser", "-u", "bitcoin", "--", "/usr/local/bin/bitcoin-cli",
+               "-conf=/etc/bitcoin/bitcoin.conf", "-datadir=/var/lib/bitcoind"]
+LNCLI = ["/usr/sbin/runuser", "-u", "lndtower", "--", "/usr/local/bin/lncli",
+         "--lnddir=/var/lib/lndtower", "--rpcserver=127.0.0.1:10019",
+         "--macaroonpath=/var/lib/lndtower/data/chain/bitcoin/mainnet/readonly.macaroon"]
+BITCOIND_LOG = "/var/lib/bitcoind/debug.log"
+# Root-owned, both written by serverb-dashboard-setup.sh
+UPDATE = "/usr/local/lib/serverb-dashboard/serverb-update"
+SETTINGS_FILE = "/usr/local/lib/serverb-dashboard/settings.json"
+LOG_LINES = 400
+ENV = {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LANG": "C.UTF-8", "HOME": "/root"}
+
+
+def run(command, timeout=20):
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=timeout, env=ENV,
+                                stdin=subprocess.DEVNULL)
+        return result.returncode, result.stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return 1, ""
+
+
+def as_json(command):
+    code, out = run(command)
+    if code != 0:
+        return None
+    try:
+        return json.loads(out)
+    except ValueError:
+        return None
+
+
+def status():
+    out = {}
+    for name, unit in SERVICES.items():
+        out[name + "_state"] = run(["systemctl", "is-active", unit], timeout=5)[1].strip() or "unknown"
+    if out["bitcoind_state"] == "active":
+        chain = as_json(BITCOIN_CLI + ["getblockchaininfo"]) or {}
+        net = as_json(BITCOIN_CLI + ["getnetworkinfo"]) or {}
+        out["bitcoind"] = {k: chain.get(k) for k in ("chain", "blocks", "headers", "verificationprogress",
+                                                       "initialblockdownload", "pruned", "size_on_disk")}
+        out["bitcoind"]["connections"] = net.get("connections")
+        out["bitcoind"]["version"] = net.get("subversion")
+    if out["tower_state"] == "active":
+        info = as_json(LNCLI + ["tower", "info"])
+        if info:
+            out["tower"] = {"pubkey": info.get("pubkey"), "uris": info.get("uris") or [],
+                            "listeners": info.get("listeners") or []}
+        node = as_json(LNCLI + ["getinfo"])
+        if node:
+            out["tower_node"] = {k: node.get(k) for k in ("synced_to_chain", "block_height", "version")}
+    incoming = chain_incoming()
+    if incoming:
+        out["chain_incoming"] = incoming
+    out["setup"] = setup_facts()
+    print(json.dumps(out))
+
+
+def read_settings():
+    try:
+        with open(SETTINGS_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, ValueError):
+        return {}
+
+
+BACKUP_NAME = re.compile(r"encrypted_backup_(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2})\.gpg")
+
+
+def setup_facts():
+    """What the dashboard's checklist needs. Everything in SERVER_B_USER's home is read as that
+    user (runuser), so root follows no link that user put there."""
+    settings = read_settings()
+    user = settings.get("backup_user") or ""
+    facts = {"backup_user": user, "user_exists": False}
+    try:
+        home = pwd.getpwnam(user).pw_dir if user else ""
+    except KeyError:
+        home = ""
+    if home:
+        facts["user_exists"] = True
+        facts["sshd_limits"] = os.path.isfile("/etc/ssh/sshd_config.d/60-lnd-backup-%s.conf" % user)
+        as_user = ["/usr/sbin/runuser", "-u", user, "--"]
+        code, _ = run(as_user + ["grep", "-q", 'command="[^"]*lnd-backup-gate"',
+                                 os.path.join(home, ".ssh", "authorized_keys")], timeout=10)
+        facts["gate"] = code == 0
+        code, names = run(as_user + ["find", os.path.join(home, "encrypted_lnd_backups"),
+                                     "-maxdepth", "1", "-name", "encrypted_backup_*.gpg",
+                                     "-printf", "%f\\n"], timeout=20)
+        newest = None
+        for name in names.splitlines():
+            m = BACKUP_NAME.fullmatch(name)
+            if m:
+                try:
+                    t = datetime.datetime.fromisoformat(m.group(1)).timestamp()
+                except ValueError:
+                    continue
+                newest = t if newest is None or t > newest else newest
+        facts["newest_backup"] = newest
+    facts["bitcoind_installed"] = os.path.isfile("/usr/local/bin/bitcoind")
+    facts["tower_installed"] = os.path.isfile("/etc/lndtower/lnd.conf")
+    code, ufw = run(["ufw", "status"], timeout=10)
+    facts["ufw_active"] = code == 0 and "Status: active" in ufw
+    port = str(settings.get("watchtower_port") or "")
+    facts["ufw_tower_rule"] = bool(port) and any(
+        line.split()[0] in (port, port + "/tcp") for line in ufw.splitlines() if line.strip())
+    return facts
+
+
+def chain_incoming():
+    """While ~SERVER_B_USER/chain-incoming exists, Server A's key can fill the disk through rsync:
+    the free space there, so the dashboard can show it. Only looked at, never opened."""
+    try:
+        with open(SETTINGS_FILE, encoding="utf-8") as f:
+            user = json.load(f).get("backup_user") or ""
+        home = pwd.getpwnam(user).pw_dir
+        if not stat.S_ISDIR(os.lstat(os.path.join(home, "chain-incoming")).st_mode):
+            return None
+        fs = os.statvfs(home)
+    except (OSError, ValueError, KeyError, AttributeError):
+        return None
+    return {"free_bytes": fs.f_bavail * fs.f_frsize}
+
+
+def log(name):
+    if name == "bitcoind":
+        # Opened without following links: the bitcoin user owns this folder and could otherwise
+        # point debug.log at a file only root may read
+        try:
+            fd = os.open(BITCOIND_LOG, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+        except OSError as e:
+            sys.exit("Can't read %s: %s" % (BITCOIND_LOG, e.strerror))
+        with os.fdopen(fd, "rb") as f:
+            if not stat.S_ISREG(os.fstat(f.fileno()).st_mode):
+                sys.exit("%s is not a regular file" % BITCOIND_LOG)
+            f.seek(0, os.SEEK_END)
+            f.seek(max(0, f.tell() - 256 * 1024))
+            lines = f.read().decode("utf-8", "replace").splitlines()[-LOG_LINES:]
+        print("\n".join(lines))
+    else:
+        code, out = run(["journalctl", "-u", SERVICES[name], "-n", str(LOG_LINES), "--no-pager",
+                         "-o", "short-iso", "-q"])
+        print(out, end="")
+
+
+def main():
+    args = sys.argv[1:]
+    if args == ["status"]:
+        status()
+    elif len(args) == 2 and args[0] in ("start", "stop", "restart") and args[1] in SERVICES:
+        tower = SERVICES["tower"]
+        tower_ran = run(["systemctl", "is-active", "--quiet", tower], timeout=5)[0] == 0
+        code, _ = run(["systemctl", args[0], SERVICES[args[1]]], timeout=600)
+        # The tower's LND exits when bitcoind goes away, and systemd would start it again only
+        # 30 seconds later. Restarted now, but only if it ran: a tower you stopped stays stopped.
+        if code == 0 and args == ["restart", "bitcoind"] and tower_ran:
+            code, _ = run(["systemctl", "restart", tower], timeout=600)
+        sys.exit(code)
+    elif len(args) == 2 and args[0] == "log" and args[1] in SERVICES:
+        log(args[1])
+    elif len(args) == 2 and args[0] == "update" and args[1] in SERVICES:
+        # Its output goes straight to the dashboard's terminal, so you see the progress
+        try:
+            os.execve(UPDATE, [UPDATE, "install", args[1]], ENV)
+        except OSError as e:
+            sys.exit("Can't run %s: %s" % (UPDATE, e.strerror))
+    else:
+        sys.exit(__doc__)
+
+
+if __name__ == "__main__":
+    main()

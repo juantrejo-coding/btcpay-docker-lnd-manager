@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="868" height="398" viewBox="0 0 868.0 398.0">
+<rect width="100%" height="100%" rx="8" fill="#1d2027"/>
+<rect width="100%" height="30" rx="8" fill="#2c313a"/>
+<rect y="22" width="100%" height="8" fill="#2c313a"/>
+<circle cx="18" cy="15" r="6" fill="#ff5f57"/>
+<circle cx="38" cy="15" r="6" fill="#febc2e"/>
+<circle cx="58" cy="15" r="6" fill="#28c840"/>
+<text x="434.0" y="20" fill="#9aa1ad" font-family="sans-serif" font-size="13" text-anchor="middle">setup_script.sh: English, Deutsch, Español, Français</text>
+<g font-family="ui-monospace, 'DejaVu Sans Mono', Menlo, Consolas, monospace" font-size="14" xml:space="preserve">
+<text x="14.0" y="56.5" fill="#d6d9e0" textLength="310.8" lengthAdjust="spacingAndGlyphs">Language / Sprache / Idioma / Langue:</text>
+<text x="14.0" y="73.5" fill="#d6d9e0" textLength="100.8" lengthAdjust="spacingAndGlyphs">  1) English</text>
+<text x="14.0" y="90.5" fill="#d6d9e0" textLength="100.8" lengthAdjust="spacingAndGlyphs">  2) Deutsch</text>
+<text x="14.0" y="107.5" fill="#d6d9e0" textLength="100.8" lengthAdjust="spacingAndGlyphs">  3) Español</text>
+<text x="14.0" y="124.5" fill="#d6d9e0" textLength="109.2" lengthAdjust="spacingAndGlyphs">  4) Français</text>
+<text x="14.0" y="141.5" fill="#d6d9e0" textLength="50.4" lengthAdjust="spacingAndGlyphs">1-4: 3</text>
+<text x="14.0" y="158.5" fill="#d6d9e0">🔎</text>
+<text x="30.8" y="158.5" fill="#d6d9e0" textLength="546.0" lengthAdjust="spacingAndGlyphs"> Revisando este servidor y el Servidor B antes de cambiar nada...</text>
+<text x="30.8" y="175.5" fill="#d6d9e0">✅</text>
+<text x="47.6" y="175.5" fill="#d6d9e0" textLength="512.4" lengthAdjust="spacingAndGlyphs"> Los programas que necesita la configuración están instalados</text>
+<text x="30.8" y="192.5" fill="#d6d9e0">✅</text>
+<text x="47.6" y="192.5" fill="#d6d9e0" textLength="478.8" lengthAdjust="spacingAndGlyphs"> BTCPay Server está instalado (/root/btcpayserver-docker)</text>
+<text x="30.8" y="209.5" fill="#d6d9e0">✅</text>
+<text x="47.6" y="209.5" fill="#d6d9e0" textLength="394.8" lengthAdjust="spacingAndGlyphs"> El LND de BTCPay tiene su carpeta de billetera</text>
+<text x="30.8" y="226.5" fill="#d6d9e0">✅</text>
+<text x="47.6" y="226.5" fill="#d6d9e0" textLength="655.2" lengthAdjust="spacingAndGlyphs"> El volumen adjunto (UUID b727c4f1-6014-4502-904b-748b614871e6) está conectado</text>
+<text x="30.8" y="243.5" fill="#d6d9e0">✅</text>
+<text x="47.6" y="243.5" fill="#d6d9e0" textLength="428.4" lengthAdjust="spacingAndGlyphs"> El Servidor B responde en 198.51.100.20, puerto 22</text>
+<text x="14.0" y="277.5" fill="#d6d9e0">✅</text>
+<text x="30.8" y="277.5" fill="#d6d9e0" textLength="445.2" lengthAdjust="spacingAndGlyphs"> Listo. La configuración pregunta antes de cada paso.</text>
+<text x="14.0" y="311.5" fill="#d6d9e0" textLength="184.8" lengthAdjust="spacingAndGlyphs">[2026-10-08 03:43:51] </text>
+<text x="198.8" y="311.5" fill="#d6d9e0">✅</text>
+<text x="215.6" y="311.5" fill="#d6d9e0" textLength="638.4" lengthAdjust="spacingAndGlyphs"> Se guardó UI_LANGUAGE=&quot;es&quot; en /home/ubuntu/btcpay-docker-lnd-manager/config</text>
+<text x="14.0" y="328.5" fill="#d6d9e0" textLength="285.6" lengthAdjust="spacingAndGlyphs">El usuario &#x27;mirroruser&#x27; ya existe.</text>
+<text x="14.0" y="345.5" fill="#d6d9e0">🔍</text>
+<text x="30.8" y="345.5" fill="#d6d9e0" textLength="344.4" lengthAdjust="spacingAndGlyphs"> Probando si el acceso SSH ya funciona...</text>
+<text x="14.0" y="362.5" fill="#d6d9e0">✅</text>
+<text x="30.8" y="362.5" fill="#d6d9e0" textLength="604.8" lengthAdjust="spacingAndGlyphs"> La clave SSH ya está configurada y funciona. Se omite su configuración.</text>
+<text x="14.0" y="379.5" fill="#d6d9e0" textLength="604.8" lengthAdjust="spacingAndGlyphs">¿Desea ver la clave privada ahora para guardarla de forma segura? (y/n):</text>
+</g></svg>

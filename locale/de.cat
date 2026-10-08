@@ -1,0 +1,1476 @@
+# Made by tools/i18n.py from de.po; edit that file, not this one
+\nExit code %d. Press Enter to return to the dashboard.	\nExit-Code %d. Drücken Sie Enter, um zum Dashboard zurückzukehren.
+        lsblk -f	        lsblk -f
+        sudo mkfs.%s -L lnd-backups /dev/sdX        (sdX = the new disk)	        sudo mkfs.%s -L lnd-backups /dev/sdX        (sdX = der neue Datenträger)
+      Lightning is set up in BTCPay. Setup does the rest; the backup service can be installed	      Lightning in BTCPay eingerichtet ist. Den Rest erledigt das Setup; der Backup-Dienst lässt sich
+      once it exists (lnd-manager: /install).	      installieren, sobald der Ordner existiert (lnd-manager: /install).
+     %s (no password, key login only), or sets up the existing one, with this key	     %s an (ohne Passwort, nur Schlüssel-Login) oder richtet den vorhandenen ein, mit diesem Schlüssel
+     If the connection drops, run /chain copy again: it goes on where it stopped.	     Bricht die Verbindung ab, führen Sie /chain copy erneut aus: Es macht dort weiter, wo es aufhörte.
+     Then BTCPay starts again.	     Danach startet BTCPay wieder.
+     This script never formats disks itself.	     Dieses Skript formatiert selbst nie Datenträger.
+     check its name in lsblk twice; never the disk that holds / or /var/lib/docker:	     Sie seinen Namen in lsblk also zweimal; nie den Datenträger mit / oder /var/lib/docker:
+     lists it, usually as /dev/sdb or /dev/vdb. A new disk shows no FSTYPE and no UUID yet.	     zeigt ihn dann, meist als /dev/sdb oder /dev/vdb. Ein neuer zeigt noch kein FSTYPE und keine UUID.
+    %s, then enables and starts it.	    %s, aktiviert und startet ihn dann.
+    and a sudo rule that lets the backup user run that helper and nothing else.	    und eine sudo-Regel, die dem Backup-Benutzer nur dieses Hilfsprogramm erlaubt und sonst nichts.
+    only, not the files in them).	    auf die Ordner, nicht auf die Dateien darin).
+    ssh-keygen -lf %s	    ssh-keygen -lf %s
+   %s are kept. Server B's copies aren't touched.	   %s bleiben erhalten. Die Kopien auf Server B bleiben unangetastet.
+   %s holds files this project didn't put there; left as it is	   %s enthält Dateien, die nicht von diesem Projekt stammen; bleibt unverändert
+   %s is disabled meanwhile, so a reboot can't start BTCPay too early;	   %s ist so lange deaktiviert, damit ein Neustart BTCPay nicht zu früh startet;
+   %s were not added. The restricted key line still applies.	   %s wurden nicht hinzugefügt. Die eingeschränkte Schlüsselzeile gilt weiterhin.
+   %s: no key in the lnd repository, skipped	   %s: kein Schlüssel im lnd-Repository, übersprungen
+   1. serverb-user-setup.sh        then on Server A: lnd-manager /setup (it installs the backup gate)	   1. serverb-user-setup.sh        dann auf Server A: lnd-manager /setup (installiert das Backup-Gate)
+   2. serverb-bitcoind-setup.sh	   2. serverb-bitcoind-setup.sh
+   3. on Server A: lnd-manager /chain prune (if BTCPay's chain isn't pruned), then /chain copy	   3. auf Server A: lnd-manager /chain prune (falls BTCPay noch nicht gepruned ist), dann /chain copy
+   4. serverb-import-chain.sh      (skip 3 and 4 to let Server B sync from the network: slower)	   4. serverb-import-chain.sh      (ohne 3 und 4 synchronisiert Server B aus dem Netz: langsamer)
+   5. serverb-watchtower-setup.sh  note the tower's pubkey@address:port it shows	   5. serverb-watchtower-setup.sh  notieren Sie das angezeigte pubkey@address:port des Towers
+   6. on Server A: lnd-manager /tower add	   6. auf Server A: lnd-manager /tower add
+   7. serverb-dashboard-setup.sh	   7. serverb-dashboard-setup.sh
+   Compare these fingerprints with LND's own list (docs: "verifying the release") if you can.	   Vergleichen Sie diese Fingerabdrücke möglichst mit LNDs eigener Liste (Doku: "verifying the release").
+   Copy:   %s	   Kopie:  %s
+   Free space for /var/lib: %s GB	   Freier Platz für /var/lib: %s GB
+   Good signatures from %s builders:	   Gültige Signaturen von %s Buildern:
+   It takes effect at your next login. Anything of your own that runs docker as %s	   Das wirkt ab Ihrer nächsten Anmeldung. Alles Eigene, das docker als %s
+   LND says: %s	   LND meldet: %s
+   LND state: %s	   LND-Status: %s
+   Later: ufw allow from %s to any port %s proto tcp (with SSH allowed), ufw enable	   Später: ufw allow from %s to any port %s proto tcp (bei erlaubtem SSH), ufw enable
+   Next: on Server A, lnd-manager: /chain copy. Then here: sudo bash serverb-import-chain.sh	   Als Nächstes: auf Server A lnd-manager: /chain copy. Danach hier: sudo bash serverb-import-chain.sh
+   Progress is shown every 30 seconds. Type skip and Enter to stop waiting.	   Fortschritt alle 30 Sekunden. Geben Sie skip und Enter ein, um nicht weiter zu warten.
+   Progress: the Server B dashboard, or journalctl -u bitcoind.	   Fortschritt: das Server-B-Dashboard oder journalctl -u bitcoind.
+   Removed the old install folder %s	   Alter Installationsordner %s entfernt
+   Scan progress: %s	   Scan-Fortschritt: %s
+   Source: %s	   Quelle: %s
+   The backup service and lnd-wallet.sh need the gate: without it, copies to Server B fail.	   Der Backup-Dienst und lnd-wallet.sh brauchen das Gate: Ohne Gate schlagen Kopien auf Server B fehl.
+   The backup service still reads %s/config: rerun %s/rsync_gpg_backup.sh,	   Der Backup-Dienst liest noch %s/config: Führen Sie %s/rsync_gpg_backup.sh erneut aus,
+   The backup service uses the installed copy: rerun %s/rsync_gpg_backup.sh to apply the changes.	   Der Backup-Dienst nutzt die installierte Kopie: Änderungen gelten erst nach erneutem %s/rsync_gpg_backup.sh.
+   The mount point should be %s (owned by root). If the disk is already	   würde ihm folgen. Der Einhängepunkt sollte %s sein (gehört root). Ist der Datenträger schon
+   The old blocks are in %s; delete that folder once all is well: sudo rm -rf %s	   Die alten Blöcke liegen in %s; löschen Sie diesen Ordner, wenn alles in Ordnung ist: sudo rm -rf %s
+   To go back: stop bitcoind, move %s/* back into %s, start it.	   Zurück zum alten Stand: Stoppen Sie bitcoind, verschieben Sie %s/* zurück nach %s, starten Sie es.
+   Two nodes with the same channels can lose all the funds in them.	   Zwei Nodes mit denselben Kanälen können das gesamte Guthaben darin verlieren.
+   Type later and Enter to stop waiting; option 4 restores the channels another time.	   Geben Sie later und Enter ein, um nicht weiter zu warten; Option 4 stellt die Kanäle später her.
+   Usually you keep them: they are your only copies of older wallet states.	   Normalerweise behalten Sie sie: Es sind Ihre einzigen Kopien älterer Wallet-Zustände.
+   Wallet: sudo lnd-wallet [new|restore|channels|channels-only|undo]   Dashboard: lnd-manager	   Wallet: sudo lnd-wallet [new|restore|channels|channels-only|undo]   Dashboard: lnd-manager
+   Watchtower (optional):	   Watchtower (optional):
+   Without it, use 'sudo docker ...' (asks for your password, and is logged).	   Ohne sie nutzen Sie 'sudo docker ...' (fragt nach Ihrem Passwort und wird protokolliert).
+   a lost tower is replaced by a new one with a new key, which Server A then adds instead.	   wird ein verlorener Tower durch einen neuen mit neuem Schlüssel ersetzt, den Server A dann hinzufügt.
+   account to keys, with no terminal: nobody could then log in as %s with a	   Konto auf Schlüssel, ohne Terminal: Niemand könnte sich dann als %s mit einem Passwort
+   all. Every other incoming port is then closed: if this server offers anything else, say no	   alle. Alle anderen eingehenden Ports sind dann zu: Bietet dieser Server noch anderes an, geben Sie
+   and add ufw rules for it yourself first.	   nicht yes ein und legen Sie zuerst selbst ufw-Regeln dafür an.
+   and in %s. The wallet safety backups in	   und in %s. Die Sicherheitskopien der Wallet in
+   another SERVER_B_USER on Server A.	   und setzen Sie auf Server A einen anderen SERVER_B_USER.
+   be verified. Only use it if you know it is the one you want.	   nicht geprüft werden. Nutzen Sie sie nur, wenn Sie sicher wissen, dass es die richtige ist.
+   below is this server's own address, which behind NAT is a private one: check it.	   Der Vorschlag unten ist die eigene Adresse dieses Servers, hinter NAT eine private: Prüfen Sie sie.
+   changed (old file kept as /etc/fstab.before-lnd-backups-move), and the disk mounted at the	   geändert (die alte Datei bleibt als /etc/fstab.before-lnd-backups-move) und der Datenträger am
+   channels are restored.	   Kanäle wiederhergestellt sind.
+   channels cooperatively and send the funds out first.	   zuerst die Kanäle kooperativ und senden Sie das Guthaben aus der Wallet.
+   channels: it stays stuck until the channels are restored from channel.backup.	   zurück: Es steckt fest, bis die Kanäle aus channel.backup wiederhergestellt sind.
+   delete it (sudo rm -rf %s), unless you mean to import a new copy	   Löschen Sie es (sudo rm -rf %s), außer Sie wollen eine neue Kopie importieren
+   download interrupted (curl %s), going on (try %s of 10)...	   Download unterbrochen (curl %s), es geht weiter (Versuch %s von 10)...
+   every backup there. Setup can install Server B's backup gate now (as %s, no root):	   jedes Backup löschen. Das Setup kann jetzt das Backup-Gate von Server B installieren (als %s, ohne root):
+   everything in it.	   alles darin auf.
+   folder for a symlink while the disk isn't mounted, and the next mount would follow it.	   durch einen Symlink ersetzen, solange der Datenträger nicht eingehängt ist, und das nächste Einhängen
+   from channel.backup in between, their peers have closed them: don't put the old state back.	   channel.backup wiederhergestellt, haben Peers sie geschlossen: Spielen Sie den alten Stand nicht zurück.
+   funds stuck until it comes back. Payments in flight when LND failed can be lost.	   des Kanals fest, bis er wiederkommt. Beim Ausfall von LND laufende Zahlungen können verloren gehen.
+   good signature: %s  %s	   gültige Signatur: %s  %s
+   installed now: %s	   jetzt installiert: %s
+   is fine, recovery is probably not what you need.	   in Ordnung sind, brauchen Sie wahrscheinlich keine Wiederherstellung.
+   it makes the backup user and its key, then offers this script.	   Es legt den Backup-Benutzer und seinen Schlüssel an und bietet dann dieses Skript an.
+   itself. Keep another way into Server B (your own key or password) for later changes.	   selbst. Behalten Sie einen anderen Zugang zu Server B (eigener Schlüssel oder Passwort) für später.
+   mounted at the old place, setup moves the mount below (it asks again first).	   am alten Ort eingehängt, verlegt das Setup ihn weiter unten (es fragt vorher noch einmal).
+   new place. The backups on it stay as they are.	   neuen Ort eingehängt. Die Backups darauf bleiben, wie sie sind.
+   no LND has run with those channels since the safety backup was made. If channels were restored	   dem Erstellen der Sicherheitskopie kein LND mit diesen Kanälen lief. Wurden seither Kanäle aus
+   on-chain once the peer's close confirms. A peer that stays offline keeps that channel's	   on-chain zurück, sobald die Schließung bestätigt ist. Bleibt ein Peer offline, steckt das Guthaben
+   password or get a shell over SSH. If a person uses this account, stop here and set	   anmelden oder per SSH eine Shell bekommen. Nutzt eine Person dieses Konto, brechen Sie hier ab
+   retry pending since %s	   Wiederholung offen seit %s
+   run it again once the earlier one has finished.	   Starten Sie ihn erneut, sobald der frühere beendet ist.
+   running as %s can read the LND wallet's password and seed. These scripts don't need it.	   als %s läuft, kann Passwort und Seed der LND-Wallet lesen. Diese Skripte brauchen die Gruppe nicht.
+   scp %s@<this server>:%s/serverb-*.sh .	   scp %s@<dieser Server>:%s/serverb-*.sh .
+   scp serverb-*.sh <your account>@%s:	   scp serverb-*.sh <Ihr Konto>@%s:
+   serverb-bitcoind-setup.sh afterwards, so bitcoin.conf gets rpccookieperms=group.	   serverb-bitcoind-setup.sh erneut aus, damit bitcoin.conf rpccookieperms=group erhält.
+   sessions in the tower and fill its disk.	   Sitzungen im Tower speichern und seine Platte füllen.
+   that are already closing. Wait until they have finished, then run this script again.	   schließende Kanäle nicht ab. Warten Sie, bis sie fertig sind, dann starten Sie das Skript erneut.
+   the Server B dashboard (/status), or: sudo -u lndtower lncli --lnddir=%s --rpcserver=%s --macaroonpath=%s/readonly.macaroon tower info	   Server-B-Dashboard (/status), oder: sudo -u lndtower lncli --lnddir=%s --rpcserver=%s --macaroonpath=%s/readonly.macaroon tower info
+   the backup service is stopped, the disk unmounted from the old place, the /etc/fstab line	   Der Backup-Dienst wird gestoppt, der Datenträger am alten Ort ausgehängt, die Zeile in /etc/fstab
+   the key may then only store new backups, list and fetch them, and Server B rotates them	   Danach darf der Schlüssel nur noch neue Backups ablegen, auflisten und abrufen; Server B rotiert sie
+   the script starts BTCPay again at the end. The backup service pauses too.	   das Skript startet BTCPay am Ende wieder. Auch der Backup-Dienst pausiert.
+   then sudo ./install-scripts.sh again removes %s.	   danach entfernt ein erneutes sudo ./install-scripts.sh %s.
+   this LND's current data (channel.db) can sweep them. channel.backup doesn't cover channels	   und nur die aktuellen Daten dieses LND (channel.db) können sie einsammeln. channel.backup deckt
+   this finishes (%s).	   dies abgeschlossen ist (%s).
+   through its old seed (in its walletunlock.json and in the safety backup). Better: close the	   alten Seed erreichbar (in ihrer walletunlock.json und in der Sicherheitskopie). Besser: Schließen Sie
+   ufw can be turned on with the tower port open only to Server A (%s) and SSH open to	   ufw kann eingeschaltet werden, mit dem Tower-Port nur für Server A (%s) offen und SSH offen für
+   with serverb-import-chain.sh.	   mit serverb-import-chain.sh.
+   without sudo (a cron job, a monitor) would stop working.	   ohne sudo ausführt (ein Cron-Job, ein Monitor), würde nicht mehr funktionieren.
+  %s) %s on the %s%s (%s)	  %s) %s (Ort: %s%s, %s)
+  %s, blocks %s of %s headers (%.2f%%)%s	  %s, Blöcke %s von %s Headern (%.2f%%)%s
+  (%s) and to Server B (%s). It keeps the 10 newest there, plus one	  angehängte Volume (%s) und auf Server B (%s). Dort behält er die 10 neuesten, dazu eines
+  (owned by root, with %s), and gives the backup user only	  (gehört root, mit %s), und es gibt dem Backup-Benutzer darauf nur
+  - A root helper, %s, that can only read files inside LND's folder,	  - Ein Hilfsprogramm mit root-Rechten, %s, das nur Dateien im LND-Ordner lesen kann,
+  - Asks whether to delete the existing backups (only if you type DELETE ALL BACKUPS).	  - Fragt, ob die vorhandenen Backups gelöscht werden (nur wenn Sie DELETE ALL BACKUPS eingeben).
+  - Installs missing tools: rsync, gnupg, inotify-tools, xxhash, acl.	  - Installiert fehlende Werkzeuge: rsync, gnupg, inotify-tools, xxhash, acl.
+  - Keeps the backup user out of the docker group (that would amount to root).	  - Hält den Backup-Benutzer aus der docker-Gruppe heraus (das käme root-Rechten gleich).
+  - Read access for the backup user to config, and to the LND folders it watches (the folders	  - Lesezugriff des Backup-Benutzers auf config und auf die LND-Ordner, die der Dienst überwacht (nur
+  - Stops the service, writes it to %s and	  - Stoppt den Dienst, schreibt ihn nach %s und
+  - The safe folders: the only folders the service may ever delete from (asked next).	  - Die sicheren Ordner: Nur in diesen Ordnern darf der Dienst jemals löschen (Abfrage folgt).
+  1) %s exists on Server B and you know its password: setup copies the key now	  1) %s existiert auf Server B und Sie kennen sein Passwort: Das Setup kopiert den Schlüssel jetzt
+  1) New wallet	  1) Neue Wallet
+  1) opt-save-storage       ~100 GB	  1) opt-save-storage       ~100 GB
+  1. Attach it to this server (in the provider's panel, or plug it in). Then	  1. Hängen Sie ihn an diesen Server an (im Panel des Anbieters oder per Anschluss). Der Befehl
+  1. while BTCPay runs: almost everything (%s GB). This can take hours; BTCPay keeps working.	  1. Während BTCPay läuft: fast alles (%s GB). Das kann Stunden dauern; BTCPay arbeitet weiter.
+  2) Restore the wallet (on-chain funds) from its seed	  2) Wallet (On-Chain-Guthaben) aus ihrem Seed wiederherstellen
+  2) opt-save-storage-s     ~50 GB	  2) opt-save-storage-s     ~50 GB
+  2) setup makes serverb-user-setup.sh for you to run on Server B with sudo. It creates	  2) das Setup erstellt serverb-user-setup.sh, das Sie auf Server B mit sudo ausführen. Es legt
+  2. BTCPay stopped (you type STOP BTCPAY): only what changed meanwhile, usually minutes.	  2. BTCPay gestoppt (Sie geben STOP BTCPAY ein): nur was sich inzwischen geändert hat, meist Minuten.
+  2. Only if it is new and empty: make a %s filesystem on it. This ERASES that disk, so	  2. Nur wenn er neu und leer ist: Legen Sie ein %s-Dateisystem darauf an. Das LÖSCHT ihn, prüfen
+  3) Restore the wallet and the channels (seed + channel.backup)	  3) Wallet und Kanäle wiederherstellen (Seed + channel.backup)
+  3) opt-save-storage-xs    ~25 GB   recommended: keeps about 3 months of blocks	  3) opt-save-storage-xs    ~25 GB   empfohlen: behält etwa 3 Monate an Blöcken
+  3. lsblk -f now shows its UUID. Below, choose it from the list of unused %s filesystems.	  3. lsblk -f zeigt jetzt seine UUID. Wählen Sie ihn unten aus der Liste ungenutzter %s-Dateisysteme.
+  4) Restore the channels into the running wallet (channel.backup only)	  4) Kanäle in die laufende Wallet wiederherstellen (nur channel.backup)
+  4) opt-save-storage-xxs   ~5 GB    BTCPay warns that Lightning can have trouble with this little	  4) opt-save-storage-xxs   ~5 GB    laut BTCPay kann Lightning mit so wenig Probleme bekommen
+  5) Undo: put a safety backup back	  5) Rückgängig: eine Sicherheitskopie zurückspielen
+  A commercial user that doesn't pay agrees to pay 10 percent of those sales instead.	  Ein gewerblicher Nutzer, der nicht zahlt, stimmt zu, stattdessen 10 Prozent dieser Umsätze zu zahlen.
+  Above that: a one-time USD 50 payment in bitcoin to the donation address.	  Darüber: eine einmalige Zahlung von USD 50 in Bitcoin an die Spendenadresse.
+  Bitcoin:  	  Bitcoin:  
+  Don't mount it or add it to /etc/fstab yourself: setup does that, at %s	  Hängen Sie ihn nicht selbst ein, tragen Sie ihn nicht in /etc/fstab ein: Das macht das Setup, unter %s
+  Free for personal and business use up to USD 1,000,000 annual sales income.	  Kostenlos für private und geschäftliche Nutzung bis USD 1,000,000 Jahresumsatz.
+  Install them now (sudo apt-get install %s)? Type yes: 	  Jetzt installieren (sudo apt-get install %s)? Geben Sie yes ein: 
+  It doesn't touch BTCPay or the LND wallet.	  BTCPay und die LND-Wallet bleiben unangetastet.
+  It runs all the time as the backup user (%s), not as root. When LND's channel	  Er läuft ständig als Backup-Benutzer (%s), nicht als root. Wenn sich die Kanal-Backups
+  Keep your bitcoin payment receipt (transaction ID) as proof.	  Bewahren Sie den Beleg Ihrer Bitcoin-Zahlung (Transaktions-ID) als Nachweis auf.
+  LND %s, block %s, %s	  LND %s, Block %s, %s
+  Missing programs: %s (packages: %s)	  Fehlende Programme: %s (Pakete: %s)
+  Not the system disk. Before going on:	  Nicht den Systemdatenträger. Bevor Sie fortfahren:
+  Project:  	  Projekt:  
+  The backups need a disk of their own: a block volume from your VPS provider, or a second disk.	  Die Backups brauchen einen eigenen Datenträger: ein Block-Volume vom VPS-Anbieter oder eine zweite Platte.
+  Used in another commercial node service or tool: a one-time USD 500 payment.	  Bei Einsatz in einem anderen kommerziellen Node-Dienst oder -Tool: eine einmalige Zahlung von USD 500.
+  backups change, and once an hour in any case, it checks LND's files (channel.backup, the wallet,	  von LND ändern, und in jedem Fall einmal pro Stunde, prüft er die Dateien von LND (channel.backup,
+  for Server A (lnd-manager: /tower add): 	  für Server A (lnd-manager: /tower add): 
+  none	  keine
+  peers %s, on disk %s%s, %s	  Peers %s, auf Platte %s%s, %s
+  per day for 30 days and one per month for 12 months.	  pro Tag für 30 Tage und eines pro Monat für 12 Monate.
+  pubkey 	  Schlüssel 
+  ssh -i <its key> %s@<this server> 'rm -rf ~' -> refused	  ssh -i <sein Schlüssel> %s@<dieser Server> 'rm -rf ~' -> abgelehnt
+  ssh -i <its key> %s@<this server> ping      -> ok	  ssh -i <sein Schlüssel> %s@<dieser Server> ping      -> ok
+  starting (no answer from bitcoin-cli yet)	  startet (noch keine Antwort von bitcoin-cli)
+  sudo -u %s ssh -i %s -p %s %s@%s	  sudo -u %s ssh -i %s -p %s %s@%s
+  the %s folder on it.	  den Ordner %s.
+  the tower starts once bitcoind has caught up	  der Tower startet, sobald bitcoind aufgeholt hat
+  them with the backup GPG key, and copies the result to the attached volume	  verschlüsselt und signiert sie mit dem GPG-Schlüssel der Backups und kopiert das Ergebnis auf das
+  until serverb-import-chain.sh takes it over, Server A's key can write there	  bis serverb-import-chain.sh sie übernimmt, darf der Schlüssel von Server A dort schreiben
+  walletunlock.json, macaroons, TLS certificate). If any changed, it packs them, encrypts and signs	  Wallet, walletunlock.json, Macaroons, TLS-Zertifikat). Hat sich etwas geändert, packt er sie,
+ (also on Server B)	 und Server B
+ (newest %s old)	 (neuestes vor %s)
+ (pruned)	 (gepruned)
+ / commands  q quit	 / Befehle  q Ende
+ / commands  s start/stop  r restart  c check now  l log  w wallet  q quit	 / Befehle  s Start/Stopp  r Neustart  c prüfen  l Protokoll  w Wallet  q Ende
+ and 	 und 
+ for %s	 seit %s
+ no matching command	 kein passender Befehl
+ q back   Up/Down scroll	 q zurück   ↑/↓ blättern
+ q back   Up/Down/PgUp/PgDn scroll	 q zurück   ↑/↓/Bild↑/Bild↓ blättern
+!!! WRITE DOWN THIS SEED. It is the only way to restore the wallet. !!!	!!! SCHREIBEN SIE DIESEN SEED AUF. Nur mit ihm lässt sich die Wallet wiederherstellen. !!!
+# Filled in on Server A by serverb-scripts.sh, %s	# Ausgefüllt auf Server A von serverb-scripts.sh, %s
+%s %s is the latest. Check again and update if newer?	%s %s ist aktuell. Erneut prüfen und ggf. aktualisieren?
+%s (%s ago)	%s (vor %s)
+%s Type %s: %s	%s %s eingeben: %s
+%s days old	%s Tage alt
+%s didn't restart: journalctl -u %s	%s wurde nicht neu gestartet: journalctl -u %s
+%s doesn't match SHA256SUMS	%s passt nicht zu SHA256SUMS
+%s doesn't match the manifest	%s passt nicht zum Manifest
+%s failed its check: %s	%s hat die Prüfung nicht bestanden: %s
+%s has no usable home folder (%s)	%s hat keinen brauchbaren Home-Ordner (%s)
+%s holds a hard link (%s), maybe to one of %s's other files. Nothing was used or changed except the folders in %s, now root's. %s	%s enthält einen Hardlink (%s), vielleicht auf eine andere Datei von %s. Nichts wurde verwendet oder geändert außer den Ordnern in %s, die jetzt root gehören. %s
+%s holds a wallet (%s). Not used. %s	%s enthält eine Wallet (%s). Nicht verwendet. %s
+%s holds something that is neither a file nor a folder (%s). Not used; it stays root-owned in %s.	%s enthält etwas, das weder Datei noch Ordner ist (%s). Nicht verwendet; es bleibt in %s, Eigentümer root.
+%s hours old	%s Stunden alt
+%s is a system folder	%s ist ein Systemordner
+%s is empty. Make this script on Server A (lnd-manager: /serverb scripts) and copy it here.	%s ist leer. Erstellen Sie dieses Skript auf Server A (lnd-manager: /serverb scripts) und kopieren Sie es hierher.
+%s is in the %s group. Server A's key must reach an account of its own, without sudo: set another SERVER_B_USER on Server A.	%s ist in der Gruppe %s. Der Schlüssel von Server A muss ein eigenes Konto ohne sudo erreichen: Setzen Sie auf Server A einen anderen SERVER_B_USER.
+%s is or contains %s	%s ist oder enthält %s
+%s is or contains the home folder %s	%s ist oder enthält den Home-Ordner %s
+%s is refused: %s	%s wird abgelehnt: %s
+%s is root, MAIN_USER or the user running this setup	%s ist root, MAIN_USER oder der Benutzer, der dieses Setup ausführt
+%s is the backup user (SERVER_A_USER)	%s ist der Backup-Benutzer (SERVER_A_USER)
+%s minutes old	%s Minuten alt
+%s on %s: %s	%s (%s): %s
+%s on %s: could not be copied	%s (%s): konnte nicht kopiert werden
+%s on the %s (%s)	%s (Ort: %s, %s)
+%s removed from docker group.	%s aus der docker-Gruppe entfernt.
+%s stopped after the restart: journalctl -u %s	%s ist nach dem Neustart wieder gestoppt: journalctl -u %s
+%s unused %s filesystem(s) for the attached volume; setup asks which	%s ungenutzte(s) %s-Dateisystem(e) für das angehängte Volume; das Setup fragt, welches
+%s/%s is missing: the copy isn't complete. Run /chain copy on Server A again.	%s/%s fehlt: Die Kopie ist nicht vollständig. Führen Sie /chain copy auf Server A erneut aus.
+%s: retry pending for %s	%s: Wiederholung steht seit %s aus
+(empty)	(leer)
+(only there, and only until serverb-import-chain.sh has taken the copy over).	(nur dort und nur, bis serverb-import-chain.sh die Kopie übernommen hat).
+(placeholder: SUPPORT_BTC_ADDRESS in Server A's config)	(Platzhalter: SUPPORT_BTC_ADDRESS in der config von Server A)
+(placeholder: SUPPORT_BTC_ADDRESS in config)	(Platzhalter: SUPPORT_BTC_ADDRESS in config)
+(placeholder: SUPPORT_URL in Server A's config)	(Platzhalter: SUPPORT_URL in der config von Server A)
+(placeholder: SUPPORT_URL in config)	(Platzhalter: SUPPORT_URL in config)
+(wtclient.active=1); btcpay-setup.sh applies it and restarts LND.	(wtclient.active=1); btcpay-setup.sh wendet es an und startet LND neu.
+, a milestone: no regular backup could be used	, ein Meilenstein: Kein reguläres Backup war verwendbar
+, restarts: %s	, Neustarts: %s
+, since 	, seit 
+, syncing	, synchronisiert noch
+------------------END TOWER SEED------------------	------------------END TOWER SEED------------------
+-----------------BEGIN TOWER SEED-----------------	-----------------BEGIN TOWER SEED-----------------
+---------------BEGIN LND CIPHER SEED---------------	---------------BEGIN LND CIPHER SEED---------------
+---------------END LND CIPHER SEED-----------------	---------------END LND CIPHER SEED-----------------
+/install installs it	/install installiert ihn
+/serverb scripts makes Server B's scripts and lists the steps; then /tower add	/serverb scripts erstellt die Skripte für Server B und listet die Schritte auf; dann /tower add
+/setup asks for them: 	/setup fragt danach: 
+/setup installs them (or sudo ./install-scripts.sh in your working folder)	/setup installiert sie (oder sudo ./install-scripts.sh in Ihrem Arbeitsordner)
+/setup mounts it (attach the disk first)	/setup hängt es ein (schließen Sie zuerst den Datenträger an)
+/wallet attach to go back to it	/wallet attach kehrt dorthin zurück
+1. Go to 'Server Settings' in your BTCpayServer dashboard.	1. Öffnen Sie 'Server Settings' im Dashboard Ihres BTCPay Servers.
+2. Click on 'Services' in the menu.	2. Klicken Sie im Menü auf 'Services'.
+3. Select 'LND Seed Backup'.	3. Wählen Sie 'LND Seed Backup'.
+4. Click on 'See information' to view and copy your LND seed.	4. Klicken Sie auf 'See information', um Ihren LND-Seed anzuzeigen und zu kopieren.
+; ⚠️ made before backups carried a signed date, so its date is not verified	; ⚠️ erstellt, bevor Backups ein signiertes Datum trugen, daher ist sein Datum nicht geprüft
+=== MANUAL STEP REQUIRED ===	=== MANUELLER SCHRITT NÖTIG ===
+=== Setup complete on Server A ===	=== Setup auf Server A abgeschlossen ===
+A copy from Server A is still running. Wait until /chain copy on Server A has finished.	Eine Kopie von Server A läuft noch. Warten Sie, bis /chain copy auf Server A fertig ist.
+A wallet operation is already running: wait for it, or /wallet attach	Es läuft schon ein Wallet-Vorgang: warten Sie oder /wallet attach
+ACL and inotify-tools installation complete.	Installation von ACL und inotify-tools abgeschlossen.
+ACL for GPG key removed.	ACL des GPG-Schlüssels entfernt.
+ACL for SSH key removed.	ACL des SSH-Schlüssels entfernt.
+Aborted by user.	Vom Benutzer abgebrochen.
+Aborted by user: BTCPay was not stopped and nothing was changed.	Vom Benutzer abgebrochen: BTCPay wurde nicht gestoppt und nichts wurde geändert.
+Aborted by user: nothing was changed.	Vom Benutzer abgebrochen: Es wurde nichts geändert.
+Aborted by user: nothing was changed. /wallet restore restores the wallet without channels.	Vom Benutzer abgebrochen: Nichts geändert. /wallet restore stellt die Wallet ohne Kanäle wieder her.
+Aborted: BTCPay was not stopped and nothing was changed.	Abgebrochen: BTCPay wurde nicht gestoppt und nichts wurde geändert.
+Aborted: channels are still opening or closing.	Abgebrochen: Kanäle werden noch geöffnet oder geschlossen.
+Add another folder (Enter to finish): 	Weiteren Ordner hinzufügen (Enter zum Beenden): 
+Addresses to look ahead when scanning for old funds (Enter for %s): 	Wie viele Adressen der Scan nach alten Guthaben vorausschaut (Enter für %s): 
+Admin account for the Server B dashboard: 	Admin-Konto für das Dashboard von Server B: 
+After doing this, test the connection by running:	Testen Sie danach die Verbindung mit:
+Afterwards, on Server B: sudo bash serverb-import-chain.sh	Danach auf Server B: sudo bash serverb-import-chain.sh
+All dependencies are already installed.	Alle Abhängigkeiten sind bereits installiert.
+Another chain-tower.sh is running. Let it finish first.	Ein anderes chain-tower.sh läuft. Warten Sie, bis es fertig ist.
+Another update is running	Ein anderes Update läuft gerade
+Asks bitcoincore.org and api.github.com for the latest releases and compares them with what is installed. It also does that by itself every 12 hours. Changes nothing.	Fragt bei bitcoincore.org und api.github.com die neuesten Versionen ab und vergleicht sie mit den installierten. Das geschieht auch von selbst alle 12 Stunden. Ändert nichts.
+Asks for the watchtower's public key and address if config lacks them, then turns on BTCPay's watchtower client (opt-lnd-wtclient: Stops BTCPay's LND for a few minutes, you type STOP BTCPAY) and adds the tower. LND then sends it encrypted channel updates.	Fragt nach dem öffentlichen Schlüssel und der Adresse des Watchtowers, falls config sie nicht hat, schaltet dann den Watchtower-Client von BTCPay ein (opt-lnd-wtclient: stoppt den LND von BTCPay für einige Minuten, Sie geben STOP BTCPAY ein) und fügt den Tower hinzu. LND sendet ihm dann verschlüsselte Kanal-Updates.
+Asks the backup service to check LND's files now instead of at the next hourly check. If any changed, it makes a backup. Nothing is stopped or deleted.	Bittet den Backup-Dienst, die Dateien von LND jetzt statt bei der nächsten stündlichen Prüfung zu prüfen. Hat sich eine geändert, macht er ein Backup. Nichts wird gestoppt oder gelöscht.
+Attached volume	Angehängtes Volume
+Attached volume mounted at %s	Angehängtes Volume eingehängt unter %s
+BTCPay Server is installed (%s)	BTCPay Server ist installiert (%s)
+BTCPay Server isn't installed the usual way (btcpayserver-docker in %s, DOCKER_ROOT in config). Install BTCPay first	BTCPay Server ist nicht wie üblich installiert (btcpayserver-docker in %s, DOCKER_ROOT in config). Installieren Sie zuerst BTCPay
+BTCPay isn't installed the usual way (%s, %s)	BTCPay ist nicht auf die übliche Weise installiert (%s, %s)
+BTCPay made a wallet of its own instead of using this one. Its seed is in %s/%s.	BTCPay hat eine eigene Wallet erstellt, statt diese zu verwenden. Deren Seed liegt in %s/%s.
+BTCPay's LND container (%s) isn't running. Backups start once it runs	Der LND-Container von BTCPay (%s) läuft nicht. Backups beginnen, sobald er läuft
+BTCPay's LND did not come back up	Das LND von BTCPay ist nicht wieder hochgefahren
+BTCPay's LND did not unlock the restored wallet	Das LND von BTCPay hat die wiederhergestellte Wallet nicht entsperrt
+BTCPay's LND did not unlock the wallet	Das LND von BTCPay hat die Wallet nicht entsperrt
+BTCPay's LND has its wallet folder	Der LND von BTCPay hat seinen Wallet-Ordner
+BTCPay's LND has its watchtower client off. BTCPay's opt-lnd-wtclient fragment turns it on	Beim LND von BTCPay ist der Watchtower-Client aus. Das BTCPay-Fragment opt-lnd-wtclient schaltet ihn ein
+BTCPay's LND has no wallet folder yet (%s/data/chain/bitcoin/mainnet). It appears once	Der LND von BTCPay hat noch keinen Wallet-Ordner (%s/data/chain/bitcoin/mainnet). Er entsteht, sobald
+BTCPay's LND has node ID '%s', not this wallet's %s. The backup service stays off.	Das LND von BTCPay hat die Node-ID '%s', nicht die dieser Wallet (%s). Der Backup-Dienst bleibt aus.
+BTCPay's LND isn't running with an unlocked wallet. Start BTCPay first.	Das LND von BTCPay läuft nicht mit entsperrter Wallet. Starten Sie zuerst BTCPay.
+BTCPay's blockchain: %s GB (prune=%s), to %s:~/chain-incoming	Blockchain von BTCPay: %s GB (prune=%s), nach %s:~/chain-incoming
+BTCPay's blockchain: %s of blocks, prune=%s	Blockchain von BTCPay: %s an Blöcken, prune=%s
+BTCPay's pruning presets keep this much of the blockchain:	Die Pruning-Presets von BTCPay behalten so viel von der Blockchain:
+Back from the log	Zurück aus dem Protokoll
+Backup	Backup
+Backup gate installed for Server A's key	Backup-Gate für den Schlüssel von Server A installiert
+Backup log file created and permissions set.	Backup-Protokolldatei angelegt und Rechte gesetzt.
+Backup service running	Backup-Dienst läuft
+Backup user %s, keys only	Backup-Benutzer %s, nur mit Schlüsseln
+Backup user name: 	Name des Backup-Benutzers: 
+Backups	Backups
+Backups from Server A	Backups von Server A
+Bitcoin Core	Bitcoin Core
+Bitcoin Core %s -> %s	Bitcoin Core %s -> %s
+Bitcoin Core isn't installed here: run serverb-bitcoind-setup.sh first	Bitcoin Core ist hier nicht installiert: Führen Sie zuerst serverb-bitcoind-setup.sh aus
+Bitcoin Core isn't set up here yet: run serverb-bitcoind-setup.sh first	Bitcoin Core ist hier noch nicht eingerichtet: Führen Sie zuerst serverb-bitcoind-setup.sh aus
+Bitcoin Core running (watchtower, optional)	Bitcoin Core läuft (Watchtower, optional)
+Bitcoin Core: %s	Bitcoin Core: %s
+Blockchain imported, or syncing from the network	Blockchain importiert oder synchronisiert aus dem Netz
+Can't read the log (%s) or the journal	Weder das Protokoll (%s) noch das Journal ist lesbar
+Can't read the status: %s	Status nicht lesbar: %s
+Cancelled	Abgebrochen
+Cancelled: %s keeps running	Abgebrochen: %s läuft weiter
+Cancelled: nothing was updated	Abgebrochen: Nichts wurde aktualisiert
+Chain copy from Server A: ~/chain-incoming is open, %s free	Blockchain-Kopie von Server A: ~/chain-incoming ist offen, %s frei
+Changing ownership of %s to %s failed.	Besitzerwechsel von %s zu %s fehlgeschlagen.
+Check SERVER_B_KNOWN_HOST_FINGERPRINT in config, or confirm Server B's host keys on Server B itself.	Prüfen Sie SERVER_B_KNOWN_HOST_FINGERPRINT in config oder bestätigen Sie die Host-Schlüssel direkt auf Server B.
+Check from Server A, as the backup user:	Prüfen Sie es von Server A aus, als Backup-Benutzer:
+Check the seed and type it again.	Prüfen Sie den Seed und geben Sie ihn erneut ein.
+Checklist	Checkliste
+Choose 1 or 2: 	Wählen Sie 1 oder 2: 
+Choose 1-4 (Enter for 3, q to stop): 	Wählen Sie 1-4 (Enter für 3, q zum Abbrechen): 
+Choose 1-5: 	Wählen Sie 1-5: 
+Choose the wallet password.	Wählen Sie das Wallet-Passwort.
+Choose: 1) type the seed again  2) continue anyway  3) stop: 	Wählen Sie: 1) Seed erneut eingeben  2) trotzdem fortfahren  3) abbrechen: 
+Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. Two passes: the first while BTCPay runs (can take hours), the second Stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B.	Kopiert die geprunte Blockchain von BTCPay zum bitcoind von Server B (in den Ordner, den serverb-bitcoind-setup.sh angelegt hat), damit er nicht tagelang synchronisiert. Zwei Durchgänge: der erste, während BTCPay läuft (kann Stunden dauern), der zweite stoppt BTCPay für einige Minuten (Sie geben STOP BTCPAY ein). Läuft in tmux; /chain attach kehrt dorthin zurück. Danach führen Sie serverb-import-chain.sh auf Server B aus.
+Copy from Server A: %s in %s	Kopie von Server A: %s in %s
+Copy the public key file:	Kopieren Sie die Datei mit dem öffentlichen Schlüssel:
+Copy them to Server B yourself, from a computer you trust (not with Server A's backup key):	Kopieren Sie sie selbst von einem sicheren Rechner auf Server B (nicht mit dem Backup-Schlüssel von Server A):
+Could not archive %s for the safety backup	%s konnte für die Sicherheitskopie nicht archiviert werden
+Could not copy %s	%s konnte nicht kopiert werden
+Could not create %s	%s konnte nicht angelegt werden
+Could not create the system user %s	Systembenutzer %s konnte nicht angelegt werden
+Could not create user %s	Benutzer %s konnte nicht angelegt werden
+Could not create volume '%s'	Volume '%s' konnte nicht erstellt werden
+Could not download %s	%s konnte nicht heruntergeladen werden
+Could not download SHA256SUMS	SHA256SUMS konnte nicht heruntergeladen werden
+Could not download SHA256SUMS.asc	SHA256SUMS.asc konnte nicht heruntergeladen werden
+Could not download the manifest	Das Manifest konnte nicht heruntergeladen werden
+Could not find BTCPay's LND image (container '%s' or its compose file). Is BTCPay installed with LND?	LND-Image von BTCPay nicht gefunden (Container '%s' oder Compose-Datei). Ist BTCPay mit LND installiert?
+Could not find a Bitcoin Core release on bitcoincore.org/bin/	Keine Version von Bitcoin Core auf bitcoincore.org/bin/ gefunden
+Could not find the latest LND release on api.github.com	Die neueste LND-Version wurde auf api.github.com nicht gefunden
+Could not get guix.sigs/builder-keys	guix.sigs/builder-keys konnte nicht geholt werden
+Could not install %s	%s konnte nicht installiert werden
+Could not install bitcoind and bitcoin-cli	bitcoind und bitcoin-cli konnten nicht installiert werden
+Could not install lnd and lncli	lnd und lncli konnten nicht installiert werden
+Could not run it: %s	Ausführen fehlgeschlagen: %s
+Could not unpack %s	%s konnte nicht entpackt werden
+Could not unpack the safety backup into %s	Die Sicherheitskopie konnte nicht nach %s entpackt werden
+Couldn't read the current wallet: LND isn't answering (state: %s).	Die aktuelle Wallet konnte nicht gelesen werden: LND antwortet nicht (Status: %s).
+Create the dashboard's admin account %s? Type yes: 	Das Admin-Konto %s für das Dashboard anlegen? Geben Sie yes ein: 
+Create user %s (no password, Server A's key only)? Type yes: 	Benutzer %s anlegen (kein Passwort, nur der Schlüssel von Server A)? Geben Sie yes ein: 
+Create user '%s'? Type yes: 	Benutzer '%s' anlegen? Geben Sie yes ein: 
+Creating the backup log file at %s and granting full control to %s...	Backup-Protokolldatei %s wird angelegt, volle Kontrolle erhält %s...
+Creating user '%s'...	Benutzer '%s' wird angelegt...
+Do you want to paste an existing ASCII-armored GPG private key? (y/n): 	Möchten Sie einen vorhandenen privaten GPG-Schlüssel im ASCII-Armor-Format einfügen? (y/n): 
+Do you want to paste an existing SSH private key? (y/n): 	Möchten Sie einen vorhandenen privaten SSH-Schlüssel einfügen? (y/n): 
+Do you want to view the private key now so you can save it securely? (y/n): 	Möchten Sie den privaten Schlüssel jetzt ansehen, um ihn sicher aufzubewahren? (y/n): 
+Downloads the latest Bitcoin Core release, checks its signatures (at least 3 builders) and checksum like serverb-bitcoind-setup.sh, installs it and restarts bitcoind, then the watchtower (it loses bitcoind meanwhile): offline for a minute or so. Nothing is installed if a check fails. You type UPDATE.	Lädt die neueste Version von Bitcoin Core herunter, prüft ihre Signaturen (mindestens 3 Builder) und Prüfsumme wie serverb-bitcoind-setup.sh, installiert sie und startet bitcoind neu, danach den Watchtower (er verliert bitcoind in der Zwischenzeit): etwa eine Minute offline. Schlägt eine Prüfung fehl, wird nichts installiert. Sie geben UPDATE ein.
+Downloads the latest LND release, checks its signatures (at least 2 signers) and checksum like serverb-watchtower-setup.sh, installs it and restarts the watchtower: offline for a minute or so. LND updates its database at the first start, so the old version may not open it again. Nothing is installed if a check fails. You type UPDATE.	Lädt die neueste LND-Version herunter, prüft ihre Signaturen (mindestens 2 Signierer) und Prüfsumme wie serverb-watchtower-setup.sh, installiert sie und startet den Watchtower neu: etwa eine Minute offline. LND aktualisiert seine Datenbank beim ersten Start, daher kann die alte Version sie danach eventuell nicht mehr öffnen. Schlägt eine Prüfung fehl, wird nichts installiert. Sie geben UPDATE ein.
+Errors in the last 24h: %d	Fehler in den letzten 24 h: %d
+Everything above is read from config, the status file and the system; only the	Alles oben wird aus config, der Statusdatei und dem System gelesen; nur der Schritt
+Expected: %s	Erwartet: %s
+Failed to install %s or command %s is still missing.	%s konnte nicht installiert werden oder der Befehl %s fehlt weiterhin.
+Failed to stop BTCPay stack via btcpay-down.sh	BTCPay-Stack konnte mit btcpay-down.sh nicht gestoppt werden
+Fetched (%s): %s	Abgerufen (%s): %s
+Files changed %s ago and no backup has succeeded since	Dateien vor %s geändert, seitdem kein erfolgreiches Backup
+Finished (exit code %s). Press Enter to close this tmux session. 	Fertig (Exit-Code %s). Drücken Sie Enter, um diese tmux-Sitzung zu schließen. 
+Finished (exit code %s). Press Enter to go back. 	Fertig (Exit-Code %s). Drücken Sie Enter, um zurückzugehen. 
+Firewall: the tower's port open only to Server A	Firewall: Port des Towers nur für Server A offen
+First backup on Server B	Erstes Backup auf Server B
+First backup on the attached volume	Erstes Backup auf dem angehängten Volume
+Found:	Gefunden:
+Fragments now: %s	Aktuelle Fragmente: %s
+GPG could not decrypt it (%s)	GPG konnte es nicht entschlüsseln (%s)
+GPG could not encrypt the safety backup	GPG konnte die Sicherheitskopie nicht verschlüsseln
+Goes back to /chain prune, /chain copy or /tower add still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here.	Kehrt zu /chain prune, /chain copy oder /tower add zurück, die noch in tmux laufen, zum Beispiel nach einem Abbruch der SSH-Verbindung. Ctrl-b d lässt den Vorgang weiterlaufen und kehrt hierher zurück.
+Goes back to a wallet operation still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here.	Kehrt zu einem Wallet-Vorgang zurück, der noch in tmux läuft, zum Beispiel nach einem Abbruch der SSH-Verbindung. Ctrl-b d lässt ihn weiterlaufen und kehrt hierher zurück.
+Granting full control over %s to %s...	Volle Kontrolle über %s wird %s gewährt...
+Have you saved this GPG key securely? Type 'yes' or 'y' to continue: 	Haben Sie diesen GPG-Schlüssel sicher aufbewahrt? Geben Sie 'yes' oder 'y' ein, um fortzufahren: 
+Have you securely stored your LND seed? (y/n): 	Haben Sie Ihren LND-Seed sicher aufbewahrt? (y/n): 
+Hourly check	Stündliche Prüfung
+How much of the blockchain Server B keeps, in MB. 2000 (2 GB) is recommended: the watchtower	Wie viel der Blockchain Server B behält, in MB. Empfohlen sind 2000 (2 GB): Der Watchtower
+If it doesn't, or you can't check, do NOT type yes.	Wenn nicht, oder wenn Sie es nicht prüfen können, geben Sie NICHT yes ein.
+If it keeps your node safe, please support its development:	Wenn es Ihren Node schützt, unterstützen Sie bitte seine Entwicklung:
+If someone is intercepting the connection, it is THEIR key: Server A would	Fängt jemand die Verbindung ab, ist es SEIN Schlüssel: Server A würde ihm
+Installing ACL and inotify-tools...	ACL und inotify-tools werden installiert...
+Installing needs root: the dashboard runs it (/update %s)	Installieren braucht root: Das Dashboard führt es aus (/update %s)
+Installs or updates the backup service: encrypted, signed backups of LND's files to the attached volume and Server B, run as the backup user. Also its read-only root helper and sudo rule. It explains everything first, and deletes existing backups only if you type DELETE ALL BACKUPS. BTCPay and LND aren't touched.	Installiert oder aktualisiert den Backup-Dienst: verschlüsselte, signierte Backups der LND-Dateien auf das angehängte Volume und Server B, ausgeführt als Backup-Benutzer. Dazu seinen nur lesenden root-Helfer und seine sudo-Regel. Das Skript erklärt vorher alles und löscht vorhandene Backups nur, wenn Sie DELETE ALL BACKUPS eingeben. BTCPay und LND bleiben unberührt.
+It explains what it does first. Later: lnd-manager /install, or rerun setup.	Er erklärt zuerst, was er tut. Später: lnd-manager /install oder das Setup erneut ausführen.
+It must show exactly the same fingerprint, character for character.	Er muss genau denselben Fingerabdruck zeigen, Zeichen für Zeichen.
+Job: %s%s	Aufgabe: %s%s
+LND %s -> %s	LND %s -> %s
+LND (the watchtower)	LND (Watchtower)
+LND could not make a seed	LND konnte keinen Seed erzeugen
+LND could not make the tower's wallet	LND konnte die Wallet des Towers nicht erstellen
+LND did not return a 24-word seed	LND hat keinen Seed mit 24 Wörtern geliefert
+LND doesn't answer (docker logs %s)	LND antwortet nicht (docker logs %s)
+LND isn't installed here: run serverb-watchtower-setup.sh first	LND ist hier nicht installiert: Führen Sie zuerst serverb-watchtower-setup.sh aus
+LND refused the new wallet. BTCPay is down; run the script again.	LND hat die neue Wallet abgelehnt. BTCPay ist gestoppt; starten Sie das Skript erneut.
+LND refused the seed	LND hat den Seed abgelehnt
+LND seed and GPG key stored safely, away from this server	LND-Seed und GPG-Schlüssel sicher verwahrt, getrennt von diesem Server
+LND's watchtower client didn't answer within 10 minutes (LND not synced to the chain yet?). The client is on; run /tower add again later.	Der Watchtower-Client von LND hat nicht innerhalb von 10 Minuten geantwortet (LND noch nicht mit der Blockchain synchron?). Der Client ist eingeschaltet; führen Sie /tower add später erneut aus.
+LND_DIR in config (%s) is not the volume's folder (%s)	LND_DIR in config (%s) ist nicht der Ordner des Volumes (%s)
+Last backup failed %s%s	Letztes Backup fehlgeschlagen, %s%s
+Last failure	Letzter Fehler
+Last file change: %s  %s	Letzte Dateiänderung: %s  %s
+Last file change: none since the status file was created	Letzte Dateiänderung: keine seit Anlage der Statusdatei
+Last step: the backup service (rsync_gpg_backup.sh). It watches LND's channel backup and, after	Letzter Schritt: der Backup-Dienst (rsync_gpg_backup.sh). Er überwacht das Kanal-Backup von LND und legt
+Last success	Letzter Erfolg
+Leaves the dashboard. The backup service keeps running.	Verlässt das Dashboard. Der Backup-Dienst läuft weiter.
+Leaves the dashboard. bitcoind and the watchtower keep running.	Verlässt das Dashboard. bitcoind und der Watchtower laufen weiter.
+Let Server A copy its blockchain here? Type yes: 	Server A seine Blockchain hierher kopieren lassen? Geben Sie yes ein: 
+Let the SSH keys that log in as %s log in as %s too? Type yes: 	Den SSH-Schlüsseln, die sich als %s anmelden, auch die Anmeldung als %s erlauben? Geben Sie yes ein: 
+Let's go through the list again.	Gehen wir die Liste noch einmal durch.
+License (the full text is in LICENSE, next to the scripts)	Lizenz (der vollständige Text steht in LICENSE, neben den Skripten)
+License (the full text is in LICENSE, with the scripts on Server A)	Lizenz (der vollständige Text steht in LICENSE, bei den Skripten auf Server A)
+Limit %s that way anyway? Type yes: 	%s trotzdem so beschränken? Geben Sie yes ein: 
+Log	Protokoll
+Log:	Protokoll:
+Log: 	Protokoll: 
+Looking for new releases (the top line shows any)...	Suche nach neuen Versionen (die oberste Zeile zeigt sie)...
+MAIN_USER is not set in config. It's your own account on this server, usually the one running this setup.	MAIN_USER ist in config nicht gesetzt. Das ist Ihr eigenes Konto auf diesem Server, meist das, mit dem Sie dieses Setup ausführen.
+Made %s owner of %s (%s itself stays root's)	%s ist jetzt Besitzer von %s (%s selbst gehört weiter root)
+Main user: 	Hauptbenutzer: 
+Makes a new LND wallet in place of the current one. Stops BTCPay for a few minutes. The current wallet is kept in a safety backup, but its funds stay reachable only through its old seed. Asks you to type confirmations before anything changes.	Erstellt eine neue LND-Wallet anstelle der aktuellen. Stoppt BTCPay für einige Minuten. Die aktuelle Wallet bleibt in einer Sicherheitskopie erhalten, ihr Guthaben ist aber nur über ihren alten Seed erreichbar. Verlangt getippte Bestätigungen, bevor sich etwas ändert.
+Milestones, local	Meilensteine, lokal
+Missing dependency: %s (package: %s). Installing...	Fehlende Abhängigkeit: %s (Paket: %s). Wird installiert...
+Missing programs: %s. Install them: sudo apt-get install %s	Fehlende Programme: %s. Installieren Sie sie: sudo apt-get install %s
+No LND release %s	LND-Version %s gibt es nicht
+No apt-get: these scripts are made for Ubuntu and Debian	Kein apt-get: Diese Skripte sind für Ubuntu und Debian gemacht
+No blockchain in %s (BITCOIND_DIR in config)	Keine Blockchain in %s (BITCOIND_DIR in config)
+No channel.backup found, neither in a backup nor on this server.	Kein channel.backup gefunden, weder in einem Backup noch auf diesem Server.
+No disk with UUID %s (UUID in config) is attached. Attach the backup disk, or empty UUID to choose another	Kein Datenträger mit UUID %s (UUID in config) angehängt. Hängen Sie den Backup-Datenträger an oder leeren Sie UUID für einen anderen
+No safety backups found in %s or on Server B.	Keine Sicherheitskopien in %s oder auf Server B gefunden.
+No status file at %s (rerun rsync_gpg_backup.sh, then wait for the service to start)	Keine Statusdatei unter %s (führen Sie rsync_gpg_backup.sh erneut aus und warten Sie, bis der Dienst startet)
+No temporary folder	Kein temporärer Ordner
+No unused %s filesystem for the attached volume yet: setup explains how to prepare the disk	Noch kein ungenutztes %s-Dateisystem für das angehängte Volume: Das Setup erklärt die Vorbereitung des Datenträgers
+No unused %s filesystem found yet (or set FILE_SYSTEM_TYPE in %s to its type).	Noch kein ungenutztes %s-Dateisystem gefunden (oder setzen Sie FILE_SYSTEM_TYPE in %s auf seinen Typ).
+No wallet operation is running	Es läuft kein Wallet-Vorgang
+No warranty: use it at your own risk.	Keine Gewährleistung: Nutzung auf eigenes Risiko.
+Node ID:           %s	Node-ID:           %s
+Not a Bitcoin Core release version: %s	Keine gültige Versionsnummer von Bitcoin Core: %s
+Not a number, using %s.	Keine Zahl, %s wird verwendet.
+Not a release version: %s	Keine gültige Versionsnummer: %s
+Not a terminal. Use --once for a text status.	Kein Terminal. Verwenden Sie --once für einen Textstatus.
+Not an LND release tag: %s	Kein gültiges LND-Versions-Tag: %s
+Not enough free space in /var/tmp for the safety backup (LND volume: %s bytes)	Nicht genug freier Platz in /var/tmp für die Sicherheitskopie (LND-Volume: %s Bytes)
+Odd SSH port from sshd -T (%s): ufw not turned on	Ungewöhnlicher SSH-Port laut sshd -T (%s): ufw nicht eingeschaltet
+On Server A, run setup (lnd-manager: /setup): it installs the backup gate over this key.	Führen Sie auf Server A das Setup aus (lnd-manager: /setup): Es installiert das Backup-Gate für diesen Schlüssel.
+On Server B itself (its console, or an SSH session you already trust), run:	Führen Sie auf Server B selbst (Konsole oder eine SSH-Sitzung, der Sie schon vertrauen) aus:
+On Server B, check them against the sha256 sums above (sha256sum serverb-*.sh). That shows the	Vergleichen Sie sie auf Server B mit den sha256-Summen oben (sha256sum serverb-*.sh). Das zeigt, dass
+On-chain:          %s sat confirmed, %s sat unconfirmed	On-Chain:          %s sat bestätigt, %s sat unbestätigt
+Open channels:     %s (your share: %s sat)	Offene Kanäle:     %s (Ihr Anteil: %s sat)
+Opening/closing:   %s channels, %s sat waiting in closes (limbo)	Öffnen/Schließen:  %s Kanäle, %s sat warten in Schließungen (Guthaben in der Schwebe)
+Opens the whole backup log in less (q comes back here). Read only.	Öffnet das ganze Backup-Protokoll in less (q kehrt hierher zurück). Nur lesend.
+Option 3 needs a channel.backup, and there is none in a backup or on this server.	Option 3 braucht ein channel.backup, und es gibt keins in einem Backup oder auf diesem Server.
+PRUNE_MB must be at least 550 (Bitcoin Core's minimum)	PRUNE_MB muss mindestens 550 sein (das Minimum von Bitcoin Core)
+Pass 1 failed (rsync exit code %s), so BTCPay was not stopped. Fix what the lines above say, then run /chain copy again.	Durchgang 1 fehlgeschlagen (rsync-Exit-Code %s), daher wurde BTCPay nicht gestoppt. Beheben Sie, was die Zeilen oben nennen, und führen Sie dann /chain copy erneut aus.
+Pass 2 failed. BTCPay is started again; run /chain copy again later.	Durchgang 2 fehlgeschlagen. BTCPay wird wieder gestartet; führen Sie /chain copy später erneut aus.
+Permissions for %s set.	Rechte für %s gesetzt.
+Prepare the disk as above, then press Enter to look again (Ctrl-C to stop): 	Bereiten Sie den Datenträger wie oben vor und drücken Sie Enter zum erneuten Suchen (Ctrl-C: Abbruch): 
+Preparing the attached volume	Angehängtes Volume vorbereiten
+Press ENTER to begin, then paste the key, then press CTRL+D when done:	Drücken Sie ENTER zum Starten, fügen Sie den Schlüssel ein und drücken Sie dann CTRL+D:
+Press Enter to continue, or Ctrl-C to stop: 	Drücken Sie Enter zum Fortfahren oder Ctrl-C zum Abbrechen: 
+Press Enter to keep a folder, edit it, or clear it to drop it.	Drücken Sie Enter, um einen Ordner zu behalten, ändern Sie ihn, oder leeren Sie ihn zum Entfernen.
+Problems	Probleme
+Problems:	Probleme:
+Prune size on Server B in MB [2000 recommended]: 	Pruning-Größe auf Server B in MB [2000 empfohlen]: 
+Prunes BTCPay's blockchain with one of BTCPay's opt-save-storage presets: ~100, ~50, ~25 (recommended) or ~5 GB. Old blocks are deleted: BTCPay can then no longer rescan for old transactions. Stops BTCPay's bitcoind and LND for a few minutes while btcpay-setup.sh applies it; you type STOP BTCPAY first.	Prunt die Blockchain von BTCPay mit einem der opt-save-storage-Presets von BTCPay: ~100, ~50, ~25 (empfohlen) oder ~5 GB. Alte Blöcke werden gelöscht: BTCPay kann danach keine alten Transaktionen mehr per Rescan finden. Stoppt bitcoind und LND von BTCPay für einige Minuten, während btcpay-setup.sh es anwendet; vorher geben Sie STOP BTCPAY ein.
+Pruning deletes old blocks: BTCPay can then no longer rescan for transactions older than what it	Pruning löscht alte Blöcke: BTCPay findet danach per Rescan keine Transaktionen mehr, die älter sind
+Puts a safety backup back as the whole LND volume, channel state included. Only safe if no LND has run with those channels since. Stops BTCPay. Saves the current wallet first, and asks you to type confirmations.	Spielt eine Sicherheitskopie als ganzes LND-Volume zurück, samt Kanalzustand. Nur sicher, wenn seitdem kein LND mit diesen Kanälen gelaufen ist. Stoppt BTCPay. Sichert vorher die aktuelle Wallet und verlangt getippte Bestätigungen.
+REMOTE_SERVER is not set in config.	REMOTE_SERVER ist in config nicht gesetzt.
+REMOTE_SSH_PORT is not set in config.	REMOTE_SSH_PORT ist in config nicht gesetzt.
+Reads bitcoind's sync and the watchtower's state again. Read only.	Liest die Synchronisation von bitcoind und den Zustand des Watchtowers neu ein. Nur lesend.
+Refusing to empty %s outside a wallet setup	Leeren von %s außerhalb einer Wallet-Einrichtung verweigert
+Removing %s from the docker group...	%s wird aus der docker-Gruppe entfernt...
+Removing ACL for GPG private key at %s...	ACL des privaten GPG-Schlüssels unter %s wird entfernt...
+Removing ACL for SSH private key at %s...	ACL des privaten SSH-Schlüssels unter %s wird entfernt...
+Required: %s KB, Available: %s KB	Benötigt: %s KB, verfügbar: %s KB
+Restarting %s...	Starte %s neu...
+Restore the channels too (option 3)? Type yes: 	Auch die Kanäle wiederherstellen (Option 3)? Geben Sie yes ein: 
+Restores the channels from channel.backup into the wallet that runs now, for example after /wallet restore. Stops BTCPay for a few minutes for a safety backup. Never while another LND with this seed runs. Typed confirmations first.	Stellt die Kanäle aus channel.backup in der jetzt laufenden Wallet wieder her, zum Beispiel nach /wallet restore. Stoppt BTCPay für einige Minuten für eine Sicherheitskopie. Nie, während ein anderer LND mit diesem Seed läuft. Vorher getippte Bestätigungen.
+Restores the wallet from its seed and the channels from channel.backup: each peer closes its channel and your share comes back on-chain. Stops BTCPay. Never while another LND with this seed runs. Safety backup and typed confirmations first.	Stellt die Wallet aus ihrem Seed und die Kanäle aus channel.backup wieder her: Jeder Peer schließt seinen Kanal und Ihr Anteil kommt on-chain zurück. Stoppt BTCPay. Nie, während ein anderer LND mit diesem Seed läuft. Vorher Sicherheitskopie und getippte Bestätigungen.
+Restores the wallet's on-chain funds from its seed: from the latest backup, or typed. Stops BTCPay; the scan for old funds can take minutes to hours. Channels are not restored (/wallet channels). Safety backup and typed confirmations first.	Stellt das On-Chain-Guthaben der Wallet aus ihrem Seed wieder her: aus dem neuesten Backup oder eingetippt. Stoppt BTCPay; die Suche nach altem Guthaben kann Minuten bis Stunden dauern. Kanäle werden nicht wiederhergestellt (/wallet channels). Vorher Sicherheitskopie und getippte Bestätigungen.
+Run it in a terminal: it asks before it changes things.	Führen Sie es in einem Terminal aus: Es fragt, bevor es etwas ändert.
+Run it with sudo: sudo bash %s	Führen Sie es mit sudo aus: sudo bash %s
+Run: 	Ausführen: 
+Runs serverb-scripts.sh: makes the scripts you run on Server B with sudo (the backup user, a pruned bitcoind, the blockchain import, the watchtower, the Server B dashboard), with your settings filled in. Asks for settings config doesn't have yet. Shows each script's sha256 and how to copy them to Server B. Changes nothing on either server.	Führt serverb-scripts.sh aus: erstellt die Skripte, die Sie auf Server B mit sudo ausführen (der Backup-Benutzer, ein bitcoind mit Pruning, der Blockchain-Import, der Watchtower, das Server-B-Dashboard), mit Ihren Einstellungen ausgefüllt. Fragt nach Einstellungen, die config noch nicht hat. Zeigt die sha256 jedes Skripts und wie Sie sie auf Server B kopieren. Ändert auf keinem der beiden Server etwas.
+Runs setup_script.sh: the backup user, the SSH key for Server B, the GPG backup key, the attached volume. It asks before each step and doesn't touch BTCPay or LND.	Führt setup_script.sh aus: der Backup-Benutzer, der SSH-Schlüssel für Server B, der GPG-Backup-Schlüssel, das angehängte Volume. Es fragt vor jedem Schritt und lässt BTCPay und LND unberührt.
+SERVER_A_KEY doesn't look like an SSH public key	SERVER_A_KEY sieht nicht wie ein öffentlicher SSH-Schlüssel aus
+SERVER_A_USER is not set in config. The backup service runs as its own user; choose its name.	SERVER_A_USER ist in config nicht gesetzt. Der Backup-Dienst läuft als eigener Benutzer; wählen Sie dessen Namen.
+SERVER_B_ADMIN_USER (%s) is not a usable user name	SERVER_B_ADMIN_USER (%s) ist kein brauchbarer Benutzername
+SERVER_B_ADMIN_USER can't be %s: that account has another job	SERVER_B_ADMIN_USER kann nicht %s sein: Dieses Konto hat eine andere Aufgabe
+SERVER_B_KNOWN_HOST_FINGERPRINT is not set in config.	SERVER_B_KNOWN_HOST_FINGERPRINT ist in config nicht gesetzt.
+SERVER_B_USER (%s) is not a usable user name	SERVER_B_USER (%s) ist kein brauchbarer Benutzername
+SERVER_B_USER is not set in config. It's the user on Server B that holds the backups; Server A's key	SERVER_B_USER ist in config nicht gesetzt: der Benutzer auf Server B, der die Backups hält. Der Schlüssel
+SERVER_B_USER is not set in config: the user on Server B that holds the backups.	SERVER_B_USER ist in config nicht gesetzt: der Benutzer auf Server B, der die Backups hält.
+SERVER_B_USER or REMOTE_SERVER is empty in config. Run setup first.	SERVER_B_USER oder REMOTE_SERVER ist in config leer. Führen Sie zuerst das Setup aus.
+SHA256SUMS has a BAD signature: the download may have been tampered with	SHA256SUMS hat eine UNGÜLTIGE Signatur: Der Download wurde möglicherweise manipuliert
+SHA256SUMS needs good signatures from at least %s builders (MIN_SIGNATURES)	SHA256SUMS braucht gültige Signaturen von mindestens %s Buildern (MIN_SIGNATURES)
+STATUS_FILE is empty in config, so the service writes no status	STATUS_FILE ist in config leer, daher schreibt der Dienst keinen Status
+STOP	STOP
+Safe folder: 	Sicherer Ordner: 
+Safe folders:	Sichere Ordner:
+Safe folders: the backup only deletes files inside these. Suggested: the backup folders from config.	Sichere Ordner: Das Backup löscht nur Dateien darin. Vorschlag: die Backup-Ordner aus config.
+Safe folders: the backup only deletes files inside these. Suggested: the list from the installed service.	Sichere Ordner: Das Backup löscht nur Dateien darin. Vorschlag: die Liste des installierten Dienstes.
+Safety backups, newest first:	Sicherheitskopien, neueste zuerst:
+Same password again: 	Dasselbe Passwort noch einmal: 
+Scripts installed root-owned	Skripte installiert (Eigentümer root)
+Seed (24 words, separated by spaces, hidden while typed): 	Seed (24 Wörter, durch Leerzeichen getrennt, bei der Eingabe verborgen): 
+Seed passphrase, only if you set one when the seed was made (Enter for none): 	Seed-Passphrase, nur falls Sie beim Erstellen des Seeds eine festgelegt haben (Enter für keine): 
+Server A can copy its pruned blockchain here instead: hours, rather than days of	Server A kann stattdessen seine geprunte Blockchain hierher kopieren: Stunden statt Tagen
+Server A reaches %s through the updated gate.	Server A erreicht %s über das aktualisierte Gate.
+Server A's address as Server B sees it: Server B's firewall lets only this address reach the tower.	Adresse von Server A aus Sicht von Server B: Die Firewall von Server B lässt nur sie zum Tower durch.
+Server A's address: 	Adresse von Server A: 
+Server A's key must get into ~/.ssh/authorized_keys of %s on Server B. Either:	Der Schlüssel von Server A muss in ~/.ssh/authorized_keys von %s auf Server B. Entweder:
+Server A's key:       %s ...%s	Schlüssel von Server A:       %s ...%s
+Server B	Server B
+Server B SSH port: 	SSH-Port von Server B: 
+Server B address (hostname or IP): 	Adresse von Server B (Hostname oder IP): 
+Server B answers at %s, port %s	Server B antwortet unter %s, Port %s
+Server B backup user: %s	Backup-Benutzer auf Server B: %s
+Server B doesn't answer at %s, port %s: check REMOTE_SERVER and REMOTE_SSH_PORT in config, that Server B runs, and its firewall	Server B antwortet nicht unter %s, Port %s: Prüfen Sie REMOTE_SERVER und REMOTE_SSH_PORT in config, ob Server B läuft, und seine Firewall
+Server B is behind: its last copy is older than the attached volume's	Server B hinkt hinterher: Seine letzte Kopie ist älter als die auf dem angehängten Volume
+Server B sees Server A connect from %s.	Laut Server B verbindet sich Server A von %s aus.
+Server B setup checklist	Setup-Checkliste von Server B
+Server B's backup gate doesn't answer. Run setup first (lnd-manager: /setup).	Das Backup-Gate von Server B antwortet nicht. Führen Sie zuerst das Setup aus (lnd-manager: /setup).
+Server B's gate takes it only into ~%s/chain-incoming (serverb-bitcoind-setup.sh makes it).	Das Gate von Server B nimmt sie nur in ~%s/chain-incoming an (serverb-bitcoind-setup.sh legt es an).
+Server B: setup asks for its address	Server B: Das Setup fragt nach seiner Adresse
+Service is %s	Dienst ist %s
+Service is %s (%s)	Dienst ist %s (%s)
+Service restarted %d time(s) since it was started	Dienst seit seinem Start %d-mal neu gestartet
+Service: 	Dienst: 
+Set a password for %s now? Type yes: 	Jetzt ein Passwort für %s setzen? Geben Sie yes ein: 
+Setting ownership and permissions for the GPG key directory...	Besitzer und Rechte des GPG-Schlüsselordners werden gesetzt...
+Setting permissions for the private key...	Rechte des privaten Schlüssels werden gesetzt...
+Settings in config	Einstellungen in config
+Setup checklist	Setup-Checkliste
+Setup complete! What's done and what's next: lnd-manager, then /checklist	Setup abgeschlossen! Was erledigt ist und was als Nächstes kommt: lnd-manager, dann /checklist
+Setup will add %s to /etc/fstab, mount it at %s and make %s the owner of %s on it.	Das Setup trägt %s in /etc/fstab ein, hängt es unter %s ein und macht %s zum Besitzer von %s darauf.
+Setup: %d of %d steps done. Next: %s (/checklist)	Setup: %d von %d Schritten erledigt. Nächster: %s (/checklist)
+Shows each Server B setup step, whether it is done, and which script runs the ones that aren't: the backup user and its gate, backups arriving, Bitcoin Core, the blockchain, the watchtower, the firewall. Read only.	Zeigt jeden Setup-Schritt von Server B, ob er erledigt ist, und welches Skript die offenen ausführt: der Backup-Benutzer und sein Gate, ankommende Backups, Bitcoin Core, die Blockchain, der Watchtower, die Firewall. Nur lesend.
+Shows each setup step, whether it is done, and what to run for the ones that aren't: settings, the root-owned install, the attached volume, your seed and GPG key stored safely, the backup service, the first backups, and the watchtower (optional). Read only.	Zeigt jeden Setup-Schritt, ob er erledigt ist, und was für die offenen auszuführen ist: Einstellungen, die root-eigene Installation, das angehängte Volume, Ihr Seed und GPG-Schlüssel sicher verwahrt, der Backup-Dienst, die ersten Backups und der Watchtower (optional). Nur lesend.
+Shows the last lines of /var/lib/bitcoind/debug.log. Read only.	Zeigt die letzten Zeilen von /var/lib/bitcoind/debug.log. Nur lesend.
+Shows the last lines of the watchtower's journal. Read only.	Zeigt die letzten Zeilen des Journals des Watchtowers. Nur lesend.
+Shows the project's donation address, its page and a summary of the license. Text only: nothing is fetched or sent.	Zeigt die Spendenadresse des Projekts, seine Seite und eine Zusammenfassung der Lizenz. Nur Text: Nichts wird abgerufen oder gesendet.
+Shows the towers BTCPay's LND uses and its statistics (lncli wtclient towers, stats). Read only.	Zeigt die Tower, die der LND von BTCPay nutzt, und seine Statistik (lncli wtclient towers, stats). Nur lesend.
+Start the copy? Type yes: 	Kopie starten? Geben Sie yes ein: 
+Starting %s...	Starte %s...
+Starts Bitcoin Core. The watchtower needs it to see new blocks.	Startet Bitcoin Core. Der Watchtower braucht es, um neue Blöcke zu sehen.
+Starts the LND watchtower. It unlocks its wallet by itself.	Startet den LND-Watchtower. Er entsperrt seine Wallet selbst.
+Starts the backup service. BTCPay and LND aren't touched.	Startet den Backup-Dienst. BTCPay und LND bleiben unberührt.
+Statistics:	Statistik:
+Still unable to remove volume '%s'.	Volume '%s' lässt sich weiterhin nicht entfernen.
+Stop %s?	Wirklich %s stoppen?
+Stop bitcoind and use this copy? Type yes: 	bitcoind stoppen und diese Kopie verwenden? Geben Sie yes ein: 
+Stopped by user. BTCPay is down; run the script again, or option 5 to undo.	Vom Benutzer abgebrochen. BTCPay ist gestoppt; starten Sie das Skript erneut (Option 5: rückgängig).
+Stopped: nothing was changed.	Abgebrochen: Es wurde nichts geändert.
+Stopped: nothing was copied.	Abgebrochen: Es wurde nichts kopiert.
+Stopped: the tower's wallet was not made. Run this script again.	Abgebrochen: Die Wallet des Towers wurde nicht erstellt. Führen Sie dieses Skript erneut aus.
+Stopping %s...	Stoppe %s...
+Stops Bitcoin Core. While it is stopped the watchtower sees no new blocks, so it can't catch a cheating channel peer. You type STOP to confirm.	Stoppt Bitcoin Core. Solange es gestoppt ist, sieht der Watchtower keine neuen Blöcke und kann daher keinen betrügenden Kanal-Peer erwischen. Sie geben zur Bestätigung STOP ein.
+Stops and starts Bitcoin Core, for example after changing /etc/bitcoin/local.conf, then the watchtower if it was running (it loses bitcoind meanwhile): both offline for a minute or so.	Stoppt und startet Bitcoin Core, zum Beispiel nach einer Änderung von /etc/bitcoin/local.conf, danach den Watchtower, falls er lief (er verliert bitcoind in der Zwischenzeit): beide etwa eine Minute offline.
+Stops and starts the LND watchtower; it is offline for a minute or so.	Stoppt und startet den LND-Watchtower; er ist etwa eine Minute offline.
+Stops and starts the backup service, for example after editing config. A backup that is running is stopped and made again later. BTCPay and LND keep running.	Stoppt und startet den Backup-Dienst, zum Beispiel nach dem Bearbeiten von config. Ein laufendes Backup wird abgebrochen und später erneut gemacht. BTCPay und LND laufen weiter.
+Stops the LND watchtower: while it is stopped it doesn't protect Server A's channels, and Server A's node keeps its updates until the tower is back. You type STOP to confirm.	Stoppt den LND-Watchtower: Solange er gestoppt ist, schützt er die Kanäle von Server A nicht, und der Node von Server A behält seine Updates, bis der Tower zurück ist. Sie geben zur Bestätigung STOP ein.
+Stops the backup service: no backups are made until it is started again. BTCPay and LND keep running.	Stoppt den Backup-Dienst: Bis er wieder gestartet wird, entstehen keine Backups. BTCPay und LND laufen weiter.
+Support	Unterstützung
+Temporary LND did not get ready for wallet creation	Das temporäre LND wurde nicht bereit für die Wallet-Erstellung
+Temporary LND stopped after wallet creation	Das temporäre LND hat nach der Wallet-Erstellung angehalten
+That's %s words, not 24.	Das sind %s Wörter, nicht 24.
+The LND image %s has no curl, which the wallet setup needs	Das LND-Image %s hat kein curl, das die Wallet-Einrichtung braucht
+The Server B dashboard runs as an admin account of its own; serverb-dashboard-setup.sh makes it.	Das Dashboard von Server B läuft unter einem eigenen Admin-Konto; serverb-dashboard-setup.sh legt es an.
+The address Server A's node uses to reach the watchtower on Server B (usually Server B's address).	Die Adresse, über die der Node von Server A den Watchtower auf Server B erreicht (meist die von Server B).
+The attached volume (UUID %s) is attached	Das angehängte Volume (UUID %s) ist angehängt
+The backup holds the wallet's seed and password (walletunlock.json).	Das Backup enthält Seed und Passwort der Wallet (walletunlock.json).
+The current wallet:	Die aktuelle Wallet:
+The hourly check hasn't run for %s	Die stündliche Prüfung ist seit %s nicht gelaufen
+The manifest has a BAD signature (%s): the download may have been tampered with	Das Manifest hat eine UNGÜLTIGE Signatur (%s): Der Download wurde möglicherweise manipuliert
+The manifest needs good signatures from at least %s signers (MIN_SIGNATURES), it has %s	Das Manifest braucht gültige Signaturen von mindestens %s Signierern (MIN_SIGNATURES), es hat %s
+The new settings would also have changed other users' logins; taken out again	Die neuen Einstellungen hätten auch die Anmeldungen anderer Benutzer geändert; wieder entfernt
+The password must have at least 8 characters.	Das Passwort muss mindestens 8 Zeichen haben.
+The passwords don't match.	Die Passwörter stimmen nicht überein.
+The programs setup needs are installed	Die Programme, die das Setup braucht, sind installiert
+The safety backup could not be stored anywhere. Nothing has been deleted.	Die Sicherheitskopie konnte nirgends gespeichert werden. Es wurde nichts gelöscht.
+The safety backup failed its check: %s	Die Sicherheitskopie hat die Prüfung nicht bestanden: %s
+The safety backup: made %s (signed), wallet %s	Die Sicherheitskopie: erstellt %s (signiert), Wallet %s
+The service isn't running, so there is no check to run	Der Dienst läuft nicht, also gibt es nichts zu prüfen
+The temporary LND stopped during the scan	Das temporäre LND hat während des Scans angehalten
+The wallet operation runs in another terminal, not in tmux: nothing to attach to	Wallet-Vorgang läuft in anderem Terminal (nicht tmux): Anhängen nicht möglich
+The wallet running now:	Die jetzt laufende Wallet:
+The watchtower client isn't on, LND isn't running, or LND is still catching up with the chain:	Der Watchtower-Client ist aus, LND läuft nicht, oder LND holt die Blockchain noch auf:
+The watchtower's public key: serverb-watchtower-setup.sh and the Server B dashboard show it	Öffentlicher Schlüssel des Watchtowers: serverb-watchtower-setup.sh und das Server-B-Dashboard zeigen ihn
+Then append its contents to ~/.ssh/authorized_keys on the remote server.	Hängen Sie dann ihren Inhalt an ~/.ssh/authorized_keys auf dem entfernten Server an.
+There is no %s: copy the blockchain from Server A first (lnd-manager: /chain copy)	%s existiert nicht: Kopieren Sie zuerst die Blockchain von Server A (lnd-manager: /chain copy)
+There is no user %s	Es gibt keinen Benutzer %s
+There is no user %s (SERVER_A_USER in config)	Es gibt keinen Benutzer %s (SERVER_A_USER in config)
+There is no wallet in %s, so nothing to check.	In %s gibt es keine Wallet, also nichts zu prüfen.
+This backup has no seed (walletunlock.json without one), so type the seed yourself.	Dieses Backup hat keinen Seed (walletunlock.json ohne Seed), geben Sie den Seed also selbst ein.
+This fingerprint was fetched over the network, so it proves nothing yet.	Dieser Fingerabdruck kam über das Netzwerk, er beweist also noch nichts.
+This installs or updates the LND backup service (%s).	Hiermit wird der Backup-Dienst für LND (%s) installiert oder aktualisiert.
+Timed out waiting for the temporary LND after wallet creation	Zeitüberschreitung beim Warten auf das temporäre LND nach der Wallet-Erstellung
+To copy again: sudo rm -rf %s; sudo -u %s mkdir -m 700 %s; then /chain copy on Server A.	Um erneut zu kopieren: sudo rm -rf %s; sudo -u %s mkdir -m 700 %s; danach /chain copy auf Server A.
+To scan again later, run this script again and choose the same restore.	Für einen späteren neuen Scan starten Sie das Skript erneut und wählen dieselbe Wiederherstellung.
+To securely store the seed, follow these steps:	So bewahren Sie den Seed sicher auf:
+To the remote server: %s@%s	Auf den entfernten Server: %s@%s
+To undo: mv %s.before-gate %s, and remove the line from crontab -e.	Rückgängig machen: mv %s.before-gate %s, und die Zeile per crontab -e entfernen.
+Tower: %s@%s:%s	Tower: %s@%s:%s
+Towers:	Tower:
+Turn on ufw that way? Type yes: 	ufw so einschalten? Geben Sie yes ein: 
+Two passes, so BTCPay is down only for the second:	Zwei Durchgänge, damit BTCPay nur während des zweiten offline ist:
+Type 'COPY ALL' to copy it unpruned anyway: 	Geben Sie 'COPY ALL' ein, um sie trotzdem ohne Pruning zu kopieren: 
+Type 'I ACCEPT THE RISK' to continue anyway: 	Geben Sie 'I ACCEPT THE RISK' ein, um trotzdem fortzufahren: 
+Type 'I WROTE IT DOWN' once you have: 	Geben Sie 'I WROTE IT DOWN' ein, sobald Sie ihn aufgeschrieben haben: 
+Type 'NO OTHER NODE IS RUNNING' to restore the channels: 	Geben Sie 'NO OTHER NODE IS RUNNING' ein, um die Kanäle wiederherzustellen: 
+Type 'PUT IT BACK' to replace the current wallet with this safety backup: 	Geben Sie 'PUT IT BACK' ein, um die aktuelle Wallet durch diese Sicherheitskopie zu ersetzen: 
+Type 'SKIP THE SCAN' to hand over to BTCPay now: 	Geben Sie 'SKIP THE SCAN' ein, um jetzt an BTCPay zu übergeben: 
+Type 'STOP BTCPAY' to stop it: 	Geben Sie 'STOP BTCPAY' ein, um BTCPay zu stoppen: 
+Type DELETE ALL BACKUPS to delete them, or press Enter to keep them: 	Geben Sie DELETE ALL BACKUPS ein, um sie zu löschen, oder drücken Sie Enter, um sie zu behalten: 
+Type MOVE to move the mount: 	Geben Sie MOVE ein, um den Einhängepunkt zu verlegen: 
+Type MOVE to set ATTACHED_VOLUME to %s: 	Geben Sie MOVE ein, um ATTACHED_VOLUME auf %s zu setzen: 
+Type REMOVE to take %s out of the docker group (Enter to keep): 	Geben Sie REMOVE ein, um %s aus der Gruppe docker zu nehmen (Enter zum Behalten): 
+Type yes if Server B shows exactly this fingerprint: 	Geben Sie yes ein, wenn Server B genau diesen Fingerabdruck zeigt: 
+Type yes to install the backup gate on Server B: 	Geben Sie yes ein, um das Backup-Gate auf Server B zu installieren: 
+Type yes to use these folders: 	Geben Sie yes ein, um diese Ordner zu verwenden: 
+Unsupported CPU: %s (x86_64, aarch64 and 32-bit ARM, armv7, are supported)	Nicht unterstützte CPU: %s (unterstützt: x86_64, aarch64 und 32-Bit-ARM, armv7)
+Unused %s filesystems:	Ungenutzte %s-Dateisysteme:
+Update %s? It restarts %s.	%s aktualisieren? Startet %s neu.
+Update: %s %s is out (installed: %s). /update %s	Update: %s %s ist erschienen (installiert: %s). /update %s
+Usage: %s /path/to/server-a-key.pub	Aufruf: %s /path/to/server-a-key.pub
+Use %s as the attached volume? Type yes: 	%s als angehängtes Volume verwenden? Geben Sie yes ein: 
+Use the seed from this backup? Type yes (anything else to type the seed yourself): 	Den Seed aus diesem Backup verwenden? Geben Sie yes ein (alles andere: Seed selbst eingeben): 
+Use this backup? Type yes: 	Dieses Backup verwenden? Geben Sie yes ein: 
+User '%s' already exists.	Benutzer '%s' existiert bereits.
+User '%s' already exists. Use it as the backup user? Type yes: 	Benutzer '%s' existiert bereits. Als Backup-Benutzer verwenden? Geben Sie yes ein: 
+User on Server B: 	Benutzer auf Server B: 
+Using the wait_for_files_to_settle Function Before Compression...	Funktion wait_for_files_to_settle läuft vor dem Komprimieren...
+Volume (number or UUID): 	Volume (Nummer oder UUID): 
+WATCHTOWER_IP in config isn't set	WATCHTOWER_IP ist in config nicht gesetzt
+WATCHTOWER_PORT in config isn't a port	WATCHTOWER_PORT in config ist kein Port
+WATCHTOWER_PORT is not a port number	WATCHTOWER_PORT ist keine Portnummer
+WATCHTOWER_PUBKEY in config isn't a public key (66 hex characters)	WATCHTOWER_PUBKEY in config ist kein öffentlicher Schlüssel (66 Hex-Zeichen)
+Wallet operation running: %s, since %s, %s	Wallet-Vorgang läuft: %s, seit %s, %s
+Wallet password (at least 8 characters): 	Wallet-Passwort (mindestens 8 Zeichen): 
+Watchtower address (Server B): 	Watchtower-Adresse (Server B): 
+Watchtower on Server B (optional)	Watchtower auf Server B (optional)
+Watchtower public key: 	Öffentlicher Schlüssel des Watchtowers: 
+Watchtower running	Watchtower läuft
+Watchtower: %s	Watchtower: %s
+What do you want to do?	Was möchten Sie tun?
+What the installer sets up	Was der Installer einrichtet
+What the service does	Was der Dienst tut
+Which one (Enter for 1): 	Welche (Enter für 1): 
+Without the finished scan, old funds may not show up in the wallet.	Ohne abgeschlossenen Scan erscheinen alte Guthaben eventuell nicht in der Wallet.
+Would you like to export and view the private key (for backup)? (y/n): 	Möchten Sie den privaten Schlüssel exportieren und ansehen (zur Sicherung)? (y/n): 
+Would you like to generate a new GPG key for %s? (y/n): 	Möchten Sie einen neuen GPG-Schlüssel für %s erzeugen? (y/n): 
+Would you like to view/export the existing private key (ASCII-armored)? (y/n): 	Möchten Sie den vorhandenen privaten Schlüssel ansehen/exportieren (ASCII-Armor)? (y/n): 
+Writing logrotate configuration to %s...	logrotate-Konfiguration wird nach %s geschrieben...
+You can run the following commands on the remote server:	Sie können dazu diese Befehle auf dem entfernten Server ausführen:
+a few minutes	einige Minuten
+a few minutes, for the safety backup	einige Minuten, für die Sicherheitskopie
+a few minutes, plus the scan for old funds, which can take minutes to hours	einige Minuten, plus der Scan nach alten Guthaben, der Minuten bis Stunden dauern kann
+a few minutes, while btcpay-setup.sh applies %s	einige Minuten, während btcpay-setup.sh %s anwendet
+a few minutes, while btcpay-setup.sh turns on the watchtower client	einige Minuten, während btcpay-setup.sh den Watchtower-Client einschaltet
+a few minutes, while the rest of the blockchain is copied	einige Minuten, während der Rest der Blockchain kopiert wird
+activating	startet
+active	aktiv
+after Bitcoin Core: copy it from Server A (/chain copy), or let it sync	nach Bitcoin Core: von Server A kopieren (/chain copy) oder synchronisieren lassen
+as <pubkey>@<address>:<port>. Type the part before the @.	als <pubkey>@<address>:<port>. Geben Sie den Teil vor dem @ ein.
+attached volume	angehängtes Volume
+auto-restart	Auto-Neustart
+back to a chain or tower operation that is still running	zurück zu laufendem Blockchain-/Tower-Vorgang
+back to a wallet operation that is still running	zurück zu laufendem Wallet-Vorgang
+backup: checking files	Backup: Prüfung der Dateien
+backup: compressing	Backup: Komprimierung
+backup: copying LND files	Backup: Kopie der LND-Dateien
+backup: copying to Server B	Backup: Kopie auf Server B
+backup: copying to the attached volume	Backup: Kopie aufs angehängte Volume
+backup: encrypting	Backup: Verschlüsselung
+backup: milestones	Backup: Meilensteine
+backup: removing old backups	Backup: Löschen alter Backups
+backup: verifying the copy	Backup: Prüfung der Kopie
+backup: waiting for files to settle	Backup: Warten, bis Dateien ruhen
+bitcoind has no peers	bitcoind hat keine Peers
+bitcoind is %s	bitcoind ist %s
+bitcoind's log	Protokoll von bitcoind
+btcpay-down.sh failed	btcpay-down.sh fehlgeschlagen
+btcpay-setup.sh didn't take the new fragments; see the lines above	btcpay-setup.sh hat die neuen Fragmente nicht übernommen; siehe die Zeilen oben
+btcpay-setup.sh failed (exit code %s); see the lines above. Check BTCPay: %s/btcpay-up.sh	btcpay-setup.sh fehlgeschlagen (Exit-Code %s); siehe die Zeilen oben. Prüfen Sie BTCPay: %s/btcpay-up.sh
+btcpay-up.sh failed	btcpay-up.sh ist fehlgeschlagen
+cat <paste or copy contents of %s> >> ~/.ssh/authorized_keys	cat <Inhalt von %s einfügen oder kopieren> >> ~/.ssh/authorized_keys
+catching up	holt auf
+changes found, backed up	geändert, Backup erstellt
+changes found, backup failed	geändert, Backup fehlgeschlagen
+channel.backup from the backup	channel.backup aus dem Backup
+channel.backup from the backup (newer than this server's)	channel.backup aus dem Backup (neuer als das dieses Servers)
+channel.backup from the backup (the same as on this server)	channel.backup aus dem Backup (gleich wie auf diesem Server)
+channel.backup from this server	channel.backup von diesem Server
+channel.backup from this server (newer than the backup)	channel.backup von diesem Server (neuer als das im Backup)
+chmod 600 ~/.ssh/authorized_keys	chmod 600 ~/.ssh/authorized_keys
+chmod 700 ~/.ssh	chmod 700 ~/.ssh
+config in your working folder changed since it was installed: sudo ./install-scripts.sh there (setup does it too)	config in Ihrem Arbeitsordner hat sich seit der Installation geändert: dort sudo ./install-scripts.sh (das Setup macht es auch)
+copy BTCPay's pruned blockchain to Server B	BTCPays geprunte Blockchain auf Server B kopieren
+copy is the one made here, not that this server is sound: before running one with sudo, glance at	die Kopie die hier erstellte ist, nicht, dass dieser Server sauber ist. Sehen Sie sich vor jedem Start mit
+daily	täglich
+deactivating	stoppt
+dead	gestoppt
+enter a hostname or IP address (letters, digits, '.', ':' and '-', no user@ or spaces)	geben Sie einen Hostnamen oder eine IP-Adresse ein (Buchstaben, Ziffern, '.', ':', '-', ohne user@ und Leerzeichen)
+enter a number from the list (1-%s) or one of its UUIDs	geben Sie eine Nummer aus der Liste (1-%s) oder eine ihrer UUIDs ein
+enter a port number from 1 to 65535	geben Sie eine Portnummer von 1 bis 65535 ein
+enter a size in MB, at least 550 (Bitcoin Core's minimum)	geben Sie eine Größe in MB ein, mindestens 550 (das Minimum von Bitcoin Core)
+enter an IPv4 or IPv6 address	geben Sie eine IPv4- oder IPv6-Adresse ein
+enter the tower's public key: 66 hex characters, starting with 02 or 03	geben Sie den öffentlichen Schlüssel des Towers ein: 66 Hex-Zeichen, beginnend mit 02 oder 03
+every change, stores an encrypted, signed copy on the attached volume and on Server B.	nach jeder Änderung eine verschlüsselte, signierte Kopie auf dem angehängten Volume und auf Server B ab.
+exit code %d	Exit-Code %d
+exit-code	Exit-Code
+exited	beendet
+failed	fehlgeschlagen
+find. Lightning needs blocks back to its oldest channel's opening.	Transaktionen suchen müssen. Lightning braucht die Blöcke ab der Eröffnung seines ältesten Kanals.
+full backup log	vollständiges Backup-Protokoll
+hourly check	stündliche Prüfung
+idle	Leerlauf
+in another terminal (not in tmux)	in einem anderen Terminal (nicht in tmux)
+inactive	inaktiv
+install the latest Bitcoin Core	die neueste Version von Bitcoin Core installieren
+install the latest LND for the watchtower	die neueste LND-Version für den Watchtower installieren
+it does not hold backup_compressed.tar.gz and its checksum	es enthält nicht backup_compressed.tar.gz mit dessen Prüfsumme
+it holds links or special files, which the service never backs up	es enthält Links oder Spezialdateien, die der Dienst nie sichert
+it is %s: /start, and /log if it stops again	er ist %s: /start, und /log, falls er wieder stoppt
+it is not signed with the backup key %s	es ist nicht mit dem Backup-Schlüssel %s signiert
+its "Filled in on Server A" settings at the top. Then run each with sudo bash, in this order:	sudo oben die Einstellungen "Ausgefüllt auf Server A" an. Dann der Reihe nach mit sudo bash starten:
+its archive could not be unpacked	sein Archiv ließ sich nicht entpacken
+its checksum does not match (the file is damaged)	seine Prüfsumme stimmt nicht (die Datei ist beschädigt)
+its name doesn't match the time in its signed manifest (%s): it was renamed	sein Name passt nicht zur Zeit in seinem signierten Manifest (%s): es wurde umbenannt
+its signed manifest has no valid time	sein signiertes Manifest hat keine gültige Zeit
+its signed manifest says it is a '%s' backup, not '%s'	laut seinem signierten Manifest ist es ein '%s'-Backup, nicht '%s'
+keeps (for example when importing an old wallet). Do it only if you have no old transactions to	als das, was es behält (z. B. beim Import einer alten Wallet). Tun Sie es nur, wenn Sie keine alten
+leave the dashboard	das Dashboard verlassen
+less than 5 GiB free while ~/chain-incoming is open	weniger als 5 GiB frei, während ~/chain-incoming offen ist
+lncli wtclient add failed	lncli wtclient add fehlgeschlagen
+lnd-wallet.sh is running. Let it finish first.	lnd-wallet.sh läuft. Warten Sie, bis es fertig ist.
+lnd-watchtower didn't restart: journalctl -u lnd-watchtower	lnd-watchtower wurde nicht neu gestartet: journalctl -u lnd-watchtower
+lnd-watchtower stopped after the restart: journalctl -u lnd-watchtower	lnd-watchtower ist nach dem Neustart wieder gestoppt: journalctl -u lnd-watchtower
+look for new Bitcoin Core and LND releases now	jetzt nach neuen Bitcoin-Core-/LND-Versionen suchen
+made at the next change of LND's channel backup; /check looks now. /log says why it fails	entsteht bei der nächsten Änderung des Kanal-Backups von LND; /check prüft jetzt. /log zeigt, warum es fehlschlägt
+made with the next backup. If it fails, /log says why (Server B's gate: /setup installs it)	entsteht mit dem nächsten Backup. Schlägt es fehl, zeigt /log den Grund (Gate von Server B: /setup installiert es)
+make the scripts to run on Server B	die Skripte für Server B erstellen
+mkdir -p ~/.ssh	mkdir -p ~/.ssh
+monthly	monatlich
+mountpoint command not found. Installing util-linux...	Befehl mountpoint nicht gefunden. util-linux wird installiert...
+never	nie
+no changes	keine Änderungen
+no channel.backup opens with this seed (a different wallet's backup, or a damaged file)	kein channel.backup lässt sich mit diesem Seed öffnen (Backup einer anderen Wallet oder Datei beschädigt)
+no disk on this server has UUID %s (is the volume attached?)	kein Datenträger auf diesem Server hat die UUID %s (ist das Volume angehängt?)
+none	keine
+none yet: on Server A, lnd-manager shows whether its backups reach Server B	noch keine: Auf Server A zeigt lnd-manager, ob seine Backups Server B erreichen
+not a filesystem UUID	keine Dateisystem-UUID
+not an absolute path	kein absoluter Pfad
+not confirmed yet: %s. /setup asks (for the GPG key: answer y to view it, then confirm)	noch nicht bestätigt: %s. /setup fragt (GPG-Schlüssel: mit y anzeigen, dann bestätigen)
+not set	nicht gesetzt
+on Server A: lnd-manager /setup (it installs the gate over the key)	auf Server A: lnd-manager /setup (es installiert das Gate für den Schlüssel)
+only needs recent blocks. 550 is Bitcoin Core's minimum.	braucht nur die neuesten Blöcke. 550 ist das Minimum von Bitcoin Core.
+prune BTCPay's blockchain (BTCPay's presets)	die Blockchain von BTCPay prunen (Presets von BTCPay)
+put a safety backup back	eine Sicherheitskopie zurückspielen
+reaches only this account. It may exist already, or Server B's user script can create it.	von Server A erreicht nur dieses Konto. Es kann schon bestehen, oder das Server-B-Benutzer-Skript legt es an.
+refresh the status now	den Status jetzt aktualisieren
+reloading	lädt neu
+replace the wallet with a new one	die Wallet durch eine neue ersetzen
+rerun serverb-watchtower-setup.sh: it offers to turn ufw on (SSH stays open)	serverb-watchtower-setup.sh erneut ausführen: Es bietet an, ufw einzuschalten (SSH bleibt offen)
+restart bitcoind	bitcoind neu starten
+restart the backup service	den Backup-Dienst neu starten
+restart the watchtower	den Watchtower neu starten
+restore the channels into the running wallet	die Kanäle in die laufende Wallet wiederherstellen
+restore the wallet and the channels	die Wallet und die Kanäle wiederherstellen
+restore the wallet from its seed	die Wallet aus ihrem Seed wiederherstellen
+rsync_gpg_backup.sh: install or update the backup service	rsync_gpg_backup.sh: Backup-Dienst installieren/updaten
+run the hourly check now	die stündliche Prüfung jetzt ausführen
+running	läuft
+seed and GPG key step comes from your answers in setup.	zu Seed und GPG-Schlüssel stammt aus Ihren Antworten im Setup.
+serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)	serverb-scripts.sh nicht in BACKUP_SCRIPTS_FOLDER gefunden (%s)
+serverb-update has a syntax error; nothing was changed	serverb-update hat einen Syntaxfehler; nichts wurde geändert
+setup_script.sh not found in BACKUP_SCRIPTS_FOLDER (%s)	setup_script.sh nicht in BACKUP_SCRIPTS_FOLDER gefunden (%s)
+setup_script.sh: users, keys, attached volume, Server B	setup_script.sh: Benutzer, Schlüssel, Volume, Server B
+signal	Signal
+skipped: no LND files found	übersprungen: keine LND-Dateien gefunden
+sshd rejected the new settings; they were taken out again and sshd was not reloaded	sshd hat die neuen Einstellungen abgelehnt; sie wurden wieder entfernt und sshd wurde nicht neu geladen
+start	Start
+start bitcoind	bitcoind starten
+start the backup service	den Backup-Dienst starten
+start the watchtower	den Watchtower starten
+starting	startet
+stop	Stopp
+stop bitcoind	bitcoind stoppen
+stop the backup service	den Backup-Dienst stoppen
+stop the watchtower	den Watchtower stoppen
+stopped	gestoppt
+success	Erfolg
+sudo bash serverb-bitcoind-setup.sh	sudo bash serverb-bitcoind-setup.sh
+sudo bash serverb-user-setup.sh (made on Server A: lnd-manager /serverb scripts)	sudo bash serverb-user-setup.sh (erstellt auf Server A: lnd-manager /serverb scripts)
+sudo bash serverb-watchtower-setup.sh, then on Server A: /tower add	sudo bash serverb-watchtower-setup.sh, danach auf Server A: /tower add
+sudo doesn't work for %s: setup needs it for the backup user, the disk and the service	sudo geht nicht für %s: Das Setup braucht es für Backup-Benutzer, Datenträger und Dienst
+support the project, license	das Projekt unterstützen, Lizenz
+synced	synchron
+syncing from the network. Server A's key may then write into ~%s/chain-incoming	Synchronisation aus dem Netz. Der Schlüssel von Server A darf dann in ~%s/chain-incoming schreiben
+the GPG backup key	der GPG-Backup-Schlüssel
+the copy from Server A (lnd-manager /chain copy) waits in ~/chain-incoming: sudo bash serverb-import-chain.sh	die Kopie von Server A (lnd-manager /chain copy) wartet in ~/chain-incoming: sudo bash serverb-import-chain.sh
+the pre-recovery folder	dem Ordner pre-recovery
+the watchtower	Watchtower
+the watchtower client's towers	die Tower des Watchtower-Clients
+the watchtower is %s	der Watchtower ist %s
+the watchtower's log	Protokoll des Watchtowers
+there is no user %s on this server (MAIN_USER must already exist)	auf diesem Server gibt es keinen Benutzer %s (MAIN_USER muss schon existieren)
+this seed gives node ID %s, but the wallet that was running had %s	dieser Seed ergibt die Node-ID %s, die bisher laufende Wallet hatte aber %s
+timed out	Zeitüberschreitung
+timeout	Timeout
+trust them from now on and send every backup of your Lightning node to them.	ab jetzt vertrauen und ihm jedes Backup Ihres Lightning-Nodes schicken.
+ufw could not be turned on	ufw konnte nicht eingeschaltet werden
+unexpected answer from %s	unerwartete Antwort von %s
+unknown	unbekannt
+use Server B's watchtower for this node	den Watchtower von Server B für diesen Node nutzen
+use a file name only (letters, digits, '.', _ or -), no folders	geben Sie nur einen Dateinamen an (Buchstaben, Ziffern, '.', _ oder -), keine Ordner
+use a normal user on Server B, not root	verwenden Sie einen normalen Benutzer auf Server B, nicht root
+use an account of its own, not root, bitcoin, lndtower or SERVER_B_USER	verwenden Sie ein eigenes Konto, nicht root, bitcoin, lndtower oder SERVER_B_USER
+use up to 32 lowercase letters, digits, _ or -, starting with a letter	verwenden Sie bis zu 32 Kleinbuchstaben, Ziffern, _ oder -, beginnend mit einem Buchstaben
+use up to 32 lowercase letters, digits, _ or -, starting with a letter or _	verwenden Sie bis zu 32 Kleinbuchstaben, Ziffern, _ oder -, beginnend mit einem Buchstaben oder _
+use your own account, not root	verwenden Sie Ihr eigenes Konto, nicht root
+visudo rejected the sudoers line; nothing was changed	visudo hat die sudoers-Zeile abgelehnt; nichts wurde geändert
+what is set up, and what to do next	was eingerichtet ist und was als Nächstes zu tun ist
+yesterday %H:%M	gestern %H:%M
+your LND seed	Ihr LND-Seed
+ℹ️ %s exists already: left as it is (its password and groups too)	ℹ️ %s existiert bereits: bleibt unverändert (auch sein Passwort und seine Gruppen)
+ℹ️ %s is up to date	ℹ️ %s ist aktuell
+ℹ️ %s was left disabled by an earlier run that stopped partway; it is enabled again at the end	ℹ️ %s blieb nach einem früheren, abgebrochenen Lauf deaktiviert; es wird am Ende wieder aktiviert
+ℹ️ %s wasn't running, so it wasn't started (the dashboard: /%s start)	ℹ️ %s lief nicht und wurde daher nicht gestartet (im Dashboard: /%s start)
+ℹ️ A chain/tower operation is already running in tmux session '%s'. Attaching to it...	ℹ️ In der tmux-Sitzung '%s' läuft bereits ein Blockchain-/Tower-Vorgang. Verbindung dorthin...
+ℹ️ A new major version. Its release notes: https://bitcoincore.org/en/releases/%s.0/	ℹ️ Eine neue Hauptversion. Versionshinweise: https://bitcoincore.org/en/releases/%s.0/
+ℹ️ A wallet operation is already running in tmux session '%s'. Attaching to it...	ℹ️ In der tmux-Sitzung '%s' läuft bereits ein Wallet-Vorgang. Verbindung dazu wird hergestellt...
+ℹ️ BTCPay already uses %s	ℹ️ BTCPay verwendet bereits %s
+ℹ️ Channels not confirmed: going on as a plain restore (option 2), without channels	ℹ️ Kanäle nicht bestätigt: weiter als einfache Wiederherstellung (Option 2), ohne Kanäle
+ℹ️ From 28 on, the watchtower can read bitcoind's cookie through its group: rerun	ℹ️ Ab 28 kann der Watchtower das Cookie von bitcoind über seine Gruppe lesen: Führen Sie danach
+ℹ️ Inotify test mode set to: %s (config: %s)	ℹ️ inotify-Testmodus gesetzt auf: %s (config: %s)
+ℹ️ It is still running in tmux. Back to it: run the same command again.	ℹ️ Er läuft in tmux weiter. Zurück dorthin: Führen Sie denselben Befehl erneut aus.
+ℹ️ LND updates its database at the first start, so the old version may not open it again.	ℹ️ LND aktualisiert seine Datenbank beim ersten Start, daher kann die alte Version sie eventuell nicht mehr öffnen.
+ℹ️ New wallet's node ID: %s	ℹ️ Node-ID der neuen Wallet: %s
+ℹ️ No file changes detected in 24h (system idle)	ℹ️ Keine Dateiänderungen in 24 h erkannt (System ruht)
+ℹ️ No terminal: keeping existing backups	ℹ️ Kein Terminal: Vorhandene Backups bleiben erhalten
+ℹ️ No terminal: reusing the installed safe folders: %s	ℹ️ Kein Terminal: Die installierten sicheren Ordner werden weiterverwendet: %s
+ℹ️ Not using a backup	ℹ️ Es wird kein Backup verwendet
+ℹ️ Run serverb-user-setup.sh on Server B, then setup again: it goes on from here.	ℹ️ Führen Sie serverb-user-setup.sh auf Server B aus, dann erneut das Setup: Es macht hier weiter.
+ℹ️ Server A's key is in ~/.ssh/authorized_keys already, restricted: left as it is	ℹ️ Der Schlüssel von Server A steht bereits eingeschränkt in ~/.ssh/authorized_keys: bleibt unverändert
+ℹ️ Sudoers already up-to-date for %s	ℹ️ sudoers für %s bereits aktuell
+ℹ️ TLS certificate and macaroons put back from the backup, so paired apps keep working	ℹ️ TLS-Zertifikat und Macaroons aus dem Backup zurückgespielt, damit gekoppelte Apps weiter funktionieren
+ℹ️ That was the earlier operation; this one (%s) was not started.	ℹ️ Das war der frühere Vorgang; dieser (%s) wurde nicht gestartet.
+ℹ️ That was the earlier wallet operation. This one (%s) was not started:	ℹ️ Das war der frühere Wallet-Vorgang. Dieser (%s) wurde nicht gestartet:
+ℹ️ The LND volume is missing or empty, so there is nothing to save in a safety backup.	ℹ️ Das LND-Volume fehlt oder ist leer, es gibt also nichts für eine Sicherheitskopie zu sichern.
+ℹ️ The previous wallet is kept in the safety backup %s (pre-recovery folders).	ℹ️ Die vorherige Wallet bleibt in der Sicherheitskopie %s erhalten (pre-recovery-Ordner).
+ℹ️ The seed was cleared from the screen and this tmux session's scrollback.	ℹ️ Der Seed wurde vom Bildschirm und aus dem Scrollback dieser tmux-Sitzung gelöscht.
+ℹ️ The tower's wallet exists already (it unlocks by itself)	ℹ️ Die Wallet des Towers existiert bereits (sie entsperrt sich selbst)
+ℹ️ The tower's wallet exists already (state: %s; it unlocks by itself)	ℹ️ Die Wallet des Towers existiert bereits (Zustand: %s; sie entsperrt sich selbst)
+ℹ️ The wallet operation is still running in tmux. Back to it: run this script again.	ℹ️ Der Wallet-Vorgang läuft noch in tmux. Zurück dorthin: Starten Sie dieses Skript erneut.
+ℹ️ The watchtower starts once bitcoind has caught up. Its address for Server A then shows in	ℹ️ Der Watchtower startet, sobald bitcoind aufgeholt hat. Seine Adresse für Server A steht dann im
+ℹ️ This server's channel.backup is newer than the backup's: a channel opened or closed after the last backup.	ℹ️ Das channel.backup dieses Servers ist neuer als das im Backup: Seit dem Backup wurde ein Kanal geöffnet oder geschlossen.
+ℹ️ User %s exists already: its password (if any) is left as it is.	ℹ️ Benutzer %s existiert bereits: Sein Passwort (falls vorhanden) bleibt unverändert.
+ℹ️ Using fee estimates flag: %s	ℹ️ Option für Gebührenschätzungen: %s
+ℹ️ bitcoind has its blockchain already: no copy from Server A is needed.	ℹ️ bitcoind hat seine Blockchain bereits: Eine Kopie von Server A ist nicht nötig.
+ℹ️ rrsync is missing (rsync 3.2.4 or later has it), so Server A can't copy its blockchain here.	ℹ️ rrsync fehlt (ab rsync 3.2.4 enthalten), daher kann Server A seine Blockchain nicht hierher kopieren.
+ℹ️ ~%s/chain-incoming exists: Server A may copy its blockchain there.	ℹ️ ~%s/chain-incoming existiert: Server A darf seine Blockchain dorthin kopieren.
+⏩ %s milestone already exists: %s	⏩ Meilenstein (%s) existiert bereits: %s
+⏩ Backup already running, skipping	⏩ Backup läuft bereits, übersprungen
+⏩ Backup running, will retry milestones next time	⏩ Backup läuft, Meilensteine werden beim nächsten Mal erneut versucht
+⏩ Backup running, will retry remote_pending next time	⏩ Backup läuft, remote_pending wird beim nächsten Mal erneut versucht
+⏩ Hash changer already running	⏩ Hash-Changer läuft bereits
+⏩ Ignoring unrelated file: %s	⏩ Nicht relevante Datei ignoriert: %s
+⏩ No change in %s	⏩ Keine Änderung in %s
+⏩ No meaningful changes detected, skipping backup	⏩ Keine relevanten Änderungen erkannt, Backup übersprungen
+⏭️ Backup service not installed now. Later: lnd-manager /install	⏭️ Backup-Dienst jetzt nicht installiert. Später: lnd-manager /install
+⏱️ Timeout after %ss	⏱️ Zeitüberschreitung nach %ss
+⏳ Flushing file system buffers after compression.	⏳ Puffer des Dateisystems werden nach dem Komprimieren geleert.
+⏳ LND is still catching up with the chain; the watchtower client waits for that (up to 10 minutes here)...	⏳ LND holt die Blockchain noch auf; der Watchtower-Client wartet darauf (hier bis zu 10 Minuten)...
+⏳ Restarting watcher in %s seconds (attempt #%s)...	⏳ Überwachung wird in %s Sekunden neu gestartet (Versuch #%s)...
+⏳ Retrying in %s seconds...	⏳ Neuer Versuch in %s Sekunden...
+⏳ Skipping: debounce active	⏳ Übersprungen: Entprellung aktiv
+⏳ Skipping: failure cooldown active (%ss)	⏳ Übersprungen: Wartezeit nach Fehler aktiv (%ss)
+⏳ Waiting for BTCPay's LND to finish starting (it syncs to the chain first)...	⏳ Warte, bis das LND von BTCPay fertig gestartet ist (es synchronisiert zuerst mit der Blockchain)...
+⏳ Waiting for BTCPay's LND to unlock the wallet (up to 10 minutes)...	⏳ Warte, bis das LND von BTCPay die Wallet entsperrt (bis zu 10 Minuten)...
+⏳ Waiting for LND RPC to be available after wallet creation (up to 180s)...	⏳ Warte, bis LND-RPC nach der Wallet-Erstellung verfügbar ist (bis zu 180 s)...
+⏳ Waiting for LND to be ready for wallet creation (up to 180s)...	⏳ Warte, bis LND für die Wallet-Erstellung bereit ist (bis zu 180 s)...
+⏳ Waiting for LND to start...	⏳ Warten, bis LND startet...
+⏳ Waiting for LND...	⏳ Warten auf LND...
+⏳ Waiting for file to exist: %s	⏳ Warten, bis die Datei existiert: %s
+⏳ Waiting for files to settle (no changes for %s seconds)...	⏳ Warten, bis die Dateien zur Ruhe kommen (%s Sekunden ohne Änderung)...
+⏳ Waiting for files to settle before backup...	⏳ Warten, bis die Dateien vor dem Backup zur Ruhe kommen...
+⏳ Waiting for files to settle...	⏳ Warten, bis die Dateien zur Ruhe kommen...
+⏳ Waiting for the current LND to answer (up to 3 minutes)...	⏳ Warte auf Antwort des aktuellen LND (bis zu 3 Minuten)...
+▶️ Check requested	▶️ Prüfung angefordert
+▶️ Installing the backup service (%s)...	▶️ Backup-Dienst wird installiert (%s)...
+⚙️ Configuring sudoers for %s...	⚙️ sudoers wird für %s eingerichtet...
+⚙️ Installing %s...	⚙️ %s wird installiert...
+⚙️ btcpay-setup.sh with BTCPAYGEN_ADDITIONAL_FRAGMENTS="%s" (BTCPay restarts)...	⚙️ btcpay-setup.sh mit BTCPAYGEN_ADDITIONAL_FRAGMENTS="%s" (BTCPay startet neu)...
+⚠️   docker logs --tail 50 %s	⚠️   docker logs --tail 50 %s
+⚠️  %s is in the docker group, which amounts to root without a password: anything	⚠️  %s ist in der Gruppe docker, was root ohne Passwort gleichkommt: Alles, was
+⚠️  %s lists %s channels. Option 2 leaves their funds stuck until the	⚠️  %s nennt %s Kanäle. Mit Option 2 steckt deren Guthaben fest, bis die
+⚠️  /etc/fstab mounts this disk (UUID %s) at %s. It moves to %s:	⚠️  /etc/fstab hängt diesen Datenträger (UUID %s) unter %s ein. Er wird nach %s verlegt:
+⚠️  ATTACHED_VOLUME in config is %s, inside a home folder. Its owner could swap that	⚠️  ATTACHED_VOLUME in config ist %s, in einem Home-Ordner. Dessen Besitzer könnte den Ordner
+⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline for %s.	⚠️  BTCPay wird gestoppt: Der Store kann keine Zahlungen annehmen und Lightning ist offline für %s.
+⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline until	⚠️  BTCPay wird gestoppt: Der Shop kann keine Zahlungen annehmen und Lightning ist offline, bis
+⚠️  CHECK SERVER B'S FINGERPRINT YOURSELF BEFORE YOU CONTINUE	⚠️  PRÜFEN SIE DEN FINGERABDRUCK VON SERVER B SELBST, BEVOR SIE FORTFAHREN
+⚠️  COPY AND STORE THIS PRIVATE KEY SECURELY:	⚠️  KOPIEREN SIE DIESEN PRIVATEN SCHLÜSSEL UND BEWAHREN SIE IHN SICHER AUF:
+⚠️  Channels are still opening or closing. Funds from a force close are timelocked, and only	⚠️  Kanäle werden noch geöffnet oder geschlossen. Guthaben aus einem Force-Close sind zeitgesperrt,
+⚠️  It isn't pruned: all of it would be copied (hundreds of GB). Prune it first: /chain prune.	⚠️  Sie ist nicht gepruned: Alles würde kopiert (Hunderte GB). Prunen Sie sie zuerst: /chain prune.
+⚠️  LND is running and its data looks intact. Option 3 closes all your channels. If LND's data	⚠️  LND läuft und seine Daten wirken intakt. Option 3 schließt alle Ihre Kanäle. Wenn die Daten von LND
+⚠️  Make sure no other LND with this seed is running anywhere (an old server, a copy).	⚠️  Stellen Sie sicher, dass nirgends ein anderes LND mit diesem Seed läuft (alter Server, Kopie).
+⚠️  Restoring channels asks every channel peer to close its channel. Your share comes back	⚠️  Beim Wiederherstellen der Kanäle wird jeder Peer gebeten, seinen Kanal zu schließen. Ihr Anteil kommt
+⚠️  Server B still gives this key a full shell: anyone who got %s here could delete	⚠️  Server B gibt diesem Schlüssel noch eine volle Shell: Wer %s hier erbeutet, könnte dort
+⚠️  The current wallet couldn't be read, so it's unknown what it holds. The safety backup keeps	⚠️  Die aktuelle Wallet war nicht lesbar, ihr Inhalt ist also unbekannt. Die Sicherheitskopie bewahrt
+⚠️  The current wallet has %s open channels. The seed alone doesn't bring back money in	⚠️  Die aktuelle Wallet hat %s offene Kanäle. Der Seed allein holt kein Geld aus Kanälen
+⚠️  The current wallet still holds funds or channels. After this, they are only reachable	⚠️  Die aktuelle Wallet hat noch Guthaben oder Kanäle. Danach sind diese nur noch über ihren
+⚠️  The existing backups can be deleted now: everything in %s	⚠️  Die vorhandenen Backups können jetzt gelöscht werden: alles in %s
+⚠️  This puts back the whole LND volume as it was, channel state included. That is only safe if	⚠️  Dies spielt das ganze LND-Volume zurück, wie es war, samt Kanalstatus. Das ist nur sicher, wenn seit
+⚠️  This safety backup was made before they carried a signed date: its date and wallet can't	⚠️  Diese Sicherheitskopie stammt aus der Zeit vor signierten Datumsangaben: Datum und Wallet können
+⚠️  Type 'YES I WANT TO DELETE' to confirm: 	⚠️  Geben Sie zur Bestätigung 'YES I WANT TO DELETE' ein: 
+⚠️  WARNING: This will DELETE the current LND wallet in volume '%s' (a safety backup is made first).	⚠️  WARNUNG: Dies LÖSCHT die aktuelle LND-Wallet im Volume '%s' (vorher wird eine Sicherheitskopie erstellt).
+⚠️ %s doesn't open with this wallet: %s	⚠️ %s lässt sich mit dieser Wallet nicht öffnen: %s
+⚠️ %s goes through a symlink, so it is left alone	⚠️ %s führt über einen Symlink und wird daher nicht angefasst
+⚠️ %s goes through a symlink, so it was not made	⚠️ %s führt über einen Symlink und wurde daher nicht angelegt
+⚠️ %s has a password, so a person may log in with it. This script limits the	⚠️ %s hat ein Passwort, also kann sich eine Person damit anmelden. Dieses Skript beschränkt das
+⚠️ %s is disabled, so a reboot won't start BTCPay on the unfinished volume.	⚠️ %s ist deaktiviert, damit ein Neustart BTCPay nicht auf dem unfertigen Volume startet.
+⚠️ %s item(s) could not be deleted and were left in place:	⚠️ %s Element(e) ließen sich nicht löschen und wurden belassen:
+⚠️ %s stays in the docker group	⚠️ %s bleibt in der Gruppe docker
+⚠️ %s still exists, so Server A's key may write there. Not needed now:	⚠️ %s existiert noch, daher darf der Schlüssel von Server A dort schreiben. Jetzt nicht nötig:
+⚠️ %s: not started, an earlier wallet operation was still open	⚠️ %s: nicht gestartet, ein früherer Wallet-Vorgang war noch offen
+⚠️ %s: still running in tmux. /%s attach to go back to it	⚠️ %s: läuft noch in tmux. /%s attach kehrt dorthin zurück
+⚠️ /etc/ssh/sshd_config doesn't include /etc/ssh/sshd_config.d/*.conf: the sshd limits for	⚠️ /etc/ssh/sshd_config bindet /etc/ssh/sshd_config.d/*.conf nicht ein: Die sshd-Limits für
+⚠️ A backup folder (encrypted_backup_*) already exists in %s, skipping initial backup.	⚠️ In %s gibt es bereits ein Backup (encrypted_backup_*), erstes Backup übersprungen.
+⚠️ Backup service installed, but 'check now' failed. It backs up on its next hourly check.	⚠️ Backup-Dienst installiert, aber 'jetzt sichern' schlug fehl. Er sichert bei der nächsten stündlichen Prüfung.
+⚠️ Channels not restored yet. Run this script with option 4 once LND has synced.	⚠️ Kanäle noch nicht wiederhergestellt. Starten Sie das Skript mit Option 4, sobald LND synchron ist.
+⚠️ Channels not restored. Run this script with option 4 to restore them later.	⚠️ Kanäle nicht wiederhergestellt. Mit Option 4 dieses Skripts lassen sie sich später wiederherstellen.
+⚠️ Channels not restored. Run this script with option 4 to try again.	⚠️ Kanäle nicht wiederhergestellt. Für einen neuen Versuch starten Sie das Skript mit Option 4.
+⚠️ Clear your terminal's scrollback too: the seed is still in it.	⚠️ Löschen Sie auch den Scrollback Ihres Terminals: Der Seed steht noch darin.
+⚠️ Containers using the volume still exist. Stopping and removing them...	⚠️ Es gibt noch Container, die das Volume nutzen. Sie werden gestoppt und entfernt...
+⚠️ Continuing anyway (confirmed by user)	⚠️ Trotzdem weiter (vom Benutzer bestätigt)
+⚠️ Continuing with channels still opening or closing (confirmed by user)	⚠️ Weiter, obwohl Kanäle noch geöffnet oder geschlossen werden (vom Benutzer bestätigt)
+⚠️ Continuing without channels: no channel.backup opens with this wallet	⚠️ Weiter ohne Kanäle: Kein channel.backup lässt sich mit dieser Wallet öffnen
+⚠️ Could not install tmux. Continuing without it: don't let the SSH connection drop.	⚠️ tmux ließ sich nicht installieren. Weiter ohne tmux: Lassen Sie die SSH-Verbindung nicht abbrechen.
+⚠️ Could not reload sshd: the limits apply after its next restart	⚠️ sshd konnte nicht neu geladen werden: Die Limits gelten nach seinem nächsten Neustart
+⚠️ Could not remove the old %s	⚠️ Die alte Datei %s konnte nicht entfernt werden
+⚠️ Could not start %s	⚠️ %s konnte nicht gestartet werden
+⚠️ Could not store the safety backup on Server B	⚠️ Die Sicherheitskopie konnte nicht auf Server B gespeichert werden
+⚠️ Could not store the safety backup on the attached volume	⚠️ Die Sicherheitskopie konnte nicht auf dem angehängten Volume gespeichert werden
+⚠️ Empty snapshot — skipping reconciliation	⚠️ Leerer Snapshot — Abgleich übersprungen
+⚠️ Ensure the correct key is imported for user: %s	⚠️ Stellen Sie sicher, dass der richtige Schlüssel für diesen Benutzer importiert ist: %s
+⚠️ Failed to save snapshot fingerprint to %s	⚠️ Fingerabdruck des Snapshots konnte nicht in %s gespeichert werden
+⚠️ Failed to stop service (may not exist or already stopped)	⚠️ Dienst konnte nicht gestoppt werden (existiert evtl. nicht oder ist schon gestoppt)
+⚠️ File flapping: %s (changes: %s)	⚠️ Datei ändert sich ständig: %s (Änderungen: %s)
+⚠️ File missing (or inaccessible) in snapshot: %s	⚠️ Datei im Snapshot fehlt (oder ist nicht zugänglich): %s
+⚠️ File missing: %s	⚠️ Datei fehlt: %s
+⚠️ LND container '%s' is stopped. Starting BTCPay to read the current wallet...	⚠️ Der LND-Container '%s' ist gestoppt. BTCPay wird gestartet, um die aktuelle Wallet zu lesen...
+⚠️ LND is not synced to the chain, so these numbers may be out of date.	⚠️ LND ist nicht mit der Blockchain synchronisiert, daher können diese Zahlen veraltet sein.
+⚠️ LND's REST interface doesn't answer: journalctl -u lnd-watchtower	⚠️ Die REST-Schnittstelle von LND antwortet nicht: journalctl -u lnd-watchtower
+⚠️ Latest backup exists but is not a valid file: %s	⚠️ Neuestes Backup existiert, ist aber keine gültige Datei: %s
+⚠️ Make sure to store this seed in a secure location! Losing the seed means losing access to your LND wallet.	⚠️ Bewahren Sie diesen Seed unbedingt an einem sicheren Ort auf! Ohne den Seed verlieren Sie den Zugriff auf Ihre LND-Wallet.
+⚠️ Milestones not complete, the hourly check will retry them from %s	⚠️ Meilensteine unvollständig, die stündliche Prüfung versucht sie erneut aus %s
+⚠️ Missing file (or not readable by the helper): %s	⚠️ Datei fehlt (oder ist für das Hilfsprogramm nicht lesbar): %s
+⚠️ No active ufw firewall: port %s is open to everyone. Anyone could then store	⚠️ Keine aktive ufw-Firewall: Port %s ist für alle offen. Dann könnte jeder
+⚠️ No backup could be used	⚠️ Kein Backup war verwendbar
+⚠️ No backup found for milestone copy	⚠️ Kein Backup für die Meilenstein-Kopie gefunden
+⚠️ No backups folder on the attached volume: %s	⚠️ Kein Backup-Ordner auf dem angehängten Volume: %s
+⚠️ No channel backups found in %s	⚠️ Keine Kanal-Backups in %s gefunden
+⚠️ No files available yet — skipping backup	⚠️ Noch keine Dateien vorhanden — Backup übersprungen
+⚠️ No files to wait for in %s	⚠️ Keine Dateien in %s, auf die zu warten wäre
+⚠️ No password set: run passwd %s later	⚠️ Kein Passwort gesetzt: Führen Sie später passwd %s aus
+⚠️ Pass 1 ended with code %s (files changing while BTCPay runs, expected). Going on to pass 2, which copies the rest.	⚠️ Durchgang 1 endete mit Code %s (Dateien ändern sich, während BTCPay läuft, das ist normal). Weiter mit Durchgang 2, der den Rest kopiert.
+⚠️ Run this script again: the same option to finish, or option 5 to put the safety backup back.	⚠️ Starten Sie das Skript erneut: dieselbe Option zum Abschließen, Option 5 zum Zurückspielen.
+⚠️ Safety backup put back, but the backup service is NOT running. Rerun %s.	⚠️ Sicherheitskopie zurückgespielt, aber der Backup-Dienst läuft NICHT. Führen Sie %s erneut aus.
+⚠️ Scan for old funds skipped at %s	⚠️ Scan nach alten Guthaben bei %s übersprungen
+⚠️ Server B can't be reached, so only the attached volume is searched.	⚠️ Server B ist nicht erreichbar, daher wird nur das angehängte Volume durchsucht.
+⚠️ Server B's backup gate can't be reached, so the safety backup is not stored there	⚠️ Das Backup-Gate von Server B ist nicht erreichbar, daher wird die Sicherheitskopie dort nicht abgelegt
+⚠️ Server B's backup gate not installed: copies to Server B will fail until it is (server-b-install.sh)	⚠️ Backup-Gate von Server B nicht installiert: Kopien auf Server B scheitern, bis es da ist (server-b-install.sh)
+⚠️ Server B's gate didn't say which address it sees (older gate, or not reachable). The suggestion	⚠️ Das Gate von Server B meldete nicht, welche Adresse es sieht (älteres Gate oder nicht erreichbar).
+⚠️ Skipped %s	⚠️ Übersprungen: %s
+⚠️ Snapshot changed during stabilization — retrying...	⚠️ Snapshot hat sich beim Stabilisieren geändert — neuer Versuch...
+⚠️ Snapshot empty during event — skipping	⚠️ Snapshot beim Ereignis leer — übersprungen
+⚠️ Snapshot inconsistent (file disappeared): %s	⚠️ Snapshot inkonsistent (Datei verschwunden): %s
+⚠️ Snapshot outdated vs latest backup	⚠️ Snapshot ist älter als das neueste Backup
+⚠️ Source changed during read: %s	⚠️ Quelle hat sich beim Lesen geändert: %s
+⚠️ Stopped after the old wallet was deleted. BTCPay is down and stays down.	⚠️ Abgebrochen, nachdem die alte Wallet gelöscht wurde. BTCPay ist gestoppt und bleibt gestoppt.
+⚠️ Stopped after the wallet was handed to BTCPay. Check BTCPay's LND before relying on it:	⚠️ Abgebrochen nach Übergabe der Wallet an BTCPay. Prüfen Sie das LND von BTCPay, bevor Sie es nutzen:
+⚠️ Stopped before the wallet was touched. Starting BTCPay and the backup service again...	⚠️ Abgebrochen, bevor die Wallet verändert wurde. BTCPay und der Backup-Dienst werden wieder gestartet...
+⚠️ Target not found: %s	⚠️ Ziel nicht gefunden: %s
+⚠️ Temporary backup directory does not exist: %s	⚠️ Temporärer Backup-Ordner existiert nicht: %s
+⚠️ The attached volume is not mounted, so only Server B is searched.	⚠️ Das angehängte Volume ist nicht eingehängt, daher wird nur Server B durchsucht.
+⚠️ The attached volume is not mounted, so the safety backup is not stored there	⚠️ Das angehängte Volume ist nicht eingehängt, daher wird die Sicherheitskopie dort nicht gespeichert
+⚠️ The backup service is still stopped. When LND is fine, rerun %s.	⚠️ Der Backup-Dienst ist noch gestoppt. Wenn LND in Ordnung ist, führen Sie %s erneut aus.
+⚠️ The backup's macaroons don't open with this password. Making new ones (apps need pairing again).	⚠️ Die Macaroons des Backups passen nicht zu diesem Passwort. Neue werden erstellt (Apps neu koppeln).
+⚠️ The install goes on; delete them by hand if you need them gone.	⚠️ Die Installation geht weiter; löschen Sie sie bei Bedarf von Hand.
+⚠️ The old wallet is in the safety backup %s.	⚠️ Die alte Wallet liegt in der Sicherheitskopie %s.
+⚠️ The wallet is done, but the backup service is NOT running. Rerun %s.	⚠️ Die Wallet ist fertig, aber der Backup-Dienst läuft NICHT. Führen Sie %s erneut aus.
+⚠️ This server's channel.backup is not a plain file (a symlink?), so it is not used	⚠️ Das channel.backup dieses Servers ist keine normale Datei (ein Symlink?), es wird nicht verwendet
+⚠️ WARNING: You are about to perform a manual step that involves storing a copy of your LND seed.	⚠️ WARNUNG: Es folgt ein manueller Schritt, bei dem Sie eine Kopie Ihres LND-Seeds aufbewahren.
+⚠️ Watcher crashed or exited	⚠️ Überwachung abgestürzt oder beendet
+⚠️ bitcoind doesn't answer yet. Look at /var/lib/bitcoind/debug.log, or journalctl -u bitcoind.	⚠️ bitcoind antwortet noch nicht. Siehe /var/lib/bitcoind/debug.log oder journalctl -u bitcoind.
+⚠️ btcpay-up.sh failed	⚠️ btcpay-up.sh ist fehlgeschlagen
+⚠️ milestones_pending points to a missing file (%s), removing marker	⚠️ milestones_pending verweist auf eine fehlende Datei (%s), Markierung wird entfernt
+⚠️ remote_pending points to a missing file (%s), removing marker	⚠️ remote_pending verweist auf eine fehlende Datei (%s), Markierung wird entfernt
+⚠️ tmux could not start a session. Continuing without it: don't let the SSH connection drop.	⚠️ tmux konnte keine Sitzung starten. Weiter ohne tmux: Lassen Sie die SSH-Verbindung nicht abbrechen.
+⚡ %s is empty or an error occurred while checking. Performing initial backup...	⚡ %s ist leer oder bei der Prüfung trat ein Fehler auf. Erstes Backup wird erstellt...
+⛓️ %s is mounted without %s: remounting with %s	⛓️ %s ist ohne %s eingehängt: wird mit %s neu eingehängt
+⛓️ Mounting %s to %s...	⛓️ %s wird unter %s eingehängt...
+⛔ Clearing attached volume and temporary backup directory...	⛔ Angehängtes Volume und temporärer Backup-Ordner werden geleert...
+✅ %s (prune=%s)	✅ %s (prune=%s)
+✅ %s belongs to this wallet: %s channels	✅ %s gehört zu dieser Wallet: %s Kanäle
+✅ %s can watch the LND folders	✅ %s kann die LND-Ordner überwachen
+✅ %s channels restored. LND now asks each peer to close its channel.	✅ %s Kanäle wiederhergestellt. LND bittet jetzt jeden Peer, seinen Kanal zu schließen.
+✅ %s created (no password yet)	✅ %s angelegt (noch ohne Passwort)
+✅ %s decrypted and checked	✅ %s entschlüsselt und geprüft
+✅ %s is ready.	✅ %s ist bereit.
+✅ %s is up to date	✅ %s ist aktuell
+✅ %s key(s) may log in as %s	✅ %s Schlüssel dürfen sich als %s anmelden
+✅ %s matches SHA256SUMS, which %s builders signed	✅ %s passt zu SHA256SUMS, das %s Builder signiert haben
+✅ %s matches the manifest, which %s signers signed	✅ %s passt zum Manifest, das %s Signierer signiert haben
+✅ %s removed from the docker group (from the next login)	✅ %s aus der Gruppe docker entfernt (ab der nächsten Anmeldung)
+✅ %s restarted	✅ Neu gestartet: %s
+✅ %s runs again	✅ %s läuft wieder
+✅ %s started	✅ Gestartet: %s
+✅ %s stopped	✅ Gestoppt: %s
+✅ %s, /usr/local/bin/serverb-dashboard, %s/serverb-update	✅ %s, /usr/local/bin/serverb-dashboard, %s/serverb-update
+✅ %s: %s may run %s as root, nothing else	✅ %s: %s darf %s als root ausführen, sonst nichts
+✅ %s: done	✅ %s: fertig
+✅ 'jq' is already installed.	✅ 'jq' ist bereits installiert.
+✅ ATTACHED_VOLUME space check passed: %s KB available	✅ Platzprüfung für ATTACHED_VOLUME bestanden: %s KB verfügbar
+✅ All snapshot files exist	✅ Alle Dateien des Snapshots vorhanden
+✅ BTCPay runs with: %s	✅ BTCPay läuft mit: %s
+✅ BTCPay stack stopped successfully.	✅ BTCPay-Stack erfolgreich gestoppt.
+✅ BTCPay's LND is up (node ID %s)	✅ Das LND von BTCPay läuft (Node-ID %s)
+✅ BTCPay's LND unlocked the wallet (node ID %s)	✅ Das LND von BTCPay hat die Wallet entsperrt (Node-ID %s)
+✅ BTCPay's blockchain is pruned to %s; bitcoind deletes old blocks as it starts.	✅ Die Blockchain von BTCPay ist jetzt mit %s gepruned; bitcoind löscht alte Blöcke beim Start.
+✅ Backup completed successfully	✅ Backup erfolgreich abgeschlossen
+✅ Backup service installer finished.	✅ Installer des Backup-Dienstes abgeschlossen.
+✅ Backup service running, and asked to back up the new wallet now	✅ Backup-Dienst läuft und wurde gebeten, die neue Wallet jetzt zu sichern
+✅ Bitcoin Core %s is the latest release: nothing to do	✅ Bitcoin Core %s ist die neueste Version: nichts zu tun
+✅ Bitcoin Core is installed; it starts when the copy is in place.	✅ Bitcoin Core ist installiert; es startet, sobald die Kopie an ihrem Platz ist.
+✅ Bitcoin Core runs again, on the version installed above.	✅ Bitcoin Core läuft wieder, mit der oben installierten Version.
+✅ Bitcoin Core runs and syncs from the network (this takes a long time).	✅ Bitcoin Core läuft und synchronisiert aus dem Netz (das dauert lange).
+✅ Blockchain copied to Server B. Next, on Server B: sudo bash serverb-import-chain.sh	✅ Blockchain auf Server B kopiert. Als Nächstes auf Server B: sudo bash serverb-import-chain.sh
+✅ Copied file hash verification passed	✅ Hash der kopierten Datei erfolgreich geprüft
+✅ Copy fingerprint verified	✅ Fingerabdruck der Kopie geprüft
+✅ Copy phase completed	✅ Kopierphase abgeschlossen
+✅ Derived public key saved to %s.	✅ Abgeleiteter öffentlicher Schlüssel in %s gespeichert.
+✅ Device for UUID %s is: %s	✅ Gerät für UUID %s ist: %s
+✅ Done. Log in as %s and run: serverb-dashboard	✅ Fertig. Melden Sie sich als %s an und führen Sie aus: serverb-dashboard
+✅ Empty volume '%s' created	✅ Leeres Volume '%s' erstellt
+✅ Encrypted backup integrity verified via checksum	✅ Integrität des verschlüsselten Backups per Prüfsumme bestätigt
+✅ Files are stable. Proceeding.	✅ Dateien sind stabil. Weiter.
+✅ Files moved to timestamped directory: %s	✅ Dateien in den Ordner mit Zeitstempel verschoben: %s
+✅ Files stable. Proceeding with backup...	✅ Dateien stabil. Backup wird fortgesetzt...
+✅ Final SSH connection test succeeded.	✅ Abschließender SSH-Verbindungstest erfolgreich.
+✅ Final hash verified: %s	✅ Endgültiger Hash geprüft: %s
+✅ GPG encryption + signing successful: %s	✅ Verschlüsseln + Signieren mit GPG erfolgreich: %s
+✅ GPG key directory %s exists.	✅ GPG-Schlüsselordner %s existiert.
+✅ GPG key generated successfully.	✅ GPG-Schlüssel erfolgreich erzeugt.
+✅ GPG key imported successfully.	✅ GPG-Schlüssel erfolgreich importiert.
+✅ GPG key trust level set to ultimate.	✅ Vertrauensstufe des GPG-Schlüssels auf ultimate (absolut) gesetzt.
+✅ GPG private key exported to %s for backup.	✅ Privater GPG-Schlüssel zur Sicherung nach %s exportiert.
+✅ GPG recipient %s found successfully.	✅ GPG-Empfänger %s gefunden.
+✅ Host fingerprint matches expected value.	✅ Host-Fingerabdruck stimmt mit dem erwarteten Wert überein.
+✅ Installed %s	✅ %s installiert
+✅ Installed %s/lnd-backup-gate and %s/lnd-backup-rotate	✅ %s/lnd-backup-gate und %s/lnd-backup-rotate installiert
+✅ Installed into %s (changed: %s)	✅ In %s installiert (geändert: %s)
+✅ LND %s is the latest release: nothing to do	✅ LND %s ist die neueste Version: nichts zu tun
+✅ LND is ready for wallet creation	✅ LND ist bereit für die Wallet-Erstellung
+✅ LND seed backup step confirmed. Proceeding with the backup process.	✅ Schritt zur Sicherung des LND-Seeds bestätigt. Es geht weiter mit den Backups.
+✅ LND's REST interface is off again (only needed to make the wallet)	✅ Die REST-Schnittstelle von LND ist wieder aus (nur zum Erstellen der Wallet nötig)
+✅ Latest usable backup: %s	✅ Neuestes verwendbares Backup: %s
+✅ Made %s (LND makes it only when it first archives a channel.backup)	✅ %s angelegt (LND legt den Ordner erst an, wenn es zum ersten Mal ein channel.backup archiviert)
+✅ Made in %s:	✅ Erstellt in %s:
+✅ Milestones caught up, milestones_pending cleared	✅ Meilensteine nachgeholt, milestones_pending gelöscht
+✅ Mount setup complete. The device should be mounted now and will be automatically mounted on every reboot.	✅ Einhängen eingerichtet. Das Gerät sollte jetzt eingehängt sein und wird bei jedem Neustart automatisch eingehängt.
+✅ New SSH key generated at %s.	✅ Neuer SSH-Schlüssel unter %s erzeugt.
+✅ New wallet in volume %s, node ID %s	✅ Neue Wallet im Volume %s, Node-ID %s
+✅ No changes detected (fingerprint match)	✅ Keine Änderungen erkannt (Fingerabdruck stimmt überein)
+✅ Ownership for %s set.	✅ Besitzer von %s gesetzt.
+✅ Permissions for %s set.	✅ Rechte für %s gesetzt.
+✅ Post-rsync hash verification complete	✅ Hash-Prüfung nach rsync abgeschlossen
+✅ Private SSH key saved to %s.	✅ Privater SSH-Schlüssel in %s gespeichert.
+✅ Public key manually added to remote server successfully.	✅ Öffentlicher Schlüssel von Hand auf dem entfernten Server hinzugefügt.
+✅ Public key successfully copied to remote server.	✅ Öffentlicher Schlüssel erfolgreich auf den entfernten Server kopiert.
+✅ Ready for setup. Nothing was changed.	✅ Bereit für das Setup. Es wurde nichts geändert.
+✅ Ready. Setup asks before each step.	✅ Bereit. Das Setup fragt vor jedem Schritt.
+✅ Reconciliation backup completed	✅ Backup aus dem Abgleich abgeschlossen
+✅ Remote copy caught up, remote_pending cleared	✅ Remote-Kopie nachgeholt, remote_pending gelöscht
+✅ Removed %s from group %s (replaced by read-only ACLs)	✅ %s aus Gruppe %s entfernt (ersetzt durch Nur-Lese-ACLs)
+✅ Rotation runs every hour (crontab -l shows it)	✅ Die Rotation läuft stündlich (crontab -l zeigt sie)
+✅ Rsync completed successfully to second backup directory.	✅ rsync in den zweiten Backup-Ordner erfolgreich abgeschlossen.
+✅ SHA256 checksum created: %s	✅ SHA256-Prüfsumme erstellt: %s
+✅ SSH key already set up and working. Skipping setup.	✅ SSH-Schlüssel ist schon eingerichtet und funktioniert. Einrichtung wird übersprungen.
+✅ Safe folders confirmed: %s	✅ Sichere Ordner bestätigt: %s
+✅ Safety backup put back into %s	✅ Sicherheitskopie nach %s zurückgespielt
+✅ Safety backup stored and checked on Server B: pre-recovery/%s	✅ Sicherheitskopie auf Server B gespeichert und geprüft: pre-recovery/%s
+✅ Safety backup stored and checked: %s/%s	✅ Sicherheitskopie gespeichert und geprüft: %s/%s
+✅ Saved %s="%s" in %s	✅ %s="%s" in %s gespeichert
+✅ Scan for old funds finished	✅ Scan nach alten Guthaben abgeschlossen
+✅ Server A's key added, restricted (no terminal, no forwarding)	✅ Schlüssel von Server A hinzugefügt, eingeschränkt (kein Terminal, keine Weiterleitung)
+✅ Server A's key may now only run the gate (old file: %s.before-gate)	✅ Der Schlüssel von Server A darf jetzt nur noch das Gate ausführen (alte Datei: %s.before-gate)
+✅ Server A's key was in ~/.ssh/authorized_keys without restrictions: now restricted	✅ Der Schlüssel von Server A stand ohne Einschränkungen in ~/.ssh/authorized_keys: jetzt eingeschränkt
+✅ Server B answers through its backup gate	✅ Server B antwortet über sein Backup-Gate
+✅ Server B's backup gate is installed: this key can no longer delete or overwrite there	✅ Backup-Gate von Server B installiert: Dieser Schlüssel kann dort nichts mehr löschen oder überschreiben
+✅ Service enabled and started: %s	✅ Dienst aktiviert und gestartet: %s
+✅ Snapshot validated. All files exist.	✅ Snapshot geprüft. Alle Dateien vorhanden.
+✅ Stored on Server B and checked (sha256) in %ss (attempt %s/%s)	✅ Auf Server B gespeichert und geprüft (sha256) in %ss (Versuch %s/%s)
+✅ Successfully mounted %s at %s	✅ %s erfolgreich unter %s eingehängt
+✅ Sudoers updated and validated for %s	✅ sudoers für %s aktualisiert und geprüft
+✅ System user %s created	✅ Systembenutzer %s angelegt
+✅ TMP space check passed (home FS): %s KB available	✅ Platzprüfung für TMP bestanden (Dateisystem von home): %s KB verfügbar
+✅ The copy is in %s; ~%s/chain-incoming is gone (Server A can't write here now)	✅ Die Kopie liegt in %s; ~%s/chain-incoming ist weg (Server A kann hier nicht mehr schreiben)
+✅ The tower's wallet is made; it unlocks by itself from now on	✅ Die Wallet des Towers ist erstellt; sie entsperrt sich ab jetzt selbst
+✅ The watchtower is added. LND sends it encrypted channel updates from now on.	✅ Der Watchtower ist hinzugefügt. LND sendet ihm ab jetzt verschlüsselte Kanal-Updates.
+✅ The watchtower runs. For Server A (lnd-manager: /tower add):	✅ Der Watchtower läuft. Für Server A (lnd-manager: /tower add):
+✅ UUID %s is already in /etc/fstab at %s	✅ UUID %s steht bereits in /etc/fstab, unter %s
+✅ Updated %s: %s	✅ %s aktualisiert: %s
+✅ User %s created	✅ Benutzer %s angelegt
+✅ Using %s	✅ Verwendet: %s
+✅ Verified: %s	✅ Geprüft: %s
+✅ Wallet created in the temporary LND	✅ Wallet im temporären LND erstellt
+✅ bitcoind runs on the copy. It prunes it to this server's size and catches up from the network.	✅ bitcoind läuft mit der Kopie. Es prunt sie auf die Größe dieses Servers und holt aus dem Netz auf.
+✅ lnd-watchtower runs again	✅ lnd-watchtower läuft wieder
+✅ sshd limits for %s in %s	✅ sshd-Limits für %s in %s
+✅ systemctl daemon-reload completed	✅ systemctl daemon-reload abgeschlossen
+✅ systemd READY notification sent	✅ READY-Meldung an systemd gesendet
+✅ systemd service bitcoind (enabled)	✅ systemd-Dienst bitcoind (aktiviert)
+✅ systemd service lnd-watchtower (enabled, started)	✅ systemd-Dienst lnd-watchtower (aktiviert, gestartet)
+✅ ufw is on	✅ ufw ist eingeschaltet
+✅ ufw: SSH port %s open	✅ ufw: SSH-Port %s offen
+✅ ufw: port %s open only to Server A (%s)	✅ ufw: Port %s nur für Server A offen (%s)
+✅ update %s: done	✅ Update %s: fertig
+✅ walletunlock.json written (BTCPay unlocks the wallet with it)	✅ walletunlock.json geschrieben (BTCPay entsperrt die Wallet damit)
+✅ ~%s/chain-incoming made	✅ ~%s/chain-incoming angelegt
+✔️ Skipping directory clearing.	✔️ Ordner werden nicht geleert.
+❌ %s (PID %s) died unexpectedly	❌ %s (PID %s) wurde unerwartet beendet
+❌ %s (from config) is not inside any safe folder	❌ %s (aus config) liegt in keinem sicheren Ordner
+❌ %s can write %s or %s, which root uses. Fix their permissions first.	❌ %s kann in %s oder %s schreiben, die root verwendet. Korrigieren Sie zuerst deren Rechte.
+❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume.	❌ %s fehlt. Führen Sie rsync_gpg_backup.sh erneut aus: Es legt den Ordner auf dem angehängten Volume an.
+❌ %s doesn't look like an SSH public key.	❌ %s sieht nicht wie ein öffentlicher SSH-Schlüssel aus.
+❌ %s has a syntax error	❌ %s hat einen Syntaxfehler
+❌ %s holds the line %s	❌ %s enthält die Zeile %s
+❌ %s in config is not allowed: %s	❌ %s in config ist nicht erlaubt: %s
+❌ %s is a symlink, not owned by root, or writable by others	❌ %s ist ein Symlink, gehört nicht root oder ist für andere beschreibbar
+❌ %s is a symlink. Remove it; the mount point must be a real folder owned by root.	❌ %s ist ein Symlink. Entfernen Sie ihn; der Einhängepunkt muss ein echter Ordner sein, der root gehört.
+❌ %s is a symlink. Stopping.	❌ %s ist ein Symlink. Abbruch.
+❌ %s is a symlink; set SERVER_B_SCRIPTS_DIR to a folder of yours	❌ %s ist ein Symlink; setzen Sie SERVER_B_SCRIPTS_DIR auf einen eigenen Ordner
+❌ %s is already mounted from %s, not %s (UUID %s). Unmount it or fix UUID in %s.	❌ %s ist bereits von %s eingehängt, nicht von %s (UUID %s). Hängen Sie es aus oder korrigieren Sie UUID in %s.
+❌ %s is empty in config. Run setup_script.sh first.	❌ %s ist in config leer. Führen Sie zuerst setup_script.sh aus.
+❌ %s is missing	❌ %s fehlt
+❌ %s is not under any SAFE_BASES entry	❌ %s liegt unter keinem Eintrag von SAFE_BASES
+❌ %s keys in %s's keyring match %s:	❌ %s Schlüssel im Schlüsselbund von %s passen zu %s:
+❌ %s needs %s, which serverb-scripts.sh didn't set	❌ %s braucht %s, was serverb-scripts.sh nicht gesetzt hat
+❌ %s problem(s) above: fix them, then run setup again. Nothing was changed.	❌ %s Problem(e) oben: Beheben Sie sie und starten Sie das Setup erneut. Es wurde nichts geändert.
+❌ %s still can't read %s	❌ %s kann %s immer noch nicht lesen
+❌ %s still cannot watch %s	❌ %s kann %s immer noch nicht überwachen
+❌ %s: exit code %d	❌ %s: Exit-Code %d
+❌ /etc/fstab already mounts %s at %s, not UUID=%s. Fix /etc/fstab or UUID in %s.	❌ /etc/fstab hängt %s bereits unter %s ein, nicht UUID=%s. Korrigieren Sie /etc/fstab oder UUID in %s.
+❌ A GPG key is required. Exiting.	❌ Ein GPG-Schlüssel ist erforderlich. Abbruch.
+❌ ATTACHED_VOLUME does not exist: %s	❌ ATTACHED_VOLUME existiert nicht: %s
+❌ Aborted by user. You did not type the exact confirmation phrase.	❌ Vom Benutzer abgebrochen. Sie haben die Bestätigung nicht exakt so eingegeben.
+❌ Aborting backup due to corrupted rsync copy	❌ Backup abgebrochen: Kopie von rsync beschädigt
+❌ Another backup process is already running. Exiting.	❌ Ein anderer Backup-Prozess läuft bereits. Wird beendet.
+❌ Another lnd-wallet.sh, or chain-tower.sh (/chain, /tower), is running. Let it finish first.	❌ Ein anderes lnd-wallet.sh oder chain-tower.sh (/chain, /tower) läuft. Warten Sie, bis es fertig ist.
+❌ BACKUP_INSTALL_DIR must be under /usr/local or /opt: %s	❌ BACKUP_INSTALL_DIR muss unter /usr/local oder /opt liegen: %s
+❌ Backup failed	❌ Backup fehlgeschlagen
+❌ Backup failed during reconciliation	❌ Backup beim Abgleich fehlgeschlagen
+❌ Backup failed. Exiting script.	❌ Backup fehlgeschlagen. Skript wird beendet.
+❌ Both the attached-volume and the remote copy failed. Not committing hashes.	❌ Kopie auf dem angehängten Volume und Remote-Kopie fehlgeschlagen. Hashes werden nicht festgeschrieben.
+❌ Cannot access file (missing or permission denied): %s	❌ Kein Zugriff auf Datei (fehlt oder Zugriff verweigert): %s
+❌ Channel restore failed: %s	❌ Wiederherstellung der Kanäle fehlgeschlagen: %s
+❌ Checksum verification failed! Backup corrupted!	❌ Prüfsumme stimmt nicht! Backup beschädigt!
+❌ Configuration file not found at %s	❌ Konfigurationsdatei nicht gefunden unter %s
+❌ Copied file missing: %s	❌ Kopierte Datei fehlt: %s
+❌ Copied snapshot fingerprint mismatch — retrying backup	❌ Fingerabdruck des kopierten Snapshots weicht ab — Backup wird wiederholt
+❌ Copy mismatch: %s	❌ Kopie stimmt nicht überein: %s
+❌ Copy stability check failed — retrying backup	❌ Stabilitätsprüfung der Kopie fehlgeschlagen — Backup wird wiederholt
+❌ Copy to Server B failed (attempt %s/%s, exit code %s): %s	❌ Kopie auf Server B fehlgeschlagen (Versuch %s/%s, Exit-Code %s): %s
+❌ Could not add the new settings to %s	❌ Die neuen Einstellungen konnten nicht zu %s hinzugefügt werden
+❌ Could not check ~/.ssh/authorized_keys	❌ ~/.ssh/authorized_keys konnte nicht geprüft werden
+❌ Could not create user '%s'	❌ Benutzer '%s' konnte nicht angelegt werden
+❌ Could not derive a public key. Is the pasted key valid and without a passphrase? Exiting.	❌ Kein öffentlicher Schlüssel ableitbar. Ist der eingefügte Schlüssel gültig und ohne Passphrase? Abbruch.
+❌ Could not fetch a host key from %s port %s. Check REMOTE_SERVER, REMOTE_SSH_PORT and that Server B's SSH server is running.	❌ Von %s Port %s konnte kein Host-Schlüssel abgerufen werden. Prüfen Sie REMOTE_SERVER, REMOTE_SSH_PORT und ob der SSH-Server von Server B läuft.
+❌ Could not make %s	❌ %s konnte nicht erstellt werden
+❌ Could not start %s. Start it by hand.	❌ %s konnte nicht gestartet werden. Bitte von Hand starten.
+❌ Could not unmount %s: something still uses it (see: sudo lsof +f -- %s)	❌ %s konnte nicht ausgehängt werden: Etwas nutzt es noch (siehe: sudo lsof +f -- %s)
+❌ Could not write %s (the original is saved in %s)	❌ %s konnte nicht geschrieben werden (das Original liegt in %s)
+❌ ERROR: Host fingerprint does not match expected fingerprint!	❌ FEHLER: Host-Fingerabdruck stimmt nicht mit dem erwarteten Fingerabdruck überein!
+❌ Empty hash produced (unexpected): %s	❌ Leerer Hash erzeugt (unerwartet): %s
+❌ Expected exactly one %s= line in %s	❌ Erwartet wurde genau eine Zeile %s= in %s
+❌ Failed to add pasted public key to remote server.	❌ Der eingefügte öffentliche Schlüssel konnte nicht auf dem entfernten Server hinzugefügt werden.
+❌ Failed to automatically copy public key to remote server.	❌ Öffentlicher Schlüssel konnte nicht automatisch auf den entfernten Server kopiert werden.
+❌ Failed to chmod %s	❌ chmod für %s fehlgeschlagen
+❌ Failed to chmod temporary backup directory	❌ chmod für den temporären Backup-Ordner fehlgeschlagen
+❌ Failed to chown %s	❌ chown für %s fehlgeschlagen
+❌ Failed to chown temporary backup directory	❌ chown für den temporären Backup-Ordner fehlgeschlagen
+❌ Failed to commit file hashes to %s	❌ Datei-Hashes konnten nicht in %s festgeschrieben werden
+❌ Failed to compress backup directory: %s	❌ Backup-Ordner konnte nicht komprimiert werden: %s
+❌ Failed to copy %s	❌ %s konnte nicht kopiert werden
+❌ Failed to create %s milestone: %s	❌ Meilenstein (%s) konnte nicht erstellt werden: %s
+❌ Failed to create GPG payload archive	❌ Archiv mit den Nutzdaten für GPG konnte nicht erstellt werden
+❌ Failed to create TEST_INOTIFY_FOLDER	❌ TEST_INOTIFY_FOLDER konnte nicht angelegt werden
+❌ Failed to create TEST_INOTIFY_PARENT_FOLDER	❌ TEST_INOTIFY_PARENT_FOLDER konnte nicht angelegt werden
+❌ Failed to create TMP_BACKUP_DIR	❌ TMP_BACKUP_DIR konnte nicht angelegt werden
+❌ Failed to create directory for %s	❌ Ordner für %s konnte nicht angelegt werden
+❌ Failed to create local milestone directories in %s	❌ Lokale Meilenstein-Ordner in %s konnten nicht angelegt werden
+❌ Failed to create metadata directory: %s	❌ Metadaten-Ordner konnte nicht angelegt werden: %s
+❌ Failed to create temporary backup directory	❌ Temporärer Backup-Ordner konnte nicht angelegt werden
+❌ Failed to create temporary hash file	❌ Temporäre Hash-Datei konnte nicht angelegt werden
+❌ Failed to create timestamped backup directory: %s	❌ Backup-Ordner mit Zeitstempel konnte nicht angelegt werden: %s
+❌ Failed to delete daily milestone: %s	❌ Täglicher Meilenstein konnte nicht gelöscht werden: %s
+❌ Failed to delete monthly milestone: %s	❌ Monatlicher Meilenstein konnte nicht gelöscht werden: %s
+❌ Failed to delete old backup: %s	❌ Altes Backup konnte nicht gelöscht werden: %s
+❌ Failed to delete old hash file: %s	❌ Alte Hash-Datei konnte nicht gelöscht werden: %s
+❌ Failed to determine disk space for %s	❌ Speicherplatz für %s konnte nicht ermittelt werden
+❌ Failed to enable/start service: %s	❌ Dienst konnte nicht aktiviert/gestartet werden: %s
+❌ Failed to extract verification bundle	❌ Prüfpaket konnte nicht entpackt werden
+❌ Failed to hash copied file: %s	❌ Hash der kopierten Datei konnte nicht berechnet werden: %s
+❌ Failed to hash file (staging phase): %s	❌ Hash der Datei konnte nicht berechnet werden (Vorbereitung): %s
+❌ Failed to hash file before commit: %s	❌ Hash der Datei konnte vor dem Festschreiben nicht berechnet werden: %s
+❌ Failed to hash file: %s	❌ Hash der Datei konnte nicht berechnet werden: %s
+❌ Failed to move files to timestamped directory: %s	❌ Dateien konnten nicht in den Ordner mit Zeitstempel verschoben werden: %s
+❌ Failed to reload %s after adding new settings	❌ %s konnte nach dem Hinzufügen der neuen Einstellungen nicht neu geladen werden
+❌ Failed to reload %s with %s="%s"	❌ %s konnte mit %s="%s" nicht neu geladen werden
+❌ Failed to remove TEST_TRIGGER_FILE	❌ TEST_TRIGGER_FILE konnte nicht entfernt werden
+❌ Failed to remove backup working file: %s	❌ Arbeitsdatei des Backups konnte nicht entfernt werden: %s
+❌ Failed to remove leftover backup file: %s	❌ Übrig gebliebene Backup-Datei konnte nicht entfernt werden: %s
+❌ Failed to remove unencrypted file: %s	❌ Unverschlüsselte Datei konnte nicht entfernt werden: %s
+❌ Failed to remove: %s	❌ Entfernen fehlgeschlagen: %s
+❌ Failed to resolve path: %s	❌ Pfad konnte nicht aufgelöst werden: %s
+❌ Failed to save the private key to %s. Exiting.	❌ Der private Schlüssel konnte nicht in %s gespeichert werden. Abbruch.
+❌ Failed to set ownership on %s	❌ Besitzer von %s konnte nicht gesetzt werden
+❌ Failed to set permissions on %s	❌ Rechte für %s konnten nicht gesetzt werden
+❌ Failed to set timestamp on %s	❌ Zeitstempel von %s konnte nicht gesetzt werden
+❌ Failed to set up inotify access for %s	❌ inotify-Zugriff für %s konnte nicht eingerichtet werden
+❌ Failed to write %s	❌ %s konnte nicht geschrieben werden
+❌ Failed writing hash entry for: %s	❌ Hash-Eintrag konnte nicht geschrieben werden für: %s
+❌ File changed since stabilization: %s	❌ Datei seit dem Stabilisieren geändert: %s
+❌ File disappeared: %s	❌ Datei verschwunden: %s
+❌ File missing before commit: %s	❌ Datei fehlt vor dem Festschreiben: %s
+❌ File missing in snapshot before copy: %s	❌ Datei des Snapshots fehlt vor dem Kopieren: %s
+❌ File never appeared: %s	❌ Datei ist nie erschienen: %s
+❌ Files did not stabilize in time	❌ Dateien kamen nicht rechtzeitig zur Ruhe
+❌ Files in %s did not settle before compression	❌ Dateien in %s kamen vor dem Komprimieren nicht zur Ruhe
+❌ Files kept changing during the backup, giving up after %s restarts	❌ Dateien änderten sich während des Backups ständig, Abbruch nach %s Neustarts
+❌ Final SSH connection test failed. Exiting.	❌ Abschließender SSH-Verbindungstest fehlgeschlagen. Abbruch.
+❌ GPG decryption failed for verification	❌ Entschlüsseln mit GPG zur Prüfung fehlgeschlagen
+❌ GPG encrypt+sign failed for backup artifacts using fingerprint: %s	❌ Verschlüsseln+Signieren der Backup-Dateien mit GPG fehlgeschlagen, Fingerabdruck: %s
+❌ GPG key directory %s does not exist. Exiting.	❌ GPG-Schlüsselordner %s existiert nicht. Abbruch.
+❌ GPG key generation failed.	❌ Erzeugung des GPG-Schlüssels fehlgeschlagen.
+❌ GPG key import failed.	❌ Import des GPG-Schlüssels fehlgeschlagen.
+❌ GPG key with fingerprint not found: %s	❌ GPG-Schlüssel mit diesem Fingerabdruck nicht gefunden: %s
+❌ GPG private key export to %s failed.	❌ Export des privaten GPG-Schlüssels nach %s fehlgeschlagen.
+❌ GPG recipient %s not found. Exiting.	❌ GPG-Empfänger %s nicht gefunden. Abbruch.
+❌ GPG_FINGERPRINT in config (%s) isn't the fingerprint of a key matching %s in %s's keyring. Fix it in %s (or empty it to have it filled in).	❌ GPG_FINGERPRINT in config (%s) ist nicht der Fingerabdruck eines Schlüssels zu %s im Schlüsselbund von %s. Korrigieren Sie ihn in %s (oder leeren Sie ihn, damit er ausgefüllt wird).
+❌ GPG_FINGERPRINT is not set	❌ GPG_FINGERPRINT ist nicht gesetzt
+❌ GPG_PASSPHRASE_FILE missing or not owned by %s: %s	❌ GPG_PASSPHRASE_FILE fehlt oder gehört nicht %s: %s
+❌ GPG_PASSPHRASE_FILE must have mode 600: %s	❌ GPG_PASSPHRASE_FILE muss Modus 600 haben: %s
+❌ Generated helper has a syntax error — not installed	❌ Das erzeugte Hilfsprogramm hat einen Syntaxfehler — nicht installiert
+❌ Generated service script has a syntax error — not installed	❌ Das erzeugte Dienst-Skript hat einen Syntaxfehler — nicht installiert
+❌ Global sudoers validation failed — reverting changes	❌ Prüfung der gesamten sudoers fehlgeschlagen — Änderungen werden rückgängig gemacht
+❌ Hash mismatch after rsync:	❌ Hash stimmt nach rsync nicht überein:
+❌ Installed safe folder not allowed: %s. Run the installer in a terminal.	❌ Installierter sicherer Ordner nicht erlaubt: %s. Starten Sie den Installer im Terminal.
+❌ Installing Server B's backup gate failed. Install it there by hand: copy server-b-install.sh and %s to Server B and run, as %s: ./server-b-install.sh server-a-key.pub	❌ Installation des Backup-Gates von Server B fehlgeschlagen. Installieren Sie es dort von Hand: Kopieren Sie server-b-install.sh und %s auf Server B und führen Sie als %s aus: ./server-b-install.sh server-a-key.pub
+❌ Installing Server B's backup gate failed. Install it there by hand: copy server-b-install.sh and server-a-key.pub from %s to Server B and run there, as %s: bash server-b-install.sh server-a-key.pub	❌ Installation des Backup-Gates von Server B fehlgeschlagen. Installieren Sie es dort von Hand: Kopieren Sie server-b-install.sh und server-a-key.pub aus %s auf Server B und führen Sie dort als %s aus: bash server-b-install.sh server-a-key.pub
+❌ Insufficient disk space in %s	❌ Nicht genug Speicherplatz in %s
+❌ Insufficient disk space in ATTACHED_VOLUME	❌ Nicht genug Speicherplatz in ATTACHED_VOLUME
+❌ Invalid safe_delete usage	❌ Ungültige Verwendung von safe_delete
+❌ LND folder does not exist: %s	❌ LND-Ordner existiert nicht: %s
+❌ LND refused the wallet (a seed word, the seed passphrase or the password; LND's reason is shown above, not logged)	❌ LND hat die Wallet abgelehnt (Seed-Wort, Seed-Passphrase oder Passwort; der Grund von LND steht oben, nicht im Protokoll)
+❌ LND seed backup step not completed. Please ensure that the seed is securely stored before proceeding.	❌ Schritt zur Sicherung des LND-Seeds nicht abgeschlossen. Bewahren Sie den Seed sicher auf, bevor Sie fortfahren.
+❌ LND_BACKUP_HELPER_PATH must be an absolute path: %s	❌ LND_BACKUP_HELPER_PATH muss ein absoluter Pfad sein: %s
+❌ Max attempts reached. Aborting backup.	❌ Höchstzahl an Versuchen erreicht. Backup wird abgebrochen.
+❌ Milestones still failing, keeping milestones_pending	❌ Meilensteine schlagen weiter fehl, milestones_pending bleibt bestehen
+❌ Missing %s/%s	❌ %s/%s fehlt
+❌ Missing %s/LICENSE	❌ %s/LICENSE fehlt
+❌ Missing file during verification: %s	❌ Datei fehlt bei der Prüfung: %s
+❌ Missing original hash for %s	❌ Ursprünglicher Hash fehlt für %s
+❌ Missing staged hash for: %s	❌ Vorbereiteter Hash fehlt für: %s
+❌ Mounting failed. Please check the /etc/fstab file for errors.	❌ Einhängen fehlgeschlagen. Prüfen Sie die Datei /etc/fstab auf Fehler.
+❌ No GPG key content received. Aborting.	❌ Kein GPG-Schlüsselinhalt empfangen. Abbruch.
+❌ No channel.backup opens with this wallet, so no channels can be restored.	❌ Kein channel.backup lässt sich mit dieser Wallet öffnen, also sind keine Kanäle wiederherstellbar.
+❌ No device found with UUID %s	❌ Kein Gerät mit UUID %s gefunden
+❌ No fingerprint found for GPG key %s	❌ Kein Fingerabdruck für GPG-Schlüssel %s gefunden
+❌ No key data received. Exiting.	❌ Keine Schlüsseldaten empfangen. Abbruch.
+❌ No key was entered. Skipping manual key addition.	❌ Kein Schlüssel eingegeben. Manuelles Hinzufügen wird übersprungen.
+❌ No public key found in %s. Exiting.	❌ Kein öffentlicher Schlüssel in %s gefunden. Abbruch.
+❌ No safe folders in this script. Rerun rsync_gpg_backup.sh.	❌ Keine sicheren Ordner in diesem Skript. Führen Sie rsync_gpg_backup.sh erneut aus.
+❌ No terminal to confirm the safe folders, and no installed list to reuse. Run the installer in a terminal.	❌ Kein Terminal zum Bestätigen der sicheren Ordner, keine installierte Liste. Installer im Terminal starten.
+❌ Not allowed: %s	❌ Nicht erlaubt: %s
+❌ Refusing delete: the attached volume (UUID %s) is not mounted at %s	❌ Löschen verweigert: Das angehängte Volume (UUID %s) ist nicht unter %s eingehängt
+❌ Refusing delete: the attached volume is not mounted at %s	❌ Löschen verweigert: Das angehängte Volume ist nicht unter %s eingehängt
+❌ Refusing to delete %s: only half-copied safety backups (pre-recovery_*.gpg.tmp) in %s	❌ Löschen von %s verweigert: nur halb kopierte Sicherheitskopien (pre-recovery_*.gpg.tmp) in %s
+❌ Refusing to delete another run's work folder: %s	❌ Löschen des temporären Ordners eines anderen Laufs verweigert: %s
+❌ Refusing to delete outside safe bases: %s	❌ Löschen außerhalb der sicheren Ordner verweigert: %s
+❌ Refusing to delete outside this script's work folders: %s	❌ Löschen außerhalb der temporären Ordner dieses Skripts verweigert: %s
+❌ Refusing to delete: this run's work folders are not known	❌ Löschen verweigert: Die temporären Ordner dieses Laufs sind nicht bekannt
+❌ Refusing to operate on invalid ATTACHED_VOLUME: %s	❌ Ungültiges ATTACHED_VOLUME, Vorgang verweigert: %s
+❌ Remote copy still failing, keeping remote_pending	❌ Remote-Kopie schlägt weiter fehl, remote_pending bleibt bestehen
+❌ Rerun rsync_gpg_backup.sh and include it in the safe folders	❌ Führen Sie rsync_gpg_backup.sh erneut aus und nehmen Sie den Pfad in die sicheren Ordner auf
+❌ Rerun the installer and include it in the safe folders	❌ Starten Sie den Installer erneut und nehmen Sie den Pfad in die sicheren Ordner auf
+❌ Rsync failed to %s. Continuing backup process.	❌ rsync nach %s fehlgeschlagen. Backup wird fortgesetzt.
+❌ Run lnd-wallet.sh as root: sudo %s %s	❌ Starten Sie lnd-wallet.sh als root: sudo %s %s
+❌ Run this as the Server B backup user, not as root.	❌ Führen Sie dies als Backup-Benutzer von Server B aus, nicht als root.
+❌ Run this from your working folder, not from %s	❌ Führen Sie dies in Ihrem Arbeitsordner aus, nicht in %s
+❌ SSH connection failed. Proceeding with SSH key setup...	❌ SSH-Verbindung fehlgeschlagen. SSH-Schlüssel wird eingerichtet...
+❌ SSH key generation failed. Exiting.	❌ Erzeugung des SSH-Schlüssels fehlgeschlagen. Abbruch.
+❌ SSH[%s] failed: %s	❌ SSH[%s] fehlgeschlagen: %s
+❌ Safe folders not confirmed	❌ Sichere Ordner nicht bestätigt
+❌ Server A's public key (%s) isn't there yet. Run setup first (lnd-manager: /setup):	❌ Der öffentliche Schlüssel von Server A (%s) fehlt. Führen Sie zuerst das Setup aus (lnd-manager: /setup):
+❌ Server B answered without its backup gate. Install it there: server-b-install.sh	❌ Server B hat ohne sein Backup-Gate geantwortet. Installieren Sie es dort: server-b-install.sh
+❌ Server B's backup gate didn't answer	❌ Das Backup-Gate auf Server B hat nicht geantwortet
+❌ Server B's checksum doesn't match this copy	❌ Die Prüfsumme von Server B passt nicht zu dieser Kopie
+❌ Server B's host fingerprint was not confirmed. Nothing was saved.	❌ Der Host-Fingerabdruck von Server B wurde nicht bestätigt. Es wurde nichts gespeichert.
+❌ Set GPG_FINGERPRINT in %s to the one the backups should use, or delete the others (sudo -u %s gpg --delete-secret-and-public-key <fingerprint>), then rerun setup_script.sh.	❌ Setzen Sie GPG_FINGERPRINT in %s auf den, den die Backups nutzen sollen, oder löschen Sie die anderen (sudo -u %s gpg --delete-secret-and-public-key <Fingerabdruck>), und führen Sie dann setup_script.sh erneut aus.
+❌ Setting GPG key trust failed.	❌ Setzen der Vertrauensstufe des GPG-Schlüssels fehlgeschlagen.
+❌ Snapshot file disappeared before rsync: %s	❌ Datei des Snapshots vor rsync verschwunden: %s
+❌ Stopped: ATTACHED_VOLUME stays %s. Set it outside home folders to go on.	❌ Abgebrochen: ATTACHED_VOLUME bleibt %s. Setzen Sie es außerhalb von Home-Ordnern, um fortzufahren.
+❌ Stopped: the mount stays at %s	❌ Abgebrochen: Der Einhängepunkt bleibt %s
+❌ Temp dir missing right before copy: %s	❌ Temporärer Ordner fehlt direkt vor dem Kopieren: %s
+❌ Temp dir vanished before processing file: %s	❌ Temporärer Ordner verschwand vor der Verarbeitung der Datei: %s
+❌ The attached volume (UUID %s) is not mounted at %s	❌ Das angehängte Volume (UUID %s) ist nicht unter %s eingehängt
+❌ The backup installer failed. Rerun %s by hand.	❌ Der Backup-Installer ist fehlgeschlagen. Führen Sie %s erneut von Hand aus.
+❌ The backup service installer is missing or not executable: %s	❌ Der Installer des Backup-Dienstes fehlt oder ist nicht ausführbar: %s
+❌ The private key for %s isn't in %s's keyring; the service needs it to sign backups.	❌ Der private Schlüssel für %s ist nicht im Schlüsselbund von %s; der Dienst braucht ihn zum Signieren der Backups.
+❌ Timeout waiting for files to settle (%ss exceeded)	❌ Zeitüberschreitung: Dateien kamen nicht zur Ruhe (%ss überschritten)
+❌ Unknown option: %s	❌ Unbekannte Option: %s
+❌ Unknown script: %s (user, bitcoind, import, tower, dashboard or all)	❌ Unbekanntes Skript: %s (user, bitcoind, import, tower, dashboard oder all)
+❌ Unsafe LND_TMP_BACKUP — skipping cleanup: %s	❌ Unsicheres LND_TMP_BACKUP — Aufräumen übersprungen: %s
+❌ Unsafe TMP_BACKUP_DIR	❌ Unsicheres TMP_BACKUP_DIR
+❌ Unsafe path: %s	❌ Unsicherer Pfad: %s
+❌ Unsafe path: empty target	❌ Unsicherer Pfad: leeres Ziel
+❌ btcpay-up.sh failed. Run %s/btcpay-up.sh by hand.	❌ btcpay-up.sh ist fehlgeschlagen. Führen Sie %s/btcpay-up.sh von Hand aus.
+❌ btcpay-up.sh failed: run %s/btcpay-up.sh by hand	❌ btcpay-up.sh fehlgeschlagen: Führen Sie %s/btcpay-up.sh von Hand aus
+❌ chain-tower.sh needs a terminal for its confirmations.	❌ chain-tower.sh braucht ein Terminal für seine Bestätigungen.
+❌ commit_file_hashes failed	❌ commit_file_hashes fehlgeschlagen
+❌ handle_event failed for: %s	❌ handle_event fehlgeschlagen für: %s
+❌ install-scripts.sh failed	❌ install-scripts.sh ist fehlgeschlagen
+❌ install-scripts.sh failed: the installed copies are not up to date	❌ install-scripts.sh fehlgeschlagen: Die installierten Kopien sind nicht aktuell
+❌ lnd-wallet.sh needs a terminal for its confirmation. Run it in a terminal.	❌ lnd-wallet.sh braucht ein Terminal für die Bestätigung. Starten Sie es in einem Terminal.
+❌ milestones_pending retry failed	❌ Neuer Versuch für milestones_pending fehlgeschlagen
+❌ remote_pending retry failed	❌ Neuer Versuch für remote_pending fehlgeschlagen
+❌ restarting %s: %s	❌ Fehler beim Neustart (%s): %s
+❌ starting %s: %s	❌ Fehler beim Starten (%s): %s
+❌ stopping %s: %s	❌ Fehler beim Stoppen (%s): %s
+❌ systemctl daemon-reload failed	❌ systemctl daemon-reload fehlgeschlagen
+❌ update %s: exit code %d	❌ Update %s: Exit-Code %d
+❌ visudo validation failed — sudoers not updated	❌ Prüfung durch visudo fehlgeschlagen — sudoers nicht geändert
+❗ Make sure to save the private key in a secure location later.	❗ Bewahren Sie den privaten Schlüssel später unbedingt an einem sicheren Ort auf.
+❗ Please type 'yes' or 'y' only when you've saved the key securely.	❗ Geben Sie 'yes' oder 'y' erst ein, wenn Sie den Schlüssel sicher aufbewahrt haben.
+➕ Adding the watchtower %s...	➕ Watchtower %s wird hinzugefügt...
+➖ optional: the watchtower and what it needs. Once one of them is set up, all count.	➖ optional: der Watchtower und was er braucht. Sobald einer davon eingerichtet ist, zählen alle.
+➡️ Copied: %s → %s	➡️ Kopiert: %s → %s
+🌀 Detected change in: %s	🌀 Änderung erkannt in: %s
+🌀 Relevant file change detected: %s (count=%s)	🌀 Relevante Dateiänderung erkannt: %s (count=%s)
+🎉 RSYNC STAGE CONFIRMED SUCCESS	🎉 RSYNC-SCHRITT ERFOLGREICH BESTÄTIGT
+💓 Heartbeat alive	💓 Lebenszeichen: aktiv
+💡 Would you like to manually paste the public SSH key now? (y/n): 	💡 Möchten Sie den öffentlichen SSH-Schlüssel jetzt von Hand einfügen? (y/n): 
+💾 Making the safety backup of the current LND volume (%s)...	💾 Sicherheitskopie des aktuellen LND-Volumes wird erstellt (%s)...
+📁 Created %s for %s	📁 %s für %s angelegt
+📁 Creating TMP_BACKUP_DIR: %s	📁 TMP_BACKUP_DIR wird angelegt: %s
+📁 Creating mount point directory: %s	📁 Ordner für den Einhängepunkt wird angelegt: %s
+📁 Creating test directory: %s	📁 Testordner wird angelegt: %s
+📁 Mount point %s already exists.	📁 Einhängepunkt %s existiert bereits.
+📂 %s is already mounted at %s	📂 %s ist bereits unter %s eingehängt
+📂 Snapshot contains %s files:	📂 Snapshot enthält %s Dateien:
+📄 Creating rsync-folder-mirror script at %s...	📄 Skript rsync-folder-mirror wird unter %s erstellt...
+📋 Here is your private key (ensure you save it in a secure location):	📋 Hier ist Ihr privater Schlüssel (bewahren Sie ihn an einem sicheren Ort auf):
+📋 Press ENTER, then paste the public SSH key. Press CTRL+D when finished:	📋 Drücken Sie ENTER und fügen Sie dann den öffentlichen SSH-Schlüssel ein. Zum Abschluss CTRL+D drücken:
+📋 Press ENTER, then paste your SSH private key. Press CTRL+D when finished:	📋 Drücken Sie ENTER und fügen Sie dann Ihren privaten SSH-Schlüssel ein. Zum Abschluss CTRL+D drücken:
+📌 Created %s milestone: %s	📌 Meilenstein (%s) erstellt: %s
+📌 Starting milestone capture phase...	📌 Meilensteine werden erfasst...
+📝 /etc/fstab: UUID=%s now mounts at %s	📝 /etc/fstab: UUID=%s wird jetzt unter %s eingehängt
+📝 /etc/fstab: mount options for %s are now %s (were %s)	📝 /etc/fstab: Einhängeoptionen für %s sind jetzt %s (vorher %s)
+📝 Adding entry for UUID %s to /etc/fstab...	📝 Eintrag für UUID %s wird in /etc/fstab ergänzt...
+📡 Running real inotifywait stream...	📡 Echter inotifywait-Datenstrom läuft...
+📡 Starting file watcher...	📡 Dateiüberwachung wird gestartet...
+📡 Starting inotify watcher...	📡 inotify-Überwachung wird gestartet...
+📡 Starting watcher stream...	📡 Datenstrom der Überwachung wird gestartet...
+📤 Copying SSH public key to remote server...	📤 Öffentlicher SSH-Schlüssel wird auf den entfernten Server kopiert...
+📤 Pass 1 of 2: copying while BTCPay runs...	📤 Durchgang 1 von 2: Kopieren, während BTCPay läuft...
+📤 Pass 2 of 2: copying the rest with BTCPay stopped...	📤 Durchgang 2 von 2: Kopieren des Rests bei gestopptem BTCPay...
+📥 Bitcoin Core %s (%s)	📥 Bitcoin Core %s (%s)
+📥 LND %s (%s), %s signature files	📥 LND %s (%s), %s Signaturdateien
+📦 'jq' not found, installing...	📦 'jq' nicht gefunden, wird installiert...
+📦 'tmux' not found, installing (it keeps the script running if SSH drops)...	📦 'tmux' nicht gefunden, wird installiert (es hält das Skript am Laufen, wenn SSH abbricht)...
+📦 Backup compressed successfully into: %s	📦 Backup erfolgreich komprimiert in: %s
+📦 Copying snapshot files to temporary directory...	📦 Dateien des Snapshots werden in den temporären Ordner kopiert...
+📦 Extracting verification bundle...	📦 Prüfpaket wird entpackt...
+📦 Install or update the backup service now? (y/n): 	📦 Backup-Dienst jetzt installieren oder aktualisieren? (y/n): 
+📦 Installing %s...	📦 %s wird installiert...
+📦 Installing the scripts and config root-owned into %s...	📦 Skripte und config werden nach %s installiert, mit root als Besitzer...
+📦 Latest in snapshot: %s	📦 Neuestes im Snapshot: %s
+📦 Moving the copy in (across disks this takes a while)...	📦 Die Kopie wird an ihren Platz verschoben (zwischen Platten dauert das eine Weile)...
+📦 Rsync encrypted backup to %s...	📦 Verschlüsseltes Backup wird per rsync nach %s kopiert...
+📦 Sending %s to Server B's backup gate...	📦 %s wird an das Backup-Gate auf Server B gesendet...
+📦 Using LND image: %s	📦 Verwendetes LND-Image: %s
+🔁 Backup attempt %s of %s	🔁 Backup-Versuch %s von %s
+🔁 Restarting backup due to inconsistent snapshot	🔁 Backup wird wegen inkonsistentem Snapshot neu gestartet
+🔁 Restarting backup to include newest channel backup	🔁 Backup wird neu gestartet, um das neueste Kanal-Backup einzuschließen
+🔁 Retrying milestones from %s	🔁 Neuer Versuch der Meilensteine aus %s
+🔁 Retrying remote copy of %s	🔁 Neuer Versuch der Remote-Kopie von %s
+🔁 Starting the backup again (restart %s of %s)	🔁 Backup wird neu gestartet (Neustart %s von %s)
+🔄 Change detected in %s	🔄 Änderung erkannt in %s
+🔄 Restarting %s...	🔄 %s wird neu gestartet...
+🔄 Restarting lnd-watchtower too (it loses bitcoind during the restart)...	🔄 lnd-watchtower wird ebenfalls neu gestartet (er verliert bitcoind während des Neustarts)...
+🔄 Updating Server B's backup gate for %s...	🔄 Backup-Gate von Server B für %s wird aktualisiert...
+🔍 Latest on disk: %s	🔍 Neuestes auf dem Datenträger: %s
+🔍 Proceeding to post-rsync validation	🔍 Weiter mit der Prüfung nach rsync
+🔍 SSH[%s] took %ss (rc=%s)	🔍 SSH[%s] dauerte %ss (rc=%s)
+🔍 Snapshot fingerprint: %s	🔍 Fingerabdruck des Snapshots: %s
+🔍 Testing if SSH access already works...	🔍 Es wird geprüft, ob der SSH-Zugang schon funktioniert...
+🔍 Verifying checksum integrity...	🔍 Integrität wird per Prüfsumme geprüft...
+🔍 Verifying copy stability...	🔍 Stabilität der Kopie wird geprüft...
+🔍 Verifying final hash: %s	🔍 Endgültiger Hash wird geprüft: %s
+🔎 Checking this server and Server B before anything is changed...	🔎 Dieser Server und Server B werden geprüft, bevor etwas geändert wird...
+🔎 Fetching Server B's host keys from %s, port %s...	🔎 Host-Schlüssel von Server B werden von %s, Port %s abgerufen...
+🔎 Fetching host fingerprints...	🔎 Host-Fingerabdrücke werden abgerufen...
+🔎 Final pre-rsync validation: ensuring all snapshot files still exist...	🔎 Letzte Prüfung vor rsync: Sind alle Dateien des Snapshots noch vorhanden...
+🔎 Looking for safety backups...	🔎 Suche nach Sicherheitskopien...
+🔎 Looking for the latest backup on the attached volume and Server B...	🔎 Suche nach dem neuesten Backup auf dem angehängten Volume und auf Server B...
+🔎 Looking up the latest Bitcoin Core release...	🔎 Suche nach der neuesten Version von Bitcoin Core...
+🔎 Looking up the latest LND release...	🔎 Suche nach der neuesten LND-Version...
+🔎 Running fingerprint reconciliation...	🔎 Abgleich per Fingerabdruck läuft...
+🔎 Scanning for old funds. This can take minutes to hours, depending on the seed's age.	🔎 Scan nach alten Guthaben läuft. Das kann je nach Alter des Seeds Minuten bis Stunden dauern.
+🔐 Compressing Folder into One File...	🔐 Ordner wird in eine Datei komprimiert...
+🔐 Encrypting backup with GPG...	🔐 Backup wird mit GPG verschlüsselt...
+🔐 GPG key for %s already exists.	🔐 GPG-Schlüssel für %s existiert bereits.
+🔐 GPG private key not found for %s.	🔐 Kein privater GPG-Schlüssel für %s gefunden.
+🔐 Getting the builders' keys (github.com/bitcoin-core/guix.sigs, builder-keys only)...	🔐 Schlüssel der Builder werden geholt (github.com/bitcoin-core/guix.sigs, nur builder-keys)...
+🔐 Please paste your ASCII-armored GPG private key below.	🔐 Fügen Sie unten Ihren privaten GPG-Schlüssel im ASCII-Armor-Format ein.
+🔐 Setting up SSH key for %s...	🔐 SSH-Schlüssel für %s wird eingerichtet...
+🔐 Using loopback mode for GPG (passphrase file provided)	🔐 GPG im Loopback-Modus (Passphrase-Datei angegeben)
+🔑 Added rx ACL for %s on %s	🔑 rx-ACL für %s auf %s hinzugefügt
+🔑 Added x ACL for %s on %s	🔑 x-ACL für %s auf %s hinzugefügt
+🔑 SSH key already exists at %s. Skipping generation.	🔑 SSH-Schlüssel existiert bereits unter %s. Erzeugung wird übersprungen.
+🔑 The tower's seed. Write it down: it is the tower's identity (its public key). Without it,	🔑 Der Seed des Towers. Notieren Sie ihn: Er ist seine Identität (sein öffentlicher Schlüssel). Ohne ihn
+🔒 %s disabled until the script finishes	🔒 %s deaktiviert, bis das Skript fertig ist
+🔒 Function lock acquired	🔒 Funktionssperre gesetzt
+🔒 Global lock acquired (PID %s)	🔒 Globale Sperre gesetzt (PID %s)
+🔒 Keeping the wallet safety backups in %s	🔒 Die Sicherheitskopien der Wallet in %s bleiben erhalten
+🔓 Decrypting encrypted backup for verification...	🔓 Verschlüsseltes Backup wird zur Prüfung entschlüsselt...
+🔓 No GPG passphrase file provided (assuming unprotected key or agent)	🔓 Keine GPG-Passphrase-Datei angegeben (vermutlich ungeschützter Schlüssel oder Agent)
+🔓 Releasing global lock on %s	🔓 Globale Sperre auf %s wird freigegeben
+🔧 Reinstalling the backup service for the new volume...	🔧 Backup-Dienst wird für das neue Volume neu installiert...
+🗑️ Removed old daily milestone: %s	🗑️ Alter täglicher Meilenstein entfernt: %s
+🗑️ Removed old monthly milestone: %s	🗑️ Alter monatlicher Meilenstein entfernt: %s
+🗑️ Safely removed: %s	🗑️ Sicher entfernt: %s
+🚀 Changes confirmed → performing backup...	🚀 Änderungen bestätigt → Backup wird erstellt...
+🚀 Safety backup put back.	🚀 Sicherheitskopie zurückgespielt.
+🚀 Starting BTCPay again...	🚀 BTCPay wird wieder gestartet...
+🚀 Starting BTCPay with btcpay-up.sh...	🚀 BTCPay wird mit btcpay-up.sh gestartet...
+🚀 Starting LND wallet script, option %s...	🚀 LND-Wallet-Skript startet, Option %s...
+🚀 Starting bitcoind...	🚀 bitcoind wird gestartet...
+🚀 Starting hash changer	🚀 Hash-Changer wird gestartet
+🚀 Starting temporary LND container...	🚀 Temporärer LND-Container wird gestartet...
+🚀 Starting watcher...	🚀 Überwachung wird gestartet...
+🚀 Wallet script completed successfully.	🚀 Wallet-Skript erfolgreich abgeschlossen.
+🚨 COPY TO SERVER B FAILED AFTER ALL RETRIES (exit code: %s)	🚨 KOPIE AUF SERVER B NACH ALLEN VERSUCHEN FEHLGESCHLAGEN (Exit-Code: %s)
+🚨 Change detected via fingerprint mismatch	🚨 Änderung erkannt: Fingerabdruck weicht ab
+🚨 Marked for remote retry in %s: %s	🚨 Für erneute Remote-Kopie vorgemerkt in %s: %s
+🚨 Remote copy failed. Continuing with the attached-volume copy only.	🚨 Remote-Kopie fehlgeschlagen. Weiter nur mit der Kopie auf dem angehängten Volume.
+🛑 Backup service stopped (setup's installer step starts it again)	🛑 Backup-Dienst gestoppt (der Installer-Schritt des Setups startet ihn wieder)
+🛑 Stopping BTCPay (btcpay-down.sh)...	🛑 BTCPay wird gestoppt (btcpay-down.sh)...
+🛑 Stopping all BTCPay Server containers using btcpay-down.sh...	🛑 Alle Container von BTCPay Server werden mit btcpay-down.sh gestoppt...
+🛑 Stopping and removing the temporary LND container '%s'...	🛑 Der temporäre LND-Container '%s' wird gestoppt und entfernt...
+🛑 Stopping bitcoind...	🛑 bitcoind wird gestoppt...
+🛑 Stopping the backup service (it would otherwise back up the new wallet and rotate the old one's backups out)...	🛑 Backup-Dienst wird gestoppt (sonst sichert er die neue Wallet und rotiert die Backups der alten hinaus)...
+🛠️ Created timestamped backup directory: %s	🛠️ Backup-Ordner mit Zeitstempel angelegt: %s
+🛠️ Generating new GPG key...	🛠️ Neuer GPG-Schlüssel wird erzeugt...
+🛠️ Moving files to timestamped directory: %s	🛠️ Dateien werden in den Ordner mit Zeitstempel verschoben: %s
+🟢 Reconciliation loop started (PID: %s)	🟢 Abgleichsschleife gestartet (PID: %s)
+🟢 Watcher stable for %ss → resetting restart counter	🟢 Überwachung seit %ss stabil → Neustartzähler wird zurückgesetzt
+🟢 start_hash_changer running in background with PID: %s	🟢 start_hash_changer läuft im Hintergrund mit PID: %s
+🧪 Final test of SSH connection...	🧪 Abschließender Test der SSH-Verbindung...
+🧪 Loaded test config: %s	🧪 Testkonfiguration geladen: %s
+🧪 Manual trigger detected	🧪 Manueller Auslöser erkannt
+🧪 Test mode watcher started	🧪 Überwachung im Testmodus gestartet
+🧹 Cleaning local milestone retention...	🧹 Lokale Meilensteine werden nach Aufbewahrungsregel aufgeräumt...
+🧹 Clearing the backups in %s...	🧹 Die Backups in %s werden gelöscht...
+🧹 Deleting the old LND volume '%s'...	🧹 Das alte LND-Volume '%s' wird gelöscht...
+🧹 Local milestone cleanup complete	🧹 Aufräumen der lokalen Meilensteine abgeschlossen
+🧹 Old encrypted backups cleaned in %s. Retained last 10 backups.	🧹 Alte verschlüsselte Backups in %s aufgeräumt. Die 10 neuesten Backups wurden behalten.
+🧹 Removed %s work folder(s) left by an earlier run that didn't finish	🧹 Temporäre Ordner eines früheren, nicht beendeten Laufs entfernt: %s
+🧹 Removed the old mount point %s	🧹 Alter Einhängepunkt %s entfernt
+🧹 Safely cleaned temporary backup directory: %s	🧹 Temporärer Backup-Ordner sicher geleert: %s
+🧹 Starting safer backup rotation in %s...	🧹 Sichere Rotation der Backups in %s beginnt...
+🧹 Unencrypted backup copies removed from %s	🧹 Unverschlüsselte Backup-Kopien aus %s entfernt
+🧹 Unencrypted tar.gz removed: %s	🧹 Unverschlüsseltes tar.gz entfernt: %s
+🧾 Captured source file hashes (post-stabilization)	🧾 Hashes der Quelldateien erfasst (nach dem Stabilisieren)
+🧾 Cleared remote_pending	🧾 remote_pending gelöscht
+🧾 Hash commit phase complete	🧾 Festschreiben der Hashes abgeschlossen
+🧾 Loaded staged hashes into COPY_VERIFY_HASHES	🧾 Vorbereitete Hashes in COPY_VERIFY_HASHES geladen
+🧾 Starting hash commit phase	🧾 Festschreiben der Hashes beginnt
+🧾 Stored source file hashes captured post-stabilization to %s	🧾 Nach dem Stabilisieren erfasste Hashes der Quelldateien gespeichert in %s
+🧾 Stored updated file hashes	🧾 Aktualisierte Datei-Hashes gespeichert
+🧾 Updated stored snapshot fingerprint	🧾 Gespeicherter Fingerabdruck des Snapshots aktualisiert

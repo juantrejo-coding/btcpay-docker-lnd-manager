@@ -1,0 +1,172 @@
+# btcpay-docker-lnd-manager config: keep this file in the same folder as setup_script.sh,
+# rsync_gpg_backup.sh, lnd-wallet.sh and lnd-manager.py. They load it from their own folder.
+
+# Language of the scripts, the dashboards and the backup log: en (English), or any language
+# with a translation in locale/ (es: Español). Left empty, setup asks.
+UI_LANGUAGE=""
+
+# Log file location
+LIGHTNING_BACKUP_LOG_FILE="/var/log/backup_monitor.log"
+
+# Status file the service writes for the dashboard (lnd-manager.py). The service's unit creates
+# /var/lib/rsync_gpg_backup for it. Set to "" to turn the status file off.
+STATUS_FILE="/var/lib/rsync_gpg_backup/status"
+
+# Users and home directories
+MAIN_USER=""
+MAIN_USER_HOME="/home/${MAIN_USER}"
+# Your working folder: edit config and run setup_script.sh here. install-scripts.sh copies the
+# scripts and config from here to BACKUP_INSTALL_DIR, root-owned, and root runs only those.
+# setup_script.sh sets BACKUP_SCRIPTS_FOLDER to the folder it runs from.
+BACKUP_SCRIPTS_FOLDER="${MAIN_USER_HOME}/btcpay-docker-lnd-manager"
+BACKUP_INSTALL_DIR="/usr/local/lib/btcpay-docker-lnd-manager"
+#LOCK_FILE="/opt/plugins/backup/poetry.lock"
+#CHECKSUM_FILE="/root/.cache/poetry_lock_checksum"
+SERVER_A_USER=""
+SERVER_A_USER_HOME="/home/${SERVER_A_USER}"
+
+# The user on Server B that holds the backups (Server A's key reaches only this account)
+SERVER_B_USER=""
+SERVER_B_USER_HOME="/home/${SERVER_B_USER}"
+# REMOTE_USER is SERVER_B_USER's older name, kept for older scripts. Set SERVER_B_USER, not this.
+REMOTE_USER="$SERVER_B_USER"
+REMOTE_SAFE_ROOT="$SERVER_B_USER_HOME"
+
+TMP_BACKUP_DIR="${SERVER_A_USER_HOME}/tmp_backups"
+DOCKER_ROOT="/root/btcpayserver-docker"
+
+# Server A ssh key, in SERVER_A_USER's ~/.ssh. Left empty, setup_script.sh names it lnd_backup_ssh_key.
+KEY_FILENAME=""
+KEY_PATH="$SERVER_A_USER_HOME/.ssh/$KEY_FILENAME"
+PUB_KEY_FILE="$KEY_PATH.pub"
+
+# Remote server configuration
+# MAIN_USER, SERVER_A_USER, SERVER_B_USER, REMOTE_SERVER, REMOTE_SSH_PORT,
+# SERVER_B_KNOWN_HOST_FINGERPRINT and UUID can be left empty: setup_script.sh then asks for them
+# and saves the answers here (KEY_FILENAME and GPG_FINGERPRINT are filled in without asking).
+# A value set here is used as is.
+# Server B's hostname or IP
+REMOTE_SERVER=""
+# Server B's SSH host key fingerprint (SHA256:...). Left empty, setup_script.sh fetches it and asks
+# you to confirm it against Server B itself.
+SERVER_B_KNOWN_HOST_FINGERPRINT=""
+REMOTE_DIR="${SERVER_B_USER_HOME}/backup" # Directory on Server B for backups
+
+# Server B SSH port
+REMOTE_SSH_PORT=
+
+# Rsync log file
+RSYNC_LOG_FILE="/tmp/rsync_backup.log"
+
+# Wallet script: new wallet, wallet and channel recovery, undo
+LND_WALLET_SCRIPT="${BACKUP_INSTALL_DIR}/lnd-wallet.sh"
+
+# ATTACHED_VOLUME: an existing FILE_SYSTEM_TYPE filesystem (this project never formats disks).
+# Left empty, setup_script.sh lists the unused ones and asks which to use.
+UUID=""
+# The mount point: owned by root and outside any home folder, so no user can swap it for a
+# symlink while the disk isn't mounted. Only SECOND_BACKUP_DIR on it belongs to the backup user.
+ATTACHED_VOLUME="/srv/lnd-backups"
+SECOND_BACKUP_DIR="${ATTACHED_VOLUME}/lnd-backups"
+FILE_SYSTEM_TYPE="ext4"
+# nosuid,nodev,noexec: nothing on the backup disk can run as a program or act as a device
+MOUNT_OPTIONS="defaults,nosuid,nodev,noexec"
+DUMP=0
+PASS=2
+
+# Rsync and GPG backup method
+LND_DIR="/var/lib/docker/volumes/generated_lnd_bitcoin_datadir/_data"
+LND_BACKUP_ARCHIVE=${LND_DIR}/data/chain/bitcoin/mainnet/chan-backup-archives
+RSYNC_FOLDER_MIRROR_SYSTEMD_SCRIPT_PATH="/usr/local/bin/systemd-rsync_gpg_backup.sh"
+RSYNC_FOLDER_MIRROR_SCRIPT="${BACKUP_INSTALL_DIR}/rsync_gpg_backup.sh"
+RSYNC_BACKUP_SERVICE_NAME="rsync_gpg_backup.service"
+RSYNC_BACKUP_SERVICE_PATH="/etc/systemd/system/${RSYNC_BACKUP_SERVICE_NAME}"
+LND_BACKUP_HELPER_PATH="/usr/local/sbin/lnd-backup-helper"
+
+# GPG encrypted backups
+LOCK_FILE="${SERVER_A_USER_HOME}/lnd_backup.lock"
+FUNCTION_LOCK_FILE="${SERVER_A_USER_HOME}/lnd_backup_function.lock"
+REMOTE_BACKUP_LOCATION="${SERVER_B_USER_HOME}/encrypted_lnd_backups/"
+REMOTE_MILESTONE_PATH="${REMOTE_BACKUP_LOCATION}/milestones"
+SECOND_BACKUP_MILESTONE="${SECOND_BACKUP_DIR}/milestones"
+GPG_KEY_DIR="${SERVER_A_USER_HOME}/.gnupg"
+GPG_KEY_NAME="lnd-backup-key"
+GPG_KEY_PATH="${GPG_KEY_DIR}/${GPG_KEY_NAME}"
+GPG_RECIPIENT="${GPG_KEY_NAME}"
+# Left empty, setup_script.sh fills it in from the GPG key it sets up
+GPG_FINGERPRINT=""
+GPG_PASSPHRASE_FILE="" # Optional: file (mode 600) holding the GPG key passphrase. Leave empty for an unprotected key.
+BACKUP_METADATA_FOLDER="${SERVER_A_USER_HOME}/backup_metadata_folder"
+REMOTE_PENDING_FILE="${BACKUP_METADATA_FOLDER}/remote_pending"
+MILESTONES_PENDING_FILE="${BACKUP_METADATA_FOLDER}/milestones_pending"
+COMMIT_HASHES_FOLDER="${BACKUP_METADATA_FOLDER}/commit_hashes_folder"
+LAST_SNAPSHOT_HASH_FILE="${BACKUP_METADATA_FOLDER}/last_snapshot_hash"
+COMMIT_HASHES_FILE="${BACKUP_METADATA_FOLDER}/committed_hashes"
+ACL_POLICY_DIR="${BACKUP_METADATA_FOLDER}/acl_policy_dir"
+
+
+# SSH command templates
+REMOTE_USER_AND_IP="${REMOTE_USER}@${REMOTE_SERVER}"
+
+SSH_COMMAND_ARR=(
+    ssh
+    -i "$KEY_PATH"
+    -p "$REMOTE_SSH_PORT"
+    -o ConnectTimeout=15
+    -o ServerAliveInterval=30
+    -o ServerAliveCountMax=3
+    "$REMOTE_USER_AND_IP"
+)
+
+SCP_OPTS=(
+    -i "$KEY_PATH"
+    -P "$REMOTE_SSH_PORT"
+    -o ConnectTimeout=15
+    -o ServerAliveInterval=30
+    -o ServerAliveCountMax=3
+)
+
+# Test inotify modes
+TEST_INOTIFY_PARENT_FOLDER="${SERVER_A_USER_HOME}/test_inotify_parent_folder"
+TEST_TRIGGER_FILE="${TEST_INOTIFY_PARENT_FOLDER}/test_trigger_file"
+TEST_INOTIFY_CONFIG="${TEST_INOTIFY_PARENT_FOLDER}/config"
+TEST_INOTIFY_FOLDER="${TEST_INOTIFY_PARENT_FOLDER}/test_inotify_folder"
+TEST_HASH_TARGET_FILE="${TEST_INOTIFY_FOLDER}/test_file"
+
+# For other scripts
+
+# Watchtower on Server B (serverb-watchtower-setup.sh), used by this node's LND (/tower add)
+# The tower's public key, filled in by /tower add
+WATCHTOWER_PUBKEY=""
+# The address this node's LND reaches the tower at (usually Server B's address); asked for when empty
+WATCHTOWER_IP=""
+WATCHTOWER_PORT="9911"
+
+# Server B scripts (serverb-scripts.sh, lnd-manager: /serverb scripts). Empty ones are asked for.
+# Where the scripts are made, to copy to Server B yourself
+SERVER_B_SCRIPTS_DIR="${MAIN_USER_HOME}/serverb-scripts"
+# How much of the blockchain Server B's bitcoind keeps, in MB (2000 recommended, 550 minimum)
+SERVER_B_PRUNE_MB=""
+# This server's address as Server B sees it: Server B's firewall lets only it reach the tower
+SERVER_A_PUBLIC_IP=""
+# The account on Server B that runs the Server B dashboard (made by serverb-dashboard-setup.sh)
+SERVER_B_ADMIN_USER=""
+
+# Recreate wallet
+LND_CONTAINER_NAME="btcpayserver_lnd_bitcoin"
+LND_VOLUME="generated_lnd_bitcoin_datadir"
+BTCPAY_SERVICE_NAME="btcpayserver.service"
+# Safety backups lnd-wallet.sh makes before it changes the wallet. No backup rotation
+# touches these folders, and the installer's "clear existing backups" keeps the local one.
+PRE_RECOVERY_DIR="${SECOND_BACKUP_DIR}/pre-recovery"
+REMOTE_PRE_RECOVERY_PATH="${REMOTE_BACKUP_LOCATION}pre-recovery"
+
+# transfer_btc_pruned_blockchain_from_docker.sh
+BITCOIND_DIR="/var/lib/docker/volumes/generated_bitcoin_datadir/_data"
+BITCOIND_CONTAINER_NAME="btcpayserver_bitcoind"
+REMOTE_BITCOIND_DATA_DIR="${SERVER_B_USER_HOME}/.bitcoin"
+
+# /support in both dashboards: a Bitcoin donation address and the project's page (e.g. GitHub).
+# Shown as text only; nothing is fetched. Empty shows a placeholder.
+SUPPORT_BTC_ADDRESS=""
+SUPPORT_URL=""

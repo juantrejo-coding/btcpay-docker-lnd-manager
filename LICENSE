@@ -1,0 +1,46 @@
+btcpay-docker-lnd-manager License, version 1.0
+
+Copyright (c) 2026 Juan Trejo
+
+This license covers the scripts and files of btcpay-docker-lnd-manager and every part of them
+(the "Software"). "You" means the person or organization using the Software. "Annual sales
+income" means your gross sales income over the last 12 months, counting every business you own
+or control.
+
+1. Free use
+   You may use, copy and change the Software free of charge, for personal use or in a business,
+   as long as your annual sales income is at most USD 1,000,000.
+
+2. Businesses above USD 1,000,000
+   If your annual sales income is above USD 1,000,000, you may use the Software after a one-time
+   payment of USD 50 to the donation address (section 5).
+
+3. Use in another commercial node service or tool
+   If you use the Software, or any part of it, in another commercial node service or tool (a
+   product or service that you sell, or that is part of something you sell), you may do so after
+   a one-time payment of USD 500 to the donation address (section 5). This payment replaces the
+   one in section 2.
+
+4. If a required payment is not made
+   A commercial user that uses the Software under section 2 or 3 without making the payment
+   agrees to pay instead 10% of its sales income from the business, product or service that uses
+   the Software.
+
+5. How to pay
+   Payments are in bitcoin, worth the amount in US dollars at the time you pay, sent to the
+   donation address published with the Software (shown by /support in the dashboards and on the
+   project page). Keep the bitcoin payment receipt (the transaction ID and the address paid) as
+   proof that your use is licensed.
+
+6. Conditions
+   Copies and changed versions of the Software must include this license and the copyright
+   notice above.
+
+7. No warranty
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING
+   BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+   NONINFRINGEMENT. THE SOFTWARE MANAGES BITCOIN AND LIGHTNING WALLETS, CHANNELS AND THEIR
+   BACKUPS: USE IT AT YOUR OWN RISK. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+   FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING LOST FUNDS, WHETHER IN AN ACTION OF
+   CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+   USE OR OTHER DEALINGS IN THE SOFTWARE.
