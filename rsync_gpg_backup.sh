@@ -189,12 +189,13 @@ if [[ -t 0 ]]; then
     say "This installs or updates the LND backup service (%s)." "$RSYNC_BACKUP_SERVICE_NAME"
     echo
     say "What the service does"
-    say "  It runs all the time as the backup user (%s), not as root. When LND's channel" "$SERVER_A_USER"
-    say "  backups change, and once an hour in any case, it checks LND's files (channel.backup, the wallet,"
-    say "  walletunlock.json, macaroons, TLS certificate). If any changed, it packs them, encrypts and signs"
-    say "  them with the backup GPG key, and copies the result to the attached volume"
+    say "  It runs all the time as the backup user (%s), not as root. When LND's channel backup" "$SERVER_A_USER"
+    say "  changes (a channel opens or closes), it packs LND's files (channel.backup, the wallet,"
+    say "  walletunlock.json, macaroons, TLS certificate), encrypts and signs them with the backup GPG key,"
+    say "  and copies the result to the attached volume"
     say "  (%s) and to Server B (%s). It keeps the 10 newest there, plus one" "$SECOND_BACKUP_DIR" "$REMOTE_SERVER"
-    say "  per day for 30 days and one per month for 12 months."
+    say "  per day for 30 days and one per month for 12 months. Once an hour it checks for a change it"
+    say "  missed; the files LND rewrites by itself all the time (wallet.db, macaroons.db) don't count."
     echo
     say "What the installer sets up"
     say "  - The safe folders: the only folders the service may ever delete from (asked next)."
@@ -1508,6 +1509,14 @@ FILES_TO_BACKUP=(
     "$LND_DIR/tls.key"
     "$LND_DIR/walletunlock.json"
 )
+# Files LND rewrites by itself while it runs: wallet.db with every new block, macaroons.db when
+# LND starts. They go into every backup, but a change in them alone is no reason for one: the
+# hourly check would then back up every hour, and the 10 newest backups would push out the one
+# made at the last channel change within hours. Recovery uses the seed and channel.backup.
+SELF_CHANGING_FILES=(
+    "$LND_DIR/data/chain/bitcoin/mainnet/wallet.db"
+    "$LND_DIR/data/chain/bitcoin/mainnet/macaroons.db"
+)
 
 # === Root-only LND files are read through the root-owned helper ===
 # sudoers allows SERVER_A_USER to run only this helper as root.
@@ -1753,6 +1762,19 @@ build_snapshot_fingerprint() {
         sort |
         xxhsum -H128 |
         awk '{print $1}'
+}
+
+# The fingerprint that decides whether something changed that needs a backup: the files given,
+# without SELF_CHANGING_FILES. Saved after each backup, compared by the hourly check.
+build_change_fingerprint() {
+    local f skip kept=()
+    for f in "$@"; do
+        for skip in "${SELF_CHANGING_FILES[@]}"; do
+            [[ "$f" == "$skip" ]] && continue 2
+        done
+        kept+=("$f")
+    done
+    build_snapshot_fingerprint "${kept[@]}"
 }
 
 wait_for_files_to_settle() {
@@ -2109,8 +2131,8 @@ start_reconciliation_loop() {
                 continue
             fi
 
-            # Compute current fingerprint
-            CURRENT_HASH=$(build_snapshot_fingerprint "${SNAPSHOT[@]}")
+            # Compute current fingerprint (without the files LND rewrites by itself)
+            CURRENT_HASH=$(build_change_fingerprint "${SNAPSHOT[@]}")
 
             # Load last known fingerprint
             LAST_HASH=$(load_last_snapshot_hash)
@@ -2619,6 +2641,8 @@ perform_backup() {
 	# --- Build quick snapshot fingerprint for monitoring ---
 	SOURCE_SNAPSHOT_HASH=$(build_snapshot_fingerprint "${FILES_SNAPSHOT[@]}")
 	log_message "$(T "🔍 Snapshot fingerprint: %s" "$SOURCE_SNAPSHOT_HASH")"
+	# What the hourly check compares with, taken at the same moment
+	SOURCE_CHANGE_HASH=$(build_change_fingerprint "${FILES_SNAPSHOT[@]}")
 	
 	log_message "$(T "✅ Snapshot validated. All files exist.")"
 	
@@ -3025,7 +3049,7 @@ perform_backup() {
 
 	# Save the fingerprint here, not in the hourly check, so every committed backup
 	# updates it and a backup skipped because of the lock saves nothing.
-	if save_last_snapshot_hash "$SOURCE_SNAPSHOT_HASH"; then
+	if save_last_snapshot_hash "$SOURCE_CHANGE_HASH"; then
 	    log_message "$(T "🧾 Updated stored snapshot fingerprint")"
 	else
 	    log_message "$(T "⚠️ Failed to save snapshot fingerprint to %s" "$LAST_SNAPSHOT_HASH_FILE")"
@@ -3362,8 +3386,17 @@ if ! sudo systemctl daemon-reload; then
 fi
 log_message "$(T "✅ systemctl daemon-reload completed")"
 
-if ! sudo systemctl enable --now "$RSYNC_BACKUP_SERVICE_NAME"; then
+# lnd-update.sh at boot runs before the service starts: there it is only enabled (starting it
+# from there would wait for the boot step that waits for this), and systemd starts it next
+if [[ "${LND_UPDATE_AT_BOOT:-}" == 1 ]]; then
+    if ! sudo systemctl enable "$RSYNC_BACKUP_SERVICE_NAME"; then
+        log_message "$(T "❌ Failed to enable/start service: %s" "$RSYNC_BACKUP_SERVICE_NAME")"
+        exit 1
+    fi
+    log_message "$(T "✅ Service enabled; it starts after this boot step: %s" "$RSYNC_BACKUP_SERVICE_NAME")"
+elif ! sudo systemctl enable --now "$RSYNC_BACKUP_SERVICE_NAME"; then
     log_message "$(T "❌ Failed to enable/start service: %s" "$RSYNC_BACKUP_SERVICE_NAME")"
     exit 1
+else
+    log_message "$(T "✅ Service enabled and started: %s" "$RSYNC_BACKUP_SERVICE_NAME")"
 fi
-log_message "$(T "✅ Service enabled and started: %s" "$RSYNC_BACKUP_SERVICE_NAME")"

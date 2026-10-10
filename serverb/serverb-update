@@ -1,14 +1,28 @@
 #!/bin/bash
-# serverb-update: Bitcoin Core and LND updates for the Server B dashboard. Installed root-owned in
-# /usr/local/lib/serverb-dashboard by serverb-dashboard-setup.sh.
+# serverb-update: updates for the Server B dashboard: Bitcoin Core, the watchtower's LND, and these
+# scripts. Installed root-owned in /usr/local/lib/serverb-dashboard by serverb-dashboard-setup.sh.
 #
 #   serverb-update check             the installed and the latest version of each, one line each:
-#                                    "bitcoind <installed> <latest>", "tower <installed> <latest>"
-#                                    ("-" where unknown). Needs no root; asks bitcoincore.org and
-#                                    api.github.com.
+#                                    "bitcoind <installed> <latest>", "tower ...", "scripts ...",
+#                                    ("-" where unknown), and "pending <name> <version> waiting|boot"
+#                                    for an update waiting to be applied. Needs no root; asks
+#                                    bitcoincore.org, api.github.com and github.com.
 #   serverb-update install bitcoind  as root (the dashboard: /update bitcoind, through
 #   serverb-update install tower     serverb-control): the latest release, checked like the setup
-#                                    scripts check it, then bitcoind or the watchtower restarted
+#                                    scripts check it. Installed and restarted only while it is
+#                                    safe: Server A's newest status (server-a-status.sh, through the
+#                                    gate) is less than 10 minutes old, its LND runs, no payments
+#                                    are in flight and no channel is being opened or closed. The
+#                                    tower watches Server A's channels when Server A can't. Not safe
+#                                    yet: it waits in the background for up to 24 hours, then the
+#                                    release is installed at the next boot, before bitcoind and the
+#                                    tower start.
+#   serverb-update install scripts   the newest signed release of these scripts (checked against
+#                                    the release key built in here), made with the settings
+#                                    serverb-setup.sh saved: the backup gate and the dashboard
+#                                    are updated. bitcoind and the tower keep running.
+#   serverb-update boot              (serverb-update-boot.service) installs what waits, at boot
+#   serverb-update apply-wait <name> (serverb-update-wait-<name>) waits until safe, then installs
 #
 # Nothing is installed unless the signatures and checksums match. Never a release candidate.
 
@@ -20,9 +34,28 @@ LND_MIN_SIGNATURES=2
 # @@I18N
 # @@INCLUDE serverb-common.sh
 # @@INCLUDE serverb-releases.sh
+# @@INCLUDE update-lib.sh
+
+SELF=/usr/local/lib/serverb-dashboard/serverb-update
+SETTINGS_FILE=/usr/local/lib/serverb-dashboard/settings.json
+# Root's: what waits to be installed (staged/<name>), and "<version> waiting|boot <since>" per name
+UPDATE_DIR=/var/lib/serverb-update
+# serverb-setup.sh's: the settings it made the scripts with, and their version
+SETUP_DIR=/var/lib/serverb-setup
+STATUS_MAX_AGE=600
+
+release_key_file() {
+    cat <<'RELEASE_KEY_EOF'
+# @@EMBED release-key.asc
+RELEASE_KEY_EOF
+}
+
+scripts_installed() {
+    head -n 1 "$UPDATE_DIR/scripts-version" 2>/dev/null || head -n 1 "$SETUP_DIR/VERSION" 2>/dev/null || echo "-"
+}
 
 check() {
-    local installed latest
+    local installed latest f
     if [[ -x /usr/local/bin/bitcoind ]]; then
         installed=$(bitcoin_core_installed)
         latest=$(bitcoin_core_latest) || latest=""
@@ -34,6 +67,14 @@ check() {
         latest=$(lnd_latest) || latest=""
         printf 'tower %s %s\n' "${installed:--}" "${latest:--}"
     fi
+    if command -v git >/dev/null; then
+        latest=$(latest_release) || latest=""
+        printf 'scripts %s %s\n' "$(scripts_installed)" "${latest:--}"
+    fi
+    for f in "$UPDATE_DIR"/pending-bitcoind "$UPDATE_DIR"/pending-tower; do
+        [[ -f "$f" ]] && printf 'pending %s %s\n' "${f##*/pending-}" "$(awk '{ print $1, $2 }' "$f")"
+    done
+    return 0
 }
 
 # Restarts a service if it runs, and says whether it came back
@@ -50,15 +91,53 @@ restart_service() {
     say "✅ %s runs again" "$unit"
 }
 
-install_bitcoind() {
-    local before latest tower_ran
+# === Is it safe to take the tower down? Prints why not; nothing when it is ===
+server_a_not_safe() {
+    local user home file mtime age line lnd="" htlcs="" pending=""
+    user=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1])).get("backup_user", ""))' "$SETTINGS_FILE" 2>/dev/null || true)
+    if [[ ! "$user" =~ ^[a-z][a-z0-9_-]{0,31}$ ]] || ! home=$(getent passwd "$user" | cut -d: -f6) || [[ -z "$home" ]]; then
+        T "the backup user isn't known here (rerun serverb-dashboard-setup.sh)"
+        return
+    fi
+    file="$home/.local/state/server-a-status"
+    # Read as that user: root doesn't open files in a folder that user owns
+    if ! mtime=$(runuser -u "$user" -- stat -c %Y -- "$file" 2>/dev/null); then
+        T "no status from Server A yet (it sends one every 5 minutes once its scripts are updated: sudo lnd-update there)"
+        return
+    fi
+    age=$(( $(date +%s) - mtime ))
+    if (( age > STATUS_MAX_AGE )); then
+        T "Server A's last status is %s minutes old: Server A may be off, and then its channels need the tower" "$(( age / 60 ))"
+        return
+    fi
+    while IFS= read -r line; do
+        case "$line" in
+            lnd=*) lnd="${line#lnd=}" ;;
+            htlcs=*) htlcs="${line#htlcs=}" ;;
+            pending_channels=*) pending="${line#pending_channels=}" ;;
+        esac
+    done < <(runuser -u "$user" -- head -c 1024 -- "$file" 2>/dev/null)
+    if [[ "$lnd" != SERVER_ACTIVE ]]; then
+        T "Server A's LND isn't running (%s)" "${lnd:-?}"
+    elif [[ ! "$htlcs" =~ ^[0-9]+$ || ! "$pending" =~ ^[0-9]+$ ]]; then
+        T "Server A couldn't count its payments in flight and pending channels"
+    elif (( htlcs > 0 )); then
+        T "%s payments in flight on Server A" "$htlcs"
+    elif (( pending > 0 )); then
+        T "%s channels being opened or closed on Server A" "$pending"
+    fi
+}
+
+# === Bitcoin Core and LND: stage, then apply when safe ===
+stage_bitcoind() {
+    local before latest
     before=$(bitcoin_core_installed)
     [[ -n "$before" ]] || die "$(T "Bitcoin Core isn't installed here: run serverb-bitcoind-setup.sh first")"
     say "🔎 Looking up the latest Bitcoin Core release..."
     latest=$(bitcoin_core_latest) || die "$(T "Could not find a Bitcoin Core release on bitcoincore.org/bin/")"
     if ! newer_version "$before" "$latest"; then
         say "✅ Bitcoin Core %s is the latest release: nothing to do" "$before"
-        return 0
+        return 1
     fi
     say "Bitcoin Core %s -> %s" "$before" "$latest"
     if [[ "${before%%.*}" != "${latest%%.*}" ]]; then
@@ -68,22 +147,12 @@ install_bitcoind() {
         say "ℹ️ From 28 on, the watchtower can read bitcoind's cookie through its group: rerun"
         say "   serverb-bitcoind-setup.sh afterwards, so bitcoin.conf gets rpccookieperms=group."
     fi
-    bitcoin_core_install "$latest" "$BITCOIN_CORE_MIN_SIGNATURES"
-    tower_ran=false
-    systemctl is-active --quiet lnd-watchtower && tower_ran=true
-    restart_service bitcoind bitcoind
-    # The watchtower's LND exits when bitcoind goes away, and systemd would start it again only
-    # 30 seconds later: restart it now instead. Only if it ran: a tower you stopped stays stopped.
-    if $tower_ran; then
-        say "🔄 Restarting lnd-watchtower too (it loses bitcoind during the restart)..."
-        systemctl restart lnd-watchtower || die "$(T "lnd-watchtower didn't restart: journalctl -u lnd-watchtower")"
-        sleep 5
-        systemctl is-active --quiet lnd-watchtower || die "$(T "lnd-watchtower stopped after the restart: journalctl -u lnd-watchtower")"
-        say "✅ lnd-watchtower runs again"
-    fi
+    rm -rf -- "$UPDATE_DIR/staged/bitcoind"
+    install -d -o root -g root -m 700 "$UPDATE_DIR/staged/bitcoind"
+    bitcoin_core_install "$latest" "$BITCOIN_CORE_MIN_SIGNATURES" "$UPDATE_DIR/staged/bitcoind"
+    echo "$latest" > "$UPDATE_DIR/staged/bitcoind/.version"
 }
-
-install_tower() {
+stage_tower() {
     local before latest
     before=$(lnd_installed)
     [[ -n "$before" ]] || die "$(T "LND isn't installed here: run serverb-watchtower-setup.sh first")"
@@ -91,22 +160,139 @@ install_tower() {
     latest=$(lnd_latest) || die "$(T "Could not find the latest LND release on api.github.com")"
     if ! newer_version "$before" "$latest"; then
         say "✅ LND %s is the latest release: nothing to do" "$before"
-        return 0
+        return 1
     fi
     say "LND %s -> %s" "$before" "$latest"
     say "ℹ️ LND updates its database at the first start, so the old version may not open it again."
-    lnd_install "$latest" "$LND_MIN_SIGNATURES"
-    restart_service lnd-watchtower tower
+    rm -rf -- "$UPDATE_DIR/staged/tower"
+    install -d -o root -g root -m 700 "$UPDATE_DIR/staged/tower"
+    lnd_install "$latest" "$LND_MIN_SIGNATURES" "$UPDATE_DIR/staged/tower"
+    echo "$latest" > "$UPDATE_DIR/staged/tower/.version"
 }
 
+# Installs what is staged for $1; restarts it unless $2 is "boot" (then it starts after this)
+apply_staged() {
+    local name="$1" when="${2:-now}" dir="$UPDATE_DIR/staged/$1" version tower_ran=false
+    [[ -f "$dir/.version" ]] || return 0
+    version=$(head -n 1 "$dir/.version")
+    if [[ "$name" == bitcoind ]]; then
+        install -o root -g root -m 755 "$dir/bitcoind" "$dir/bitcoin-cli" /usr/local/bin/ ||
+            die "$(T "Could not install bitcoind and bitcoin-cli")"
+        say "✅ Installed %s" "$(/usr/local/bin/bitcoind -version | head -n 1)"
+    else
+        install -o root -g root -m 755 "$dir/lnd" "$dir/lncli" /usr/local/bin/ || die "$(T "Could not install lnd and lncli")"
+        say "✅ Installed %s" "$(/usr/local/bin/lnd --version)"
+    fi
+    rm -rf -- "$dir" "$UPDATE_DIR/pending-$name"
+    [[ "$when" == boot ]] && return 0
+    if [[ "$name" == bitcoind ]]; then
+        systemctl is-active --quiet lnd-watchtower && tower_ran=true
+        restart_service bitcoind bitcoind
+        # The watchtower's LND exits when bitcoind goes away, and systemd would start it again
+        # only 30 seconds later: restart it now instead. Only if it ran: a tower you stopped stays
+        # stopped.
+        if $tower_ran; then
+            say "🔄 Restarting lnd-watchtower too (it loses bitcoind during the restart)..."
+            systemctl restart lnd-watchtower || die "$(T "lnd-watchtower didn't restart: journalctl -u lnd-watchtower")"
+            sleep 5
+            systemctl is-active --quiet lnd-watchtower || die "$(T "lnd-watchtower stopped after the restart: journalctl -u lnd-watchtower")"
+            say "✅ lnd-watchtower runs again"
+        fi
+    else
+        restart_service lnd-watchtower tower
+    fi
+    say "✅ Updated to %s" "$version"
+}
+
+install_release() {
+    local name="$1" reason version
+    if [[ "$name" == bitcoind ]]; then stage_bitcoind || return 0; else stage_tower || return 0; fi
+    version=$(head -n 1 "$UPDATE_DIR/staged/$name/.version")
+    reason=$(server_a_not_safe)
+    if [[ -z "$reason" ]]; then
+        apply_staged "$name"
+        return 0
+    fi
+    printf '%s waiting %s\n' "$version" "$(date +%s)" > "$UPDATE_DIR/pending-$name"
+    chmod 644 "$UPDATE_DIR/pending-$name"
+    say "⏳ Not safe to restart it now: %s" "$reason"
+    flock -u 9
+    start_waiter "serverb-update-wait-$name" "$SELF" apply-wait "$name" ||
+        die "$(T "Could not start the background wait; %s is installed at the next boot" "$version")"
+    say "   It waits in the background (serverb-update-wait-%s) and installs %s once it is safe, for up" "$name" "$version"
+    say "   to 24 hours. After that it is installed at the next boot. /update check shows where it is."
+}
+
+apply_wait() {
+    local name="$1" deadline version
+    [[ -f "$UPDATE_DIR/staged/$name/.version" ]] || exit 0
+    version=$(head -n 1 "$UPDATE_DIR/staged/$name/.version")
+    deadline=$(wait_deadline "$(awk '{ print $3 }' "$UPDATE_DIR/pending-$name" 2>/dev/null)")
+    while wait_until_safe server_a_not_safe "$deadline"; do
+        exec 9> /run/serverb-update.lock
+        flock 9
+        # Checked again with the lock held: it may have changed while waiting for it
+        if [[ -z "$(server_a_not_safe)" ]]; then
+            apply_staged "$name"
+            exit 0
+        fi
+        flock -u 9
+        (( $(date +%s) < deadline )) || break
+        sleep "$UPDATE_RETRY_SECONDS"
+    done
+    printf '%s boot %s\n' "$version" "$(date +%s)" > "$UPDATE_DIR/pending-$name"
+    say "⏸️ Still not safe after 24 hours: %s is installed at the next boot" "$version"
+}
+
+# === These scripts ===
+install_scripts() {
+    local installed latest key
+    [[ -f "$SETUP_DIR/serverb.conf" ]] ||
+        die "$(T "%s/serverb.conf is missing: set Server B up with serverb-setup.sh (or /serverb send) once, then this can update it" "$SETUP_DIR")"
+    installed=$(scripts_installed)
+    say "🔎 Looking for the newest release of these scripts..."
+    latest=$(latest_release) || true
+    [[ -n "$latest" ]] || die "$(T "No release found at %s (no network, or no release yet)" "$RELEASE_REPO_URL")"
+    if ! release_newer "$installed" "$latest"; then
+        say "✅ %s is the newest release: nothing to do" "$installed"
+        return 0
+    fi
+    say "These scripts: %s -> %s" "$installed" "$latest"
+    key=$(mktemp)
+    release_key_file > "$key"
+    stage_release_git "$latest" "$UPDATE_DIR/scripts" "$key"
+    rm -f -- "$key"
+    [[ -f "$UPDATE_DIR/scripts/src/serverb-setup.sh" ]] || die "$(T "%s doesn't look like a release of these scripts" "$latest")"
+    # The new release updates itself: its own serverb-setup.sh, with the saved settings
+    bash "$UPDATE_DIR/scripts/src/serverb-setup.sh" --update "$latest" ||
+        die "$(T "Updating to %s failed: the steps that ran are listed above" "$latest")"
+    rm -rf -- "$UPDATE_DIR/scripts/src"
+}
+
+install -d -o root -g root -m 755 "$UPDATE_DIR" 2>/dev/null || true
 case "${1:-} ${2:-}" in
     "check ") check ;;
-    "install bitcoind" | "install tower")
+    "install bitcoind" | "install tower" | "install scripts")
         [[ $EUID -eq 0 ]] || die "$(T "Installing needs root: the dashboard runs it (/update %s)" "$2")"
         # One update at a time
         exec 9> /run/serverb-update.lock
         flock -n 9 || die "$(T "Another update is running")"
-        if [[ "$2" == bitcoind ]]; then install_bitcoind; else install_tower; fi
+        if [[ "$2" == scripts ]]; then
+            install_scripts
+        else
+            systemctl stop "serverb-update-wait-$2.service" 2>/dev/null || true
+            install_release "$2"
+        fi
+        ;;
+    "apply-wait bitcoind" | "apply-wait tower")
+        [[ $EUID -eq 0 ]] || die "$(T "Installing needs root: the dashboard runs it (/update %s)" "$2")"
+        apply_wait "$2"
+        ;;
+    "boot ")
+        [[ $EUID -eq 0 ]] || exit 1
+        # Before bitcoind and the tower start: nothing to restart
+        apply_staged bitcoind boot
+        apply_staged tower boot
         ;;
     *) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//' >&2; exit 2 ;;
 esac

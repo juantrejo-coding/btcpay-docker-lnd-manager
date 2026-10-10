@@ -46,6 +46,7 @@ apt_install python3 sudo curl ca-certificates gnupg git
 if id "$SERVER_B_ADMIN_USER" &>/dev/null; then
     say "ℹ️ %s exists already: left as it is (its password and groups too)" "$SERVER_B_ADMIN_USER"
 else
+    updating && die "$(T "There is no account %s yet: an update only updates what is set up" "$SERVER_B_ADMIN_USER")"
     confirm_phrase yes "$(T "Create the dashboard's admin account %s? Type yes: " "$SERVER_B_ADMIN_USER")" ||
         die "$(T "Stopped: nothing was changed.")"
     adduser --disabled-password --gecos "" "$SERVER_B_ADMIN_USER" >/dev/null || die "$(T "Could not create %s" "$SERVER_B_ADMIN_USER")"
@@ -124,6 +125,28 @@ visudo -cf "$SUDOERS.new" >/dev/null || { rm -f "$SUDOERS.new"; die "$(T "visudo
 mv -f "$SUDOERS.new" "$SUDOERS"
 say "✅ %s: %s may run %s as root, nothing else" "$SUDOERS" "$SERVER_B_ADMIN_USER" "$HELPER"
 
+# === A waiting Bitcoin Core or LND update, at boot (serverb-update: not safe for 24 hours) ===
+cat > /etc/systemd/system/serverb-update-boot.service.new <<UNIT
+[Unit]
+Description=Installs a waiting Bitcoin Core or LND update (serverb-update) before they start
+After=local-fs.target
+Before=bitcoind.service lnd-watchtower.service
+
+[Service]
+Type=oneshot
+ExecStart=$LIB/serverb-update boot
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+chmod 644 /etc/systemd/system/serverb-update-boot.service.new
+mv -f /etc/systemd/system/serverb-update-boot.service.new /etc/systemd/system/serverb-update-boot.service
+systemctl daemon-reload
+systemctl enable --quiet serverb-update-boot.service
+say "✅ serverb-update-boot.service: an update that waited too long is installed at the next boot"
+
 echo
 say "✅ Done. Log in as %s and run: serverb-dashboard" "$SERVER_B_ADMIN_USER"
-sudo -u "$SERVER_B_ADMIN_USER" -H /usr/local/bin/serverb-dashboard --once | show_lines || true
+# An update writes the new version only after this step: the preview would offer it again
+updating || sudo -u "$SERVER_B_ADMIN_USER" -H /usr/local/bin/serverb-dashboard --once | show_lines || true

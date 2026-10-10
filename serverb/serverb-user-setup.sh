@@ -60,9 +60,16 @@ if id "$SERVER_B_USER" &>/dev/null; then
         say "   account to keys, with no terminal: nobody could then log in as %s with a" "$SERVER_B_USER"
         say "   password or get a shell over SSH. If a person uses this account, stop here and set"
         say "   another SERVER_B_USER on Server A."
-        confirm_phrase yes "$(T "Limit %s that way anyway? Type yes: " "$SERVER_B_USER")" || die "$(T "Stopped: nothing was changed.")"
+        # An update keeps what you agreed to before: the limits are there already
+        if updating; then
+            [[ -f "/etc/ssh/sshd_config.d/60-lnd-backup-$SERVER_B_USER.conf" ]] ||
+                die "$(T "%s has a password and no sshd limits yet: run this step by hand once (sudo ./serverb-setup.sh)" "$SERVER_B_USER")"
+        else
+            confirm_phrase yes "$(T "Limit %s that way anyway? Type yes: " "$SERVER_B_USER")" || die "$(T "Stopped: nothing was changed.")"
+        fi
     fi
 else
+    updating && die "$(T "There is no user %s yet: an update only updates what is set up" "$SERVER_B_USER")"
     confirm_phrase yes "$(T "Create user %s (no password, Server A's key only)? Type yes: " "$SERVER_B_USER")" ||
         die "$(T "Stopped: nothing was changed.")"
     # --disabled-password: no password at all, but key logins work. (passwd -d, in older

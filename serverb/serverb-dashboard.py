@@ -69,7 +69,8 @@ HELPER = "/usr/local/sbin/serverb-control"
 # Run as this user for the check (no root needed); the helper runs it as root for /update
 UPDATE_TOOL = "/usr/local/lib/serverb-dashboard/serverb-update"
 UPDATE_CHECK_SECONDS = 12 * 3600
-UPDATE_NAMES = {"bitcoind": N_("Bitcoin Core"), "tower": N_("LND (the watchtower)")}
+UPDATE_NAMES = {"bitcoind": N_("Bitcoin Core"), "tower": N_("LND (the watchtower)"),
+                "scripts": N_("these scripts")}
 SETTINGS_FILE = "/usr/local/lib/serverb-dashboard/settings.json"
 REFRESH_SECONDS = 5
 
@@ -103,12 +104,19 @@ COMMANDS = [
     ("/update bitcoind", N_("install the latest Bitcoin Core"), "update bitcoind",
      N_("Downloads the latest Bitcoin Core release, checks its signatures (at least 3 builders) and "
      "checksum like serverb-bitcoind-setup.sh, installs it and restarts bitcoind, then the "
-     "watchtower (it loses bitcoind meanwhile): offline for a minute or so. Nothing is installed if a check fails. You type UPDATE.")),
+     "watchtower (it loses bitcoind meanwhile): offline for a minute or so. Only while Server A says "
+     "it is safe (its LND runs, nothing in flight, no channel opening or closing); else it waits up to "
+     "24 hours, then installs at the next boot. Nothing is installed if a check fails. You type UPDATE.")),
     ("/update tower", N_("install the latest LND for the watchtower"), "update tower",
      N_("Downloads the latest LND release, checks its signatures (at least 2 signers) and checksum "
      "like serverb-watchtower-setup.sh, installs it and restarts the watchtower: offline for a "
-     "minute or so. LND updates its database at the first start, so the old version may not open "
-     "it again. Nothing is installed if a check fails. You type UPDATE.")),
+     "minute or so. Only while Server A says it is safe, as /update bitcoind. LND updates its "
+     "database at the first start, so the old version may not open it again. Nothing is installed "
+     "if a check fails. You type UPDATE.")),
+    ("/update scripts", N_("install the newest release of these scripts"), "update scripts",
+     N_("Gets the newest release of these scripts from GitHub, checks its signature against the "
+     "release key built in here, and updates the backup gate and this dashboard with the settings "
+     "serverb-setup.sh saved. bitcoind and the watchtower keep running. You type UPDATE.")),
     ("/log bitcoind", N_("bitcoind's log"), "log bitcoind",
      N_("Shows the last lines of /var/lib/bitcoind/debug.log. Read only.")),
     ("/log tower", N_("the watchtower's log"), "log tower",
@@ -167,6 +175,9 @@ def check_updates():
         parts = line.split()
         if len(parts) == 3 and parts[0] in UPDATE_NAMES:
             found[parts[0]] = (parts[1], parts[2])
+        # "pending <name> <version> waiting|boot": staged, waiting until Server A says it is safe
+        elif len(parts) == 4 and parts[0] == "pending" and parts[1] in UPDATE_NAMES:
+            found["pending " + parts[1]] = (parts[2], parts[3])
     return found
 
 
@@ -206,7 +217,19 @@ def update_lines(updates):
     """One line per available update, for the top of the screen."""
     out = []
     for name, (installed, latest) in sorted(updates.found.items()):
-        if newer(installed, latest):
+        if name.startswith("pending "):
+            what = _(UPDATE_NAMES[name.split(" ", 1)[1]])
+            if latest == "boot":
+                out.append((_("Update waiting: %s %s is installed at the next boot (not safe for 24 hours)")
+                            % (what, installed), "warn"))
+            else:
+                out.append((_("Update waiting: %s %s, installed once Server A says it is safe")
+                            % (what, installed), "warn"))
+            continue
+        if name == "scripts" and newer(installed, latest):
+            out.append((_("Update: these scripts %s are out (installed: %s). /update scripts")
+                        % (latest, installed), "warn"))
+        elif newer(installed, latest):
             out.append((_("Update: %s %s is out (installed: %s). /update %s")
                         % (_(UPDATE_NAMES[name]), latest, installed, name), "warn"))
     return out
@@ -505,6 +528,8 @@ def do_action(stdscr, action, settings, styles, info, updates):
         current = updates.found.get(name)
         if current and not newer(*current):
             question = _("%s %s is the latest. Check again and update if newer?") % (_(UPDATE_NAMES[name]), current[0])
+        elif name == "scripts":
+            question = _("Update these scripts? bitcoind and the watchtower keep running.")
         else:
             question = _("Update %s? It restarts %s.") % (_(UPDATE_NAMES[name]), label)
         if not ask_typed(stdscr, question, "UPDATE", styles):

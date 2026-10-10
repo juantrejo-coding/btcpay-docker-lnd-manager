@@ -30,7 +30,8 @@ Ein Backup-Dienst auf Server A überwacht das Kanal-Backup von LND. Nach jeder �
 eine verschlüsselte, mit Ihrem GPG-Schlüssel signierte Kopie. Eine Kopie geht auf das angehängte
 Volume, eine auf Server B.
 
-Der Schlüssel von Server A kann auf Server B nur Backups ablegen, auflisten und abrufen. Er kann
+Der Schlüssel von Server A kann auf Server B nur Backups ablegen, auflisten und abrufen und Server B
+seine Einstellungen übergeben. Er kann
 sich dort nicht anmelden und nichts anderes ausführen, daher kann ein Einbruch auf Server A nicht
 löschen, was Server B aufbewahrt.
 
@@ -66,6 +67,9 @@ Tippen Sie `/` für die Befehle; jeder erklärt, was er tut und was er stoppt, b
    git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git ~/btcpay-docker-lnd-manager
    ```
 
+   Prüfen Sie danach seine Signatur (siehe
+   [Prüfen Sie, was Sie herunterladen](#prüfen-sie-was-sie-herunterladen)): root führt diese
+   Skripte aus.
 2. Prüfen Sie, ob alles bereit ist. Dabei wird nichts geändert:
 
    ```
@@ -108,6 +112,11 @@ Tippen Sie `/` für die Befehle; jeder erklärt, was er tut und was er stoppt, b
       führen Sie es dort mit `sudo bash serverb-user-setup.sh` aus und starten Sie danach
       `./setup_script.sh` auf Server A erneut.
 
+      Oder, wenn Sie das Projekt auch auf Server B klonen: Führen Sie `lnd-manager` →
+      `/serverb send` aus. Es kann Server B noch nicht erreichen und zeigt stattdessen
+      `serverb.conf` an. Führen Sie auf Server B im Klon `sudo ./serverb-setup.sh --paste` aus,
+      fügen Sie es ein und antworten Sie nur bei Schritt 1 mit `yes`.
+
    In beiden Fällen beschränkt das Setup den Schlüssel danach so, dass er nur die Backups erreicht
    („das Gate“).
 5. Öffnen Sie das Dashboard:
@@ -144,37 +153,158 @@ schließen, und Ihr Anteil kommt on-chain zurück.
 
 Ein Watchtower behält Ihre Kanäle im Auge, während Ihr Node offline ist.
 
-1. Im Dashboard: `/serverb scripts`. Es erstellt die Skripte für Server B und listet die Schritte
-   der Reihe nach auf.
-2. Kopieren Sie die Skripte selbst auf Server B, von einem Computer, dem Sie vertrauen, und führen
-   Sie sie dort mit `sudo bash` aus: zuerst Bitcoin Core, dann den Watchtower, dann das Dashboard
-   von Server B.
-3. Um Server B tagelanges Synchronisieren zu ersparen, kopieren Sie die Blockchain von Server A:
-   `/chain copy` (vorher `/chain prune`, falls die Blockchain von BTCPay noch nicht gepruned ist),
-   danach `serverb-import-chain.sh` auf Server B.
-4. Wieder auf Server A: `/tower add`.
+1. Im Dashboard: `/serverb send`. Es sendet Server B seine Einstellungen (`serverb.conf`) über
+   das Backup-Gate in `~/serverb-setup` des Backup-Benutzers. Dort wird nichts von selbst
+   ausgeführt. Wählen Sie, wie Server B die Skripte bekommt:
+   1. **git clone (empfohlen).** Nur die Einstellungen kommen von Server A. Auf Server B, mit
+      Ihrem Admin-Konto:
+
+      ```
+      git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git
+      cd btcpay-docker-lnd-manager
+      ```
+
+      Prüfen Sie die Signatur
+      ([Prüfen Sie, was Sie herunterladen](#prüfen-sie-was-sie-herunterladen)), dann:
+
+      ```
+      sudo ./serverb-setup.sh <backup user>
+      ```
+
+      Es liest `serverb.conf` als Daten (führt sie nie aus), zeigt jeden Wert an und erstellt die
+      Skripte aus dem Klon, den Sie geprüft haben. Root auf Server B führt dann nur Code aus, den
+      Sie geprüft haben, selbst wenn auf Server A eingebrochen wurde.
+   2. **Skripte von Server A.** Für einen Server B, der GitHub nicht erreicht. Server A sendet
+      zusätzlich `serverb-install.sh`, alle Skripte in einer Datei. Kopieren Sie sie auf Server B
+      zuerst aus dem Ordner des Backup-Benutzers heraus (root führt sie von dort nicht aus) und
+      vergleichen Sie ihre sha256 mit der, die `/serverb send` angezeigt hat:
+
+      ```
+      sudo -u <backup user> cat ~<backup user>/serverb-setup/serverb-install.sh > serverb-install.sh
+      sha256sum serverb-install.sh
+      sudo bash serverb-install.sh
+      ```
+
+      Das ist genauso sicher, wie die Skripte von Hand zu kopieren, und nicht sicherer: Root auf
+      Server B führt aus, was Server A erstellt hat. Wenn auf Server A eingebrochen wurde, kann
+      auch die angezeigte sha256 gefälscht sein.
+
+   In beiden Fällen geht es die Schritte der Reihe nach durch und fragt vor jedem: der
+   Backup-Benutzer und das Gate, Bitcoin Core, der Import der Blockchain, der Watchtower, das
+   Dashboard. Die ausgeführten Skripte bleiben in `/var/lib/serverb-setup/scripts`. Ein
+   Backup-Gate, das älter als `/serverb send` ist, lehnt die Einstellungen ab: Verwenden Sie dann
+   Weg 1 mit `--paste` (es zeigt die einzufügenden Einstellungen), und Schritt 1 aktualisiert das
+   Gate.
+2. Um Server B tagelanges Synchronisieren zu ersparen, kopieren Sie die Blockchain von Server A:
+   `/chain copy` (vorher `/chain prune`, falls die Blockchain von BTCPay noch nicht gepruned ist).
+   Die Schritte halten nach Bitcoin Core an, bis die Kopie fertig ist; führen Sie danach denselben
+   Befehl auf Server B erneut aus, um fortzufahren.
+3. Wieder auf Server A: `/tower add`, mit der Adresse des Towers, die der Watchtower-Schritt
+   angezeigt hat.
+
+`/serverb scripts` erstellt weiterhin die Skripte einzeln, damit Sie sie selbst auf Server B
+kopieren.
 
 Melden Sie sich auf Server B mit dem Admin-Konto des Dashboards an und starten Sie
-`serverb-dashboard`. Es hat eine eigene `/checklist`. Es meldet auch, wenn eine neue Version von
-Bitcoin Core oder LND erschienen ist: `/update bitcoind` oder `/update tower` installiert sie,
-nachdem die Signaturen auf dieselbe Weise geprüft wurden wie im Setup. Nichts wird von selbst
-aktualisiert.
+`serverb-dashboard`. Es hat eine eigene `/checklist` und meldet, wenn eine neue Version von
+Bitcoin Core, LND oder diesen Skripten erschienen ist (siehe [Aktualisieren](#aktualisieren)).
 
 ## Sicher und offline aufbewahren
 
 - **Ihren LND-Seed.** Er bringt Ihr Guthaben zurück.
 - **Den privaten GPG-Schlüssel.** Er öffnet die Backups.
 
-## Einstellungen ändern oder aktualisieren
+## Prüfen Sie, was Sie herunterladen
+
+Jeder Commit und jedes Release-Tag ist mit diesem GPG-Schlüssel signiert:
+
+```
+Juan Trejo <juantrejo_coding@proton.me>
+93F4 433D CE56 353B D7E6  9D42 CBFE 4123 CF41 21FA
+```
+
+Ein Fingerabdruck, der neben dem Code steht, beweist für sich allein nichts: Wer den Code ändern
+könnte, könnte auch diese Seite ändern. Holen Sie den Schlüssel deshalb von zwei Orten und prüfen
+Sie, dass beide den obigen Fingerabdruck zeigen:
+
+```
+curl -fsSL https://github.com/juantrejo-coding.gpg | gpg --show-keys
+gpg --keyserver hkps://keys.openpgp.org --recv-keys 93F4433DCE56353BD7E69D42CBFE4123CF4121FA
+gpg --fingerprint 93F4433DCE56353BD7E69D42CBFE4123CF4121FA
+```
+
+Dann, im Klon:
+
+```
+git tag -l                           # the releases
+git verify-tag <newest tag>          # "Good signature from Juan Trejo", with the fingerprint above
+git checkout <newest tag>
+git log --show-signature -3          # each commit: "Good signature", the same fingerprint
+```
+
+Solange es noch kein Release-Tag gibt, prüfen Sie stattdessen den neuesten Commit:
+`git verify-commit HEAD`. gpg fügt eventuell „This key is not certified with a trusted signature“
+hinzu (der Schlüssel ist nicht mit einer vertrauenswürdigen Signatur beglaubigt): Das ist normal
+bei einem Schlüssel, den Sie nicht selbst signiert haben. Entscheidend sind „Good signature“ (gute
+Signatur) und der Fingerabdruck. Bei allem anderen (eine BAD-Signatur, ein anderer Fingerabdruck,
+keine Signatur): Führen Sie es nicht aus.
+
+Von Hand machen Sie das nur beim ersten Mal. Danach prüfen die unten beschriebenen
+Update-Befehle jede neue Version auf dieselbe Weise, mit dem Schlüssel, der mit den Skripten
+installiert wurde.
+
+## Aktualisieren
+
+Nichts wird von selbst aktualisiert. Beide Dashboards melden, wenn eine neue Version erschienen
+ist; Sie starten das Update und tippen `UPDATE`. Jedes Update lädt die Version zuerst herunter und
+prüft ihre Signatur, dann installiert es sie erst, wenn das sicher ist. Ist es noch nicht sicher,
+wartet es im Hintergrund und prüft alle 5 Minuten, bis zu 24 Stunden lang; danach wird das Update
+beim nächsten Start installiert, bevor die betroffenen Dienste starten. Das Dashboard zeigt ein
+wartendes Update an.
+
+**Server A** (`/update` in `lnd-manager` oder `sudo lnd-update`): diese Skripte, aus dem neuesten
+signierten Release-Tag. Sicher heißt: Es läuft kein Backup, keine Wallet-Operation und keine
+`/chain`- oder `/tower`-Operation. Der Backup-Dienst wird neu installiert; LND und BTCPay laufen
+weiter (BTCPay aktualisiert sie selbst, mit `btcpay-update.sh`). Ihr Arbeitsordner wird auf
+dieselbe Version gebracht, Ihre `config` bleibt erhalten. Wenn Sie dort andere Dateien geändert
+haben, bleibt er unverändert, und das Update sagt es Ihnen; `install-scripts.sh` weigert sich
+dann, die ältere Version wieder zu installieren.
+
+**Server B** (`serverb-dashboard`):
+- `/update scripts`: diese Skripte, aus der neuesten signierten Version, erstellt mit den
+  Einstellungen, die `serverb-setup.sh` gespeichert hat. Das Backup-Gate und das Dashboard werden
+  aktualisiert; bitcoind und der Watchtower laufen weiter. Setzt einen Server B voraus, der GitHub
+  erreicht (Weg 1 oben); verwenden Sie sonst erneut `/serverb send`.
+- `/update bitcoind` und `/update tower`: das neueste Bitcoin Core bzw. LND, geprüft wie im Setup.
+  Das Update startet den Watchtower neu, deshalb geschieht es nur, während der Node von Server A
+  seine eigenen Kanäle im Auge behalten kann: Server A sendet alle 5 Minuten seinen Zustand über
+  das Gate (nur Daten), und das Update wartet, bis dieser Zustand weniger als 10 Minuten alt ist,
+  LND dort läuft, keine Zahlung unterwegs ist und kein Kanal geöffnet oder geschlossen wird. Ein
+  ausgeschalteter Server A gilt als nicht sicher: Genau dann wird der Tower gebraucht.
+
+Später kommen diese Skripte vielleicht auch als Paket aus einem APT-Repository; dieselben Befehle
+verwenden dann apt, das die Signatur des Pakets prüft.
+
+## Einstellungen ändern
 
 Bearbeiten Sie `config` in Ihrem Arbeitsordner und führen Sie dann dort `sudo ./install-scripts.sh`
 aus. Die Skripte, die als root laufen, verwenden nur die Kopien, die es in
-`/usr/local/lib/btcpay-docker-lnd-manager` installiert, sodass niemand sonst sie ändern kann. Führen
-Sie nach dem Aktualisieren der Skripte auch `/install` im Dashboard aus, um den Backup-Dienst zu
-aktualisieren.
+`/usr/local/lib/btcpay-docker-lnd-manager` installiert, sodass niemand sonst sie ändern kann. Wenn
+Sie Einstellungen geändert haben, die der Backup-Dienst verwendet, führen Sie auch `/install` im
+Dashboard aus.
 
 Die Sprache ist `UI_LANGUAGE` in `config`: `en` (Englisch) oder der Code einer beliebigen
 Übersetzung in `locale/` (`de` für Deutsch).
+
+## Unterstützung
+
+Wenn es Ihren Node schützt, unterstützen Sie bitte die Entwicklung. Bitcoin:
+
+```
+bc1qevxw36e4htzvlke3y0kqqz3qs0nfmreqhxkt73
+```
+
+Das ist auch die Spendenadresse, an die die Zahlungen der Lizenz gehen (siehe [LICENSE](LICENSE), Abschnitt 5).
 
 ## Lizenz
 

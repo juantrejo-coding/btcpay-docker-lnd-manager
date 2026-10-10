@@ -166,7 +166,8 @@ BITCOIND_DIR="/var/lib/docker/volumes/generated_bitcoin_datadir/_data"
 BITCOIND_CONTAINER_NAME="btcpayserver_bitcoind"
 REMOTE_BITCOIND_DATA_DIR="${SERVER_B_USER_HOME}/.bitcoin"
 
-# /support in both dashboards: a Bitcoin donation address and the project's page (e.g. GitHub).
+# /support in both dashboards: the project's Bitcoin donation address (the one in README.md and
+# LICENSE section 5) and the project's page (e.g. GitHub).
 # Shown as text only; nothing is fetched. Empty shows a placeholder.
-SUPPORT_BTC_ADDRESS=""
-SUPPORT_URL=""
+SUPPORT_BTC_ADDRESS="bc1qevxw36e4htzvlke3y0kqqz3qs0nfmreqhxkt73"
+SUPPORT_URL="https://github.com/juantrejo-coding/btcpay-docker-lnd-manager"

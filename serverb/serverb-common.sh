@@ -8,10 +8,14 @@ die() {
 }
 
 # Every Server B script changes the system, so it runs as root, in a terminal, with the
-# settings Server A filled in
+# settings Server A filled in. SERVERB_UPDATE=1 (serverb-update, through serverb-setup.sh
+# --update): no terminal; only what was set up before is updated, nothing new is asked for.
 need_root() {
     [[ $EUID -eq 0 ]] || die "$(T "Run it with sudo: sudo bash %s" "$0")"
-    [[ -t 0 ]] || die "$(T "Run it in a terminal: it asks before it changes things.")"
+    [[ -t 0 || "${SERVERB_UPDATE:-}" == 1 ]] || die "$(T "Run it in a terminal: it asks before it changes things.")"
+}
+updating() {
+    [[ "${SERVERB_UPDATE:-}" == 1 ]]
 }
 need_settings() {
     local v

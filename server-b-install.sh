@@ -20,7 +20,11 @@ fi
 # What it sets up, all in this user's home:
 #   ~/.local/bin/lnd-backup-gate     The only thing Server A's key may run (forced command).
 #                                    It allows: ping, list, get, and put of NEW backups.
-#                                    No delete, no overwrite, no shell. And, only while
+#                                    No delete, no overwrite, no shell. put-setup stores
+#                                    serverb.conf or serverb-install.sh in ~/serverb-setup
+#                                    (never run here; you run them with sudo). put-status
+#                                    stores Server A's LND state (data, for serverb-update).
+#                                    And, only while
 #                                    ~/chain-incoming exists, rsync into that folder alone
 #                                    (Server A's pruned blockchain for this server's bitcoind).
 #   ~/.local/bin/lnd-backup-rotate   Rotation, run by this user's cron every hour: keeps the 10
@@ -67,6 +71,13 @@ cat > "$BIN/lnd-backup-gate.new" <<'GATE'
 #   get <area> <name>          a backup's contents
 #   put <area> <name>          stores a NEW backup from stdin, prints its sha256; never
 #                              overwrites, refuses names dated in the future
+#   put-setup <name>           stores Server B's settings or scripts from stdin in
+#                              ~/serverb-setup, prints the sha256: serverb.conf or
+#                              serverb-install.sh only, replacing the one there. Never run here:
+#                              you run them yourself, with sudo (lnd-manager: /serverb send).
+#   put-status                 Server A's LND state, every 5 minutes (server-a-status.sh), into
+#                              ~/.local/state/server-a-status: serverb-update reads it before it
+#                              restarts the watchtower. A few lines of data, checked here too.
 # Areas: main, daily, monthly, pre-recovery (put: main and pre-recovery only; the milestones
 # are made here by lnd-backup-rotate). Nothing is run through a shell.
 # Also rsync into ~/chain-incoming, only while that folder exists (serverb-bitcoind-setup.sh makes
@@ -189,6 +200,49 @@ case "$VERB" in
         trap - EXIT
         sha256sum -- "$final" | cut -d' ' -f1
         log "stored $area/$name ($size bytes)"
+        ;;
+    put-setup)
+        (( ${#WORDS[@]} == 2 )) || refuse "usage: put-setup <name>"
+        name="${WORDS[1]}"
+        case "$name" in
+            serverb.conf) max=$((64 * 1024)) ;;
+            serverb-install.sh) max=$((16 * 1024 * 1024)) ;;
+            *) refuse "put-setup: only serverb.conf or serverb-install.sh" ;;
+        esac
+        dir="$HOME/serverb-setup"
+        [[ ! -L "$dir" ]] || refuse "put-setup: ~/serverb-setup is a symlink"
+        mkdir -p "$dir"
+        chmod 700 "$dir"
+        tmp="$dir/.incoming-$name.$$"
+        trap 'rm -f -- "$tmp"' EXIT
+        head -c $((max + 1)) > "$tmp"
+        size=$(stat -c %s "$tmp")
+        (( size > 0 )) || refuse "empty upload: $name"
+        (( size <= max )) || refuse "too large: $name"
+        free=$(df --output=avail -k "$dir" | tail -n 1)
+        (( free > RESERVE_KB )) || refuse "not enough free space left after $name"
+        # A rename replaces the name itself, never a file a symlink there would point to
+        mv -f -- "$tmp" "$dir/$name"
+        trap - EXIT
+        sha256sum -- "$dir/$name" | cut -d' ' -f1
+        log "stored setup file $name ($size bytes)"
+        ;;
+    put-status)
+        (( ${#WORDS[@]} == 1 )) || refuse "usage: put-status"
+        dir="$HOME/.local/state"
+        tmp="$dir/.incoming-server-a-status.$$"
+        trap 'rm -f -- "$tmp"' EXIT
+        head -c 1025 > "$tmp"
+        (( $(stat -c %s "$tmp") <= 1024 )) || refuse "put-status: too large"
+        # Only the lines server-a-status.sh writes
+        if ! LC_ALL=C awk 'NR == 1 && $0 != "server-a-status 1" { bad = 1 }
+                           NR > 1 && $0 !~ /^(lnd=[A-Z_]{1,40}|htlcs=-?[0-9]{1,9}|pending_channels=-?[0-9]{1,9})$/ { bad = 1 }
+                           END { exit (bad || NR != 4) ? 1 : 0 }' "$tmp"; then
+            refuse "put-status: not a status"
+        fi
+        mv -f -- "$tmp" "$dir/server-a-status"
+        trap - EXIT
+        echo ok
         ;;
     *)
         refuse "not allowed: ${SSH_ORIGINAL_COMMAND:-<interactive login>}"

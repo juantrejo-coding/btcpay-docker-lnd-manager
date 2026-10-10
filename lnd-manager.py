@@ -29,6 +29,7 @@ import os
 import re
 import subprocess
 import sys
+import threading
 import time
 import unicodedata
 
@@ -144,6 +145,11 @@ COMMANDS = [
      "a pruned bitcoind, the blockchain import, the watchtower, the Server B dashboard), with your "
      "settings filled in. Asks for settings config doesn't have yet. Shows each script's sha256 "
      "and how to copy them to Server B. Changes nothing on either server.")),
+    ("/serverb send", N_("send Server B its settings (and the scripts, if you choose)"), "serverb send",
+     N_("Runs serverb-scripts.sh send: asks for settings config doesn't have yet, then sends Server B "
+     "serverb.conf through the backup gate, and, if you choose, serverb-install.sh with all the "
+     "scripts made here. They go into the backup user's ~/serverb-setup; nothing runs there. Then "
+     "shows what to run on Server B with sudo: serverb-setup.sh from a git clone, or serverb-install.sh.")),
     ("/chain prune", N_("prune BTCPay's blockchain (BTCPay's presets)"), "chain prune",
      N_("Prunes BTCPay's blockchain with one of BTCPay's opt-save-storage presets: ~100, ~50, ~25 "
      "(recommended) or ~5 GB. Old blocks are deleted: BTCPay can then no longer rescan for old "
@@ -165,6 +171,11 @@ COMMANDS = [
     ("/tower status", N_("the watchtower client's towers"), "tower status",
      N_("Shows the towers BTCPay's LND uses and its statistics (lncli wtclient towers, stats). "
      "Read only.")),
+    ("/update", N_("install the newest release of these scripts"), "update",
+     N_("Runs sudo lnd-update: gets the newest release from GitHub, checks its signature against the "
+     "release key installed with the scripts, and asks you to type UPDATE. It installs it when no "
+     "backup, wallet operation or /chain or /tower operation runs (else it waits up to 24 hours, then "
+     "at the next boot), and reinstalls the backup service. LND and BTCPay keep running.")),
     ("/install", N_("rsync_gpg_backup.sh: install or update the backup service"), "install",
      N_("Installs or updates the backup service: encrypted, signed backups of LND's files to the "
      "attached volume and Server B, run as the backup user. Also its read-only root helper and "
@@ -207,6 +218,9 @@ WALLET_RUNNING_FILE = "/run/lnd-wallet.running"
 WALLET_TMUX_SESSION = "lnd-wallet"
 # lnd-wallet.sh's own tmux socket, in a folder only root can write to
 WALLET_TMUX_SOCKET = "/run/lnd-wallet-tmux/sock"
+# lnd-update check (no root): "scripts <installed> <newest>" and "pending <tag> waiting|boot <since>"
+UPDATE_TOOL = "/usr/local/bin/lnd-update"
+UPDATE_CHECK_SECONDS = 12 * 3600
 # lnd-wallet.sh's exit codes when you detach from its tmux session while it keeps running, and
 # when it only went back to an earlier operation's session without starting the one asked for
 WALLET_STILL_RUNNING = 3
@@ -449,7 +463,7 @@ def checklist(config, status, service):
     tower = (config.get("WATCHTOWER_PUBKEY", "") not in ("", "your-watchtower-public-key")
              and "opt-lnd-wtclient" in btcpay_fragments())
     step(tower, _("Watchtower on Server B (optional)"),
-         _("/serverb scripts makes Server B's scripts and lists the steps; then /tower add"),
+         _("/serverb send gives Server B its settings and says what to run there; then /tower add"),
          optional=True)
     return steps
 
@@ -466,6 +480,64 @@ def checklist_lines(steps):
     out.append(("", None))
     out.append((_("Everything above is read from config, the status file and the system; only the"), "dim"))
     out.append((_("seed and GPG key step comes from your answers in setup."), "dim"))
+    return out
+
+
+class UpdateChecker:
+    """Asks lnd-update check in the background every UPDATE_CHECK_SECONDS, so the screen never
+    waits for the network."""
+
+    def __init__(self):
+        self.found, self.checked_at, self.running = {}, 0.0, False
+        self.lock = threading.Lock()
+
+    def start(self, force=False):
+        with self.lock:
+            if self.running or (not force and time.time() - self.checked_at < UPDATE_CHECK_SECONDS):
+                return
+            self.running = True
+        threading.Thread(target=self._run, daemon=True).start()
+
+    def _run(self):
+        found = {}
+        try:
+            result = subprocess.run([UPDATE_TOOL, "check"], capture_output=True, text=True,
+                                    timeout=120, stdin=subprocess.DEVNULL)
+            for line in result.stdout.splitlines():
+                parts = line.split()
+                if len(parts) == 3 and parts[0] == "scripts":
+                    found["scripts"] = (parts[1], parts[2])
+                elif len(parts) == 4 and parts[0] == "pending":
+                    found["pending"] = (parts[1], parts[2])
+        except (OSError, subprocess.TimeoutExpired):
+            pass
+        with self.lock:
+            self.found, self.checked_at, self.running = found, time.time(), False
+
+
+UPDATES = UpdateChecker()
+
+
+def release_newer(installed, latest):
+    """True if release latest (v1.2.3) is newer than installed (v1.2.0, v1.2.0-3-gabc, unknown)."""
+    def key(v):
+        m = re.match(r"v?(\d+)\.(\d+)\.(\d+)", v)
+        return tuple(int(x) for x in m.groups()) if m else (0, 0, 0)
+    return bool(re.fullmatch(r"v\d+\.\d+\.\d+", latest or "")) and key(latest) > key(installed or "")
+
+
+def update_lines():
+    found = UPDATES.found
+    out = []
+    if "pending" in found:
+        tag, state = found["pending"]
+        if state == "boot":
+            out.append((_("Update waiting: %s is installed at the next boot (not safe for 24 hours)") % tag, "warn"))
+        else:
+            out.append((_("Update waiting: %s, installed once it is safe (no backup or wallet operation running)") % tag, "warn"))
+    elif "scripts" in found and release_newer(*found["scripts"]):
+        installed, latest = found["scripts"]
+        out.append((_("Update: these scripts %s are out (installed: %s). /update") % (latest, installed), "warn"))
     return out
 
 
@@ -578,6 +650,7 @@ def summary_lines(info):
         required = [step for step in info["checklist"] if not step[3]]
         out.append((_("Setup: %d of %d steps done. Next: %s (/checklist)")
                     % (len(required) - len(todo), len(required), todo[0][1]), "warn"))
+    out.extend(update_lines())
     out.append((_("Service: ") + service_text(info), "ok" if service_state == "active" else "fail"))
     if info.get("wallet"):
         option, started, in_tmux = info["wallet"]
@@ -725,6 +798,13 @@ def do_action(stdscr, action, config, info, styles):
         if not working or not os.path.isfile(os.path.join(working, "serverb-scripts.sh")):
             return _("serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)") % (working or _("not set"))
         command = [os.path.join(working, "serverb-scripts.sh")]
+    elif action == "serverb send":
+        working = config.get("BACKUP_SCRIPTS_FOLDER", "")
+        if not working or not os.path.isfile(os.path.join(working, "serverb-scripts.sh")):
+            return _("serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)") % (working or _("not set"))
+        command = [os.path.join(working, "serverb-scripts.sh"), "send"]
+    elif action == "update":
+        command = ["sudo", UPDATE_TOOL]
     elif action == "install":
         command = [script("rsync_gpg_backup.sh")]
     elif action == "support":
@@ -760,7 +840,7 @@ def do_action(stdscr, action, config, info, styles):
 
     if not ask(stdscr, _("Run: ") + shown(command) + " ?", styles):
         return _("Cancelled")
-    is_script = action in ("setup", "install", "serverb scripts")
+    is_script = action in ("setup", "install", "serverb scripts", "serverb send", "update")
     # chain-tower.sh, like lnd-wallet.sh, waits for Enter itself and uses the same exit codes
     is_wallet = action.startswith("wallet ") or action in ("chain prune", "chain copy", "tower add",
                                                            "tower status", "chain attach")
@@ -768,6 +848,8 @@ def do_action(stdscr, action, config, info, styles):
     code = run_outside(stdscr, command, wait=is_script,
                        pause_on_fail=not is_wallet or action in ("wallet attach", "chain attach", "tower add"))
     name = shown(command[1:] if command[0] == "sudo" else command)
+    if action == "update":
+        UPDATES.start(force=True)
     if code == 0:
         return _("✅ %s: done") % name
     if is_wallet and code == WALLET_STILL_RUNNING:
@@ -856,6 +938,7 @@ def run_dashboard(stdscr, config):
     # in the command list doesn't lag (reading it takes a moment on a busy server)
     info, read_at = None, 0.0
     while True:
+        UPDATES.start()
         if info is None or time.time() - read_at >= REFRESH_SECONDS:
             info, read_at = collect(config), time.time()
         footer = message if time.time() < message_until else _(FOOTER_KEYS)

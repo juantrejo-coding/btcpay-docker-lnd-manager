@@ -52,10 +52,10 @@ newer_version() {
 
 # Downloads Bitcoin Core $1, checks that its SHA256SUMS carries good signatures from at least $2
 # builders (keys from github.com/bitcoin-core/guix.sigs) and that the download matches, then
-# installs bitcoind and bitcoin-cli into /usr/local/bin. Stops the script if anything fails;
-# nothing is installed then.
+# installs bitcoind and bitcoin-cli into folder $3 (default /usr/local/bin; serverb-update stages
+# them in its own folder first). Stops the script if anything fails; nothing is installed then.
 bitcoin_core_install() (
-    local version="$1" min="$2" arch tarball base_url status fpr uid
+    local version="$1" min="$2" target="${3:-/usr/local/bin}" arch tarball base_url status fpr uid
     local -a signers
     [[ "$version" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]] || die "$(T "Not a Bitcoin Core release version: %s" "$version")"
     arch=$(machine_arch)
@@ -101,17 +101,21 @@ bitcoin_core_install() (
     say "✅ %s matches SHA256SUMS, which %s builders signed" "$tarball" "${#signers[@]}"
 
     tar -xzf "$tarball" || die "$(T "Could not unpack %s" "$tarball")"
-    install -o root -g root -m 755 "bitcoin-$version/bin/bitcoind" "bitcoin-$version/bin/bitcoin-cli" /usr/local/bin/ ||
+    install -o root -g root -m 755 "bitcoin-$version/bin/bitcoind" "bitcoin-$version/bin/bitcoin-cli" "$target/" ||
         die "$(T "Could not install bitcoind and bitcoin-cli")"
-    say "✅ Installed %s" "$(/usr/local/bin/bitcoind -version | head -n 1)"
+    if [[ "$target" == /usr/local/bin ]]; then
+        say "✅ Installed %s" "$(/usr/local/bin/bitcoind -version | head -n 1)"
+    else
+        say "✅ Checked and ready to install: Bitcoin Core %s" "$version"
+    fi
 )
 
 # Downloads LND $1 (a tag such as v0.21.4-beta), checks that its manifest carries good
 # signatures from at least $2 of LND's release signers (keys from the lnd repository at that
-# release) and that the download matches, then installs lnd and lncli into /usr/local/bin.
-# Stops the script if anything fails; nothing is installed then.
+# release) and that the download matches, then installs lnd and lncli into folder $3 (default
+# /usr/local/bin). Stops the script if anything fails; nothing is installed then.
 lnd_install() (
-    local version="$1" min="$2" lnd_arch tarball base_url url file signer status fpr
+    local version="$1" min="$2" target="${3:-/usr/local/bin}" lnd_arch tarball base_url url file signer status fpr
     local -a sig_urls
     local -A signers=()
     [[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?-beta$ ]] || die "$(T "Not an LND release tag: %s" "$version")"
@@ -165,8 +169,12 @@ for a in json.load(open("release.json"))["assets"]:
     grep -E "^[0-9a-f]{64}  $tarball\$" manifest.txt | sha256sum -c --quiet - || die "$(T "%s doesn't match the manifest" "$tarball")"
     say "✅ %s matches the manifest, which %s signers signed" "$tarball" "${#signers[@]}"
     tar -xzf "$tarball" || die "$(T "Could not unpack %s" "$tarball")"
-    install -o root -g root -m 755 "lnd-linux-$lnd_arch-$version/lnd" "lnd-linux-$lnd_arch-$version/lncli" /usr/local/bin/ ||
+    install -o root -g root -m 755 "lnd-linux-$lnd_arch-$version/lnd" "lnd-linux-$lnd_arch-$version/lncli" "$target/" ||
         die "$(T "Could not install lnd and lncli")"
-    say "✅ Installed %s" "$(/usr/local/bin/lnd --version)"
+    if [[ "$target" == /usr/local/bin ]]; then
+        say "✅ Installed %s" "$(/usr/local/bin/lnd --version)"
+    else
+        say "✅ Checked and ready to install: LND %s" "$version"
+    fi
 )
 # --- end of serverb-releases.sh ---

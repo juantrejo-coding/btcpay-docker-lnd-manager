@@ -22,7 +22,9 @@ back. It runs next to a BTCPay Server installed the usual way (btcpayserver-dock
 ## What it does
 
 - **Backs up LND by itself.** A service watches LND's channel backup. Each time it changes (a
-  channel opens or closes), and once an hour in any case, it makes a new backup.
+  channel opens or closes), it makes a new backup. Once an hour it also checks for a change it
+  may have missed. Nothing changed, no backup: the files LND rewrites by itself all the time don't
+  count, so quiet days don't push your last good backups out.
 - **Encrypted, signed, in two places.** Every backup is encrypted and signed with your GPG key,
   then stored on an extra disk on the server and on a second server. The copy on the second
   server is checked after it arrives.
@@ -67,7 +69,8 @@ flowchart LR
   not as root. The scripts root runs are installed so that only root can change them.
 - **The attached volume** is an extra disk on Server A, used only for backups.
 - **Server B** is a second server you control, anywhere else. Its "gate" is the only thing
-  Server A's key may run there. Server B keeps the 10 newest backups, one a day for 30 days,
+  Server A's key may run there: it stores, lists and fetches backups, and takes Server B's
+  settings for you to use. It can't delete anything or run anything else. Server B keeps the 10 newest backups, one a day for 30 days,
   and one a month for 12 months, and rotates them itself.
 - **To restore,** `lnd-wallet` looks on both places for the newest backup that decrypts, is
   signed with your key and matches its checksum, and tells you which one it found before
@@ -109,6 +112,8 @@ Type `/` for the commands. Each one is explained before it runs:
    git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git ~/btcpay-docker-lnd-manager
    ```
 
+   Then check its signature (see [Check what you download](#check-what-you-download)): root
+   runs these scripts.
 2. Check that everything is ready. This changes nothing:
 
    ```
@@ -145,6 +150,10 @@ Type `/` for the commands. Each one is explained before it runs:
       there with `sudo bash serverb-user-setup.sh`, then run `./setup_script.sh` on Server A
       again.
 
+      Or, if you clone the project on Server B too: run `lnd-manager` → `/serverb send`, which
+      can't reach Server B yet and shows `serverb.conf` instead. On Server B, in the clone, run
+      `sudo ./serverb-setup.sh --paste`, paste it, and answer `yes` to step 1 only.
+
    Either way, setup then locks the key down so it can only reach the backups (the gate).
 5. Open the dashboard:
 
@@ -179,34 +188,146 @@ on-chain. Never run a restored node while the old one still runs with the same s
 
 A watchtower keeps an eye on your channels while your node is offline.
 
-1. In the dashboard: `/serverb scripts`. It makes the Server B scripts and lists the steps in
-   order.
-2. Copy the scripts to Server B yourself, from a computer you trust, and run them there with
-   `sudo bash`: Bitcoin Core first, then the watchtower, then the Server B dashboard.
-3. To save Server B days of syncing, copy the blockchain over from Server A: `/chain copy`
-   (`/chain prune` first, if BTCPay's blockchain isn't pruned yet), then
-   `serverb-import-chain.sh` on Server B.
-4. Back on Server A: `/tower add`.
+1. In the dashboard: `/serverb send`. It sends Server B its settings (`serverb.conf`) through
+   the backup gate, into the backup user's `~/serverb-setup`. Nothing runs there by itself.
+   Choose how Server B gets the scripts:
+   1. **git clone (recommended).** Only the settings come from Server A. On Server B, as your
+      admin account:
+
+      ```
+      git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git
+      cd btcpay-docker-lnd-manager
+      ```
+
+      Check the signature ([Check what you download](#check-what-you-download)), then:
+
+      ```
+      sudo ./serverb-setup.sh <backup user>
+      ```
+
+      It reads `serverb.conf` as data (never runs it), shows every value, and makes the
+      scripts from the clone you checked. Root on Server B then runs only code you checked,
+      even if Server A was broken into.
+   2. **Scripts from Server A.** For a Server B that can't reach GitHub. Server A also sends
+      `serverb-install.sh`, all the scripts in one file. On Server B, copy it out of the backup
+      user's folder first (root won't run it from there), and compare its sha256 with the one
+      `/serverb send` showed:
+
+      ```
+      sudo -u <backup user> cat ~<backup user>/serverb-setup/serverb-install.sh > serverb-install.sh
+      sha256sum serverb-install.sh
+      sudo bash serverb-install.sh
+      ```
+
+      This is as safe as copying the scripts over by hand, and no safer: root on Server B runs
+      what Server A made. If Server A was broken into, the sha256 it shows can be faked too.
+
+   Either way it goes through the steps in order, asking before each: the backup user and
+   gate, Bitcoin Core, the blockchain import, the watchtower, the dashboard. The scripts it ran
+   stay in `/var/lib/serverb-setup/scripts`. A backup gate older than `/serverb send` refuses
+   the settings: then use way 1 with `--paste` (it shows the settings to paste), and step 1
+   updates the gate.
+2. To save Server B days of syncing, copy the blockchain over from Server A: `/chain copy`
+   (`/chain prune` first, if BTCPay's blockchain isn't pruned yet). The steps stop after
+   Bitcoin Core until the copy is done; run the same command on Server B again to go on.
+3. Back on Server A: `/tower add`, with the tower's address the watchtower step showed.
+
+`/serverb scripts` still makes the scripts one by one, to copy to Server B yourself.
 
 On Server B, log in as the dashboard's admin account and run `serverb-dashboard`. It has its
-own `/checklist`. It also says when a new Bitcoin Core or LND release is out: `/update bitcoind`
-or `/update tower` installs it, after checking its signatures the same way setup did. Nothing
-updates by itself.
+own `/checklist`, and says when a new release of Bitcoin Core, LND or these scripts is out (see
+[Updating](#updating)).
 
 ## Keep these safe, offline
 
 - **Your LND seed.** It brings back your funds.
 - **The GPG private key.** It opens the backups.
 
-## Changing settings or updating
+## Check what you download
+
+Every commit and release tag is signed with this GPG key:
+
+```
+Juan Trejo <juantrejo_coding@proton.me>
+93F4 433D CE56 353B D7E6  9D42 CBFE 4123 CF41 21FA
+```
+
+A fingerprint printed next to the code proves nothing by itself: whoever could change the code
+could change this page too. So get the key from two places and check that both show the
+fingerprint above:
+
+```
+curl -fsSL https://github.com/juantrejo-coding.gpg | gpg --show-keys
+gpg --keyserver hkps://keys.openpgp.org --recv-keys 93F4433DCE56353BD7E69D42CBFE4123CF4121FA
+gpg --fingerprint 93F4433DCE56353BD7E69D42CBFE4123CF4121FA
+```
+
+Then, in the clone:
+
+```
+git tag -l                           # the releases
+git verify-tag <newest tag>          # "Good signature from Juan Trejo", with the fingerprint above
+git checkout <newest tag>
+git log --show-signature -3          # each commit: "Good signature", the same fingerprint
+```
+
+Without a release tag yet, check the newest commit instead: `git verify-commit HEAD`. gpg may add
+"This key is not certified with a trusted signature": that is normal for a key you haven't
+signed yourself. What counts is "Good signature" and the fingerprint. Anything else (a BAD
+signature, another fingerprint, no signature): don't run it.
+
+You only do this by hand the first time. After that, the update commands below check every new
+release the same way, against the key installed with the scripts.
+
+## Updating
+
+Nothing updates by itself. Both dashboards say when a new release is out; you start the update and
+type `UPDATE`. Each update first downloads the release and checks its signature, then installs it
+only when that is safe. If it isn't safe yet, it waits in the background and checks every 5
+minutes, for up to 24 hours; after that the update is installed at the next boot, before the
+services it touches start. The dashboard shows an update that is waiting.
+
+**Server A** (`/update` in `lnd-manager`, or `sudo lnd-update`): these scripts, from the newest
+signed release tag. Safe means no backup, no wallet operation and no `/chain` or `/tower`
+operation is running. The backup service is reinstalled; LND and BTCPay keep running (BTCPay
+updates them itself, with `btcpay-update.sh`). Your working folder is moved to the same release,
+your `config` kept. If you changed other files there, it is left as it is and the update says so;
+`install-scripts.sh` then refuses to put the older version back.
+
+**Server B** (`serverb-dashboard`):
+- `/update scripts`: these scripts, from the newest signed release, made with the settings
+  `serverb-setup.sh` saved. The backup gate and the dashboard are updated; bitcoind and the
+  watchtower keep running. Needs a Server B that can reach GitHub (way 1 above); otherwise use
+  `/serverb send` again.
+- `/update bitcoind` and `/update tower`: the newest Bitcoin Core or LND, checked like setup
+  checks them. Updating restarts the watchtower, so it only happens while Server A's node can
+  watch its own channels: Server A sends its state every 5 minutes through the gate (data only),
+  and the update waits until that state is less than 10 minutes old, LND runs there, no payment
+  is in flight and no channel is being opened or closed. A Server A that is off counts as not
+  safe: that is when the tower is needed.
+
+Later, these scripts may also come as a package from an APT repository; the same commands will then
+use apt, which checks the package's signature.
+
+## Changing settings
 
 Edit `config` in your working folder, then run `sudo ./install-scripts.sh` there. The scripts
 that run as root only use the copies it installs in `/usr/local/lib/btcpay-docker-lnd-manager`,
-so nobody else can change them. After updating the scripts (`git pull`), also run `/install` in
-the dashboard to update the backup service.
+so nobody else can change them. After changing settings the backup service uses, also run
+`/install` in the dashboard.
 
 The language is `UI_LANGUAGE` in `config`: `en` (English), or the code of any translation in
 `locale/` (`es`, `fr`, `de`).
+
+## Support
+
+If it keeps your node safe, please support its development. Bitcoin:
+
+```
+bc1qevxw36e4htzvlke3y0kqqz3qs0nfmreqhxkt73
+```
+
+This is also the donation address the license's payments go to (see [LICENSE](LICENSE), section 5).
 
 ## License
 

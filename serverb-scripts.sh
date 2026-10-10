@@ -10,14 +10,20 @@
 #   serverb-watchtower-setup.sh  LND as a watchtower for this node
 #   serverb-dashboard-setup.sh   the Server B dashboard and its admin account
 #
+#   ./serverb-scripts.sh send   (lnd-manager: /serverb send) sends Server B its settings through
+#   the backup gate (put-setup: into the backup user's ~/serverb-setup, nothing is run there):
+#     1. serverb.conf only: on Server B, serverb-setup.sh from a git clone makes the scripts
+#     2. serverb.conf and serverb-install.sh: all the scripts in one file, made here
+#   Either way you run it on Server B yourself, with sudo. A gate older than put-setup refuses:
+#   then serverb.conf is shown to paste into serverb-setup.sh --paste.
+#
 #   ./serverb-scripts.sh tower-client   (lnd-manager: /tower add) asks for the tower's public key
 #   and address if config lacks them, installs config, then runs chain-tower.sh tower-add, which
 #   turns on BTCPay's watchtower client and adds the tower.
 #
 # Settings they need that are empty in config are asked for and saved there. The scripts go into
 # SERVER_B_SCRIPTS_DIR; copy them to Server B yourself and run them there with sudo. Server A's
-# backup key can't put them there: Server B would then run with sudo whatever a compromised
-# Server A had put there.
+# backup key never runs anything on Server B: root there runs only what you start yourself.
 
 if ! SCRIPT_DIR=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")"); then
     echo "❌ Could not determine this script's folder"
@@ -48,41 +54,18 @@ source "$SCRIPT_DIR/config-lib.sh" || { echo "❌ Failed to load $SCRIPT_DIR/con
 source "$SCRIPT_DIR/i18n.sh" || { echo "❌ Failed to load $SCRIPT_DIR/i18n.sh"; exit 1; }
 i18n_load
 upgrade_config || exit 1
+declare -A V=()
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/serverb-lib.sh" || { echo "❌ Failed to load $SCRIPT_DIR/serverb-lib.sh"; exit 1; }
 
 WHICH="${1:-all}"
 case "$WHICH" in
-    user | bitcoind | import | tower | dashboard | all | tower-client) ;;
+    user | bitcoind | import | tower | dashboard | all | tower-client | send) ;;
     -h | --help) sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) say "❌ Unknown script: %s (user, bitcoind, import, tower, dashboard or all)" "$WHICH" >&2; exit 2 ;;
+    *) say "❌ Unknown script: %s (user, bitcoind, import, tower, dashboard, all or send)" "$WHICH" >&2; exit 2 ;;
 esac
 wanted() {
-    [[ "$WHICH" == all || "$WHICH" == "$1" ]]
-}
-
-# === Checks for the settings asked for here ===
-prune_problem() {
-    if [[ ! "$1" =~ ^[0-9]+$ ]] || (( 10#$1 < 550 )); then
-        say "enter a size in MB, at least 550 (Bitcoin Core's minimum)"
-    fi
-}
-ipv4_problem() {
-    local IFS=. part
-    if [[ ! "$1" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ && ! "$1" =~ ^[0-9A-Fa-f:]{2,39}$ ]]; then
-        say "enter an IPv4 or IPv6 address"
-        return
-    fi
-    if [[ "$1" == *.* ]]; then
-        for part in $1; do
-            (( 10#$part <= 255 )) || { say "enter an IPv4 or IPv6 address"; return; }
-        done
-    fi
-}
-admin_user_problem() {
-    if [[ ! "$1" =~ ^[a-z][a-z0-9_-]{0,31}$ ]]; then
-        say "use up to 32 lowercase letters, digits, _ or -, starting with a letter"
-    elif [[ "$1" == root || "$1" == bitcoin || "$1" == lndtower || "$1" == "${SERVER_B_USER:-}" ]]; then
-        say "use an account of its own, not root, bitcoin, lndtower or SERVER_B_USER"
-    fi
+    [[ "$WHICH" == all || "$WHICH" == send || "$WHICH" == "$1" ]]
 }
 
 # Asks for $1 when config has no value for it (or only the placeholder $4), saves the answer
@@ -97,7 +80,6 @@ setting() {
     save_config_value "$name" "$ASKED_VALUE" || exit 1
 }
 
-declare -A V=()
 if wanted user || wanted bitcoind || wanted import || wanted dashboard; then
     if [[ -z "$SERVER_B_USER" ]]; then
         say "SERVER_B_USER is not set in config: the user on Server B that holds the backups."
@@ -190,92 +172,85 @@ if [[ -L "$OUT" ]]; then
 fi
 install -d -m 700 "$OUT" || exit 1
 
-# Fills in a template: the settings between "# @@SETTINGS" and "# @@END-SETTINGS" get their
-# values (quoted for bash), "# @@INCLUDE f" and "# @@EMBED f" are replaced by file f (an embedded
-# file filled in the same way first, so its own INCLUDE lines are replaced too).
-# Translations (i18n.sh), in config's UI_LANGUAGE:
-#   "# @@I18N"           UI_LANGUAGE, and the translations of the messages in this template and
-#                        its INCLUDEs, built in (read with i18n_read)
-#   "# @@CATALOG f ..."  the catalog lines the messages of templates f ... use (for a here-
-#                        document that installs them as a file)
-# Server B scripts are single files copied over by hand, so they carry what they need.
-catalog_for() {
-    local cat="$SCRIPT_DIR/locale/${UI_LANGUAGE:-en}.cat"
-    [[ "${UI_LANGUAGE:-en}" != en && -f "$cat" ]] || return 0
-    python3 "$SCRIPT_DIR/tools/i18n.py" subset "$cat" "$@"
-}
-render() {
-    local template="$1" line name in_settings=false file next content
-    local -a lines sources names
-    mapfile -t lines < "$template"
-    local i
-    # This template and the files it includes: their messages are the ones # @@I18N builds in
-    sources=("$template")
-    for line in "${lines[@]}"; do
-        if [[ "$line" =~ ^#\ @@INCLUDE\ ([A-Za-z0-9._-]+)$ ]]; then
-            file="$TEMPLATES/${BASH_REMATCH[1]}"
-            [[ -f "$file" ]] || file="$SCRIPT_DIR/${BASH_REMATCH[1]}"
-            sources+=("$file")
-        fi
-    done
-    for (( i = 0; i < ${#lines[@]}; i++ )); do
-        line="${lines[$i]}"
-        if [[ "$line" == "# @@I18N" ]]; then
-            printf 'UI_LANGUAGE=%q\n' "${UI_LANGUAGE:-en}"
-            content=$(catalog_for "${sources[@]}") || return 1
-            if [[ -n "$content" ]]; then
-                printf '%s\n' "i18n_read <<'I18N_CATALOG_EOF'" "$content" "I18N_CATALOG_EOF"
-            fi
-        elif [[ "$line" =~ ^#\ @@CATALOG((\ [A-Za-z0-9._-]+)+)$ ]]; then
-            read -r -a names <<< "${BASH_REMATCH[1]}"
-            content=$(catalog_for "${names[@]/#/$TEMPLATES/}") || return 1
-            [[ -n "$content" ]] && printf '%s\n' "$content"
-        elif [[ "$line" == "# @@SETTINGS" ]]; then
-            in_settings=true
-            say "# Filled in on Server A by serverb-scripts.sh, %s" "$(date '+%Y-%m-%d %H:%M')"
-        elif [[ "$line" == "# @@END-SETTINGS" ]]; then
-            in_settings=false
-        elif $in_settings && [[ "$line" =~ ^([A-Z_][A-Z0-9_]*)= ]]; then
-            name="${BASH_REMATCH[1]}"
-            if [[ -z "${V[$name]+set}" ]]; then
-                say "❌ %s needs %s, which serverb-scripts.sh didn't set" "$template" "$name" >&2
-                return 1
-            fi
-            printf '%s=%q\n' "$name" "${V[$name]}"
-        elif [[ "$line" =~ ^#\ @@(INCLUDE|EMBED)\ ([A-Za-z0-9._-]+)$ ]]; then
-            file="$TEMPLATES/${BASH_REMATCH[2]}"
-            [[ -f "$file" ]] || file="$SCRIPT_DIR/${BASH_REMATCH[2]}"
-            [[ -f "$file" ]] || { say "❌ %s is missing" "${BASH_REMATCH[2]}" >&2; return 1; }
-            if [[ "${BASH_REMATCH[1]}" == EMBED ]]; then
-                name="${BASH_REMATCH[2]}"
-                content=$(render "$file") || return 1
-                # An embedded file must not hold the line that ends its here-document
-                next="${lines[$((i + 1))]:-}"
-                if grep -qxF -- "$next" <<< "$content"; then
-                    say "❌ %s holds the line %s" "$name" "$next" >&2
-                    return 1
-                fi
-                printf '%s\n' "$content"
-            else
-                cat -- "$file"
-            fi
-        else
-            printf '%s\n' "$line"
-        fi
-    done
+RENDER_NOTE=$(T "# Filled in on Server A by serverb-scripts.sh, %s" "$(date '+%Y-%m-%d %H:%M')")
+make_script() {
+    make_serverb_script "$1" "$OUT" || exit 1
+    MADE+=("$1")
 }
 
-make_script() {
-    local name="$1" target="$OUT/$1"
-    if ! render "$TEMPLATES/$name" > "$target.new" || ! bash -n "$target.new"; then
-        rm -f "$target.new"
-        say "❌ Could not make %s" "$name"
-        exit 1
-    fi
-    chmod 600 "$target.new"
-    mv -f "$target.new" "$target"
-    MADE+=("$name")
+# === Sending them to Server B (send) ===
+# Stores file $2 as $1 in the backup user's ~/serverb-setup through the gate; prints the sha256
+# the gate answers
+gate_put_setup() {
+    timeout 300 sudo -u "$SERVER_A_USER" -- "${SSH_COMMAND_ARR[0]}" -o BatchMode=yes \
+        "${SSH_COMMAND_ARR[@]:1}" put-setup "$1" < "$2"
 }
+show_conf_to_paste() {
+    say "To paste it instead: on Server B, in a git clone of the project, run sudo ./serverb-setup.sh --paste"
+    say "and paste these lines:"
+    echo
+    cat -- "$OUT/serverb.conf"
+    echo
+}
+if [[ "$WHICH" == send ]]; then
+    # Only the key itself: Server B checks it is nothing more
+    read -r key_type key_blob _ <<< "${V[SERVER_A_KEY]}"
+    V[SERVER_A_KEY]="$key_type $key_blob"
+    V[SOURCE_VERSION]=$(git -C "$SCRIPT_DIR" describe --tags --always --dirty 2>/dev/null || true)
+    [[ "${V[SOURCE_VERSION]}" =~ ^[A-Za-z0-9._+-]{1,80}$ ]] || V[SOURCE_VERSION]=""
+    echo
+    say "What to send to Server B (into %s's ~/serverb-setup; nothing is run there):" "$SERVER_B_USER"
+    say "   1. serverb.conf only. On Server B you get the scripts with git clone and check their"
+    say "      signature yourself, so root there runs only code you checked (recommended)."
+    say "   2. serverb.conf and serverb-install.sh, all the scripts made here, in one file. For a Server B"
+    say "      without GitHub. As safe as copying them by hand: root there runs what this server made."
+    while :; do
+        read -r -p "$(T "Choose 1 or 2: ")" choice || exit 1
+        [[ "$choice" == 1 || "$choice" == 2 ]] && break
+    done
+    write_serverb_conf > "$OUT/serverb.conf.new" && chmod 600 "$OUT/serverb.conf.new" &&
+        mv -f "$OUT/serverb.conf.new" "$OUT/serverb.conf" || { say "❌ Could not write %s" "$OUT/serverb.conf"; exit 1; }
+    SEND=(serverb.conf)
+    if [[ "$choice" == 2 ]]; then
+        make_script serverb-install.sh
+        SEND+=(serverb-install.sh)
+    fi
+    echo
+    for f in "${SEND[@]}"; do
+        local_sum=$(sha256sum -- "$OUT/$f" | cut -d' ' -f1)
+        rc=0
+        answer=$(gate_put_setup "$f" "$OUT/$f" 2> "$OUT/.send-error") || rc=$?
+        error=$(LC_ALL=C tr -d '\000-\010\013-\037\177' < "$OUT/.send-error" | head -n 3)
+        rm -f -- "$OUT/.send-error"
+        if (( rc != 0 )); then
+            say "❌ Sending %s failed: %s" "$f" "$error"
+            if [[ "$error" == *"not allowed: put-setup"* ]]; then
+                say "   Server B's backup gate is older than /serverb send. Step 1 on Server B updates it."
+            fi
+            show_conf_to_paste
+            exit 1
+        fi
+        if [[ "$answer" != "$local_sum" ]]; then
+            say "❌ Server B stored %s with another sha256 (%s, here %s): send it again" "$f" "${answer//[^0-9a-f]/}" "$local_sum"
+            exit 1
+        fi
+        say "✅ Sent %s, sha256 %s" "$f" "$local_sum"
+    done
+    echo
+    say "On Server B, as your admin account (the one with sudo):"
+    if [[ "$choice" == 1 ]]; then
+        say "   git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git"
+        say "   cd btcpay-docker-lnd-manager    then check the signature (README.md, \"Check what you download\")"
+        say "   sudo ./serverb-setup.sh %s" "$SERVER_B_USER"
+    else
+        say "   sudo -u %s cat ~%s/serverb-setup/serverb-install.sh > serverb-install.sh" "$SERVER_B_USER" "$SERVER_B_USER"
+        say "   sha256sum serverb-install.sh     must be %s" "$(sha256sum -- "$OUT/serverb-install.sh" | cut -d' ' -f1)"
+        say "   sudo bash serverb-install.sh"
+    fi
+    say "It shows the settings, then goes through the steps, asking before each. Run it again after"
+    say "lnd-manager /chain copy (if you chose to copy the blockchain) to go on with the import."
+    exit 0
+fi
 
 MADE=()
 wanted user && make_script serverb-user-setup.sh

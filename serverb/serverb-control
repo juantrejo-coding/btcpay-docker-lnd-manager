@@ -7,8 +7,9 @@ commands, without a shell or a pager (from a pager you could start a root shell)
   serverb-control start|stop|restart bitcoind|tower
                                                   (restart bitcoind restarts a running tower too)
   serverb-control log bitcoind|tower              the last lines of its log
-  serverb-control update bitcoind|tower           installs the latest release (serverb-update),
-                                                  then restarts it; shows its progress
+  serverb-control update bitcoind|tower|scripts   installs the latest release (serverb-update):
+                                                  bitcoind or the tower when Server A says it is
+                                                  safe, else later; shows its progress
 """
 import datetime
 import json
@@ -182,7 +183,7 @@ def main():
         sys.exit(code)
     elif len(args) == 2 and args[0] == "log" and args[1] in SERVICES:
         log(args[1])
-    elif len(args) == 2 and args[0] == "update" and args[1] in SERVICES:
+    elif len(args) == 2 and args[0] == "update" and args[1] in ("bitcoind", "tower", "scripts"):
         # Its output goes straight to the dashboard's terminal, so you see the progress
         try:
             os.execve(UPDATE, [UPDATE, "install", args[1]], ENV)

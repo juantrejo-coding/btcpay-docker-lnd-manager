@@ -102,11 +102,12 @@ ssh_port_problem() {
 # new settings are added at the end with their defaults. Each change is listed.
 CONFIG_ADDITIONS=$(cat <<'ADDITIONS'
 @@ SUPPORT_BTC_ADDRESS
-# /support in both dashboards: a Bitcoin donation address and the project's page (e.g. GitHub).
+# /support in both dashboards: the project's Bitcoin donation address (the one in README.md and
+# LICENSE section 5) and the project's page (e.g. GitHub).
 # Shown as text only; nothing is fetched. Empty shows a placeholder.
-SUPPORT_BTC_ADDRESS=""
+SUPPORT_BTC_ADDRESS="bc1qevxw36e4htzvlke3y0kqqz3qs0nfmreqhxkt73"
 @@ SUPPORT_URL
-SUPPORT_URL=""
+SUPPORT_URL="https://github.com/juantrejo-coding/btcpay-docker-lnd-manager"
 @@ SERVER_B_SCRIPTS_DIR
 # Server B scripts (serverb-scripts.sh, lnd-manager: /serverb scripts). Empty ones are asked for.
 # Where the scripts are made, to copy to Server B yourself
