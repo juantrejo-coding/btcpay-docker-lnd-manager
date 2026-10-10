@@ -44,10 +44,22 @@ Tapez `/` pour voir les commandes ; chacune explique ce qu'elle fait, et ce qu'e
 
 ![La liste des commandes](docs/images/commands.png)
 
-| | |
-|---|---|
-| ![La question de la langue](docs/images/languages.png) | ![La liste des étapes](docs/images/checklist.png) |
-| ![Les outils du portefeuille](docs/images/wallet.png) | ![Le tableau de bord du serveur B](docs/images/serverb-dashboard.png) |
+
+On choisit d'abord la langue :
+
+![La question de la langue](docs/images/languages.png)
+
+La liste des étapes montre ce qui est fait et ce qui reste à faire :
+
+![La liste des étapes](docs/images/checklist.png)
+
+Les outils du portefeuille :
+
+![Les outils du portefeuille](docs/images/wallet.png)
+
+Le tableau de bord du serveur B :
+
+![Le tableau de bord du serveur B](docs/images/serverb-dashboard.png)
 
 ## Avant de commencer
 

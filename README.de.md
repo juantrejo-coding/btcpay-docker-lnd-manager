@@ -45,10 +45,22 @@ Tippen Sie `/` für die Befehle; jeder erklärt, was er tut und was er stoppt, b
 
 ![Die Befehlsliste](docs/images/commands.png)
 
-| | |
-|---|---|
-| ![Die Sprachfrage](docs/images/languages.png) | ![Die Checkliste](docs/images/checklist.png) |
-| ![Die Wallet-Werkzeuge](docs/images/wallet.png) | ![Das Dashboard auf Server B](docs/images/serverb-dashboard.png) |
+
+Zuerst wählen Sie die Sprache:
+
+![Die Sprachfrage](docs/images/languages.png)
+
+Die Checkliste zeigt, was erledigt ist und was noch fehlt:
+
+![Die Checkliste](docs/images/checklist.png)
+
+Die Wallet-Werkzeuge:
+
+![Die Wallet-Werkzeuge](docs/images/wallet.png)
+
+Das Dashboard auf Server B:
+
+![Das Dashboard auf Server B](docs/images/serverb-dashboard.png)
 
 ## Bevor Sie beginnen
 

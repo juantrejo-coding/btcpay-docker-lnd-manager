@@ -86,13 +86,28 @@ Type `/` for the commands. Each one is explained before it runs:
 
 ![The command list](docs/images/commands.png)
 
-| Before anything changes, setup checks the server | The checklist shows what's done and what's next |
-|---|---|
-| ![setup_script.sh --check](docs/images/setup-check.png) | ![/checklist](docs/images/checklist.png) |
-| **The wallet tools** | **The dashboard on Server B** |
-| ![lnd-wallet](docs/images/wallet.png) | ![serverb-dashboard](docs/images/serverb-dashboard.png) |
-| **Setup asks for the language first** | **Everything in that language, the log too** |
-| ![The language question](docs/images/languages.png) | ![The dashboard in Spanish](docs/images/dashboard-es.png) |
+
+Before anything changes, setup checks the server:
+
+![setup_script.sh --check](docs/images/setup-check.png)
+
+The checklist shows what's done and what's next:
+
+![/checklist](docs/images/checklist.png)
+
+The wallet tools:
+
+![lnd-wallet](docs/images/wallet.png)
+
+The dashboard on Server B:
+
+![serverb-dashboard](docs/images/serverb-dashboard.png)
+
+Setup asks for the language first. Then everything is in that language, the log too:
+
+![The language question](docs/images/languages.png)
+
+![The dashboard in Spanish](docs/images/dashboard-es.png)
 
 ## Before you start
 

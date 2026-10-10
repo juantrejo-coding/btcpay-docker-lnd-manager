@@ -44,10 +44,22 @@ Escriba `/` para ver los comandos; cada uno explica qué hace, y qué detiene, a
 
 ![La lista de comandos](docs/images/commands.png)
 
-| | |
-|---|---|
-| ![La pregunta del idioma](docs/images/languages.png) | ![La lista de pasos](docs/images/checklist.png) |
-| ![Las herramientas de la billetera](docs/images/wallet.png) | ![El panel del Servidor B](docs/images/serverb-dashboard.png) |
+
+Primero se elige el idioma:
+
+![La pregunta del idioma](docs/images/languages.png)
+
+La lista de pasos muestra lo que ya está hecho y lo que falta:
+
+![La lista de pasos](docs/images/checklist.png)
+
+Las herramientas de la billetera:
+
+![Las herramientas de la billetera](docs/images/wallet.png)
+
+El panel del Servidor B:
+
+![El panel del Servidor B](docs/images/serverb-dashboard.png)
 
 ## Antes de empezar
 
