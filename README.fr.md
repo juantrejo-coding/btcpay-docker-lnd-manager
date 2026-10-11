@@ -157,7 +157,8 @@ sudo lnd-wallet channels     # les fonds et les canaux
 
 Ou utilisez `/wallet` dans le tableau de bord. Le script trouve la sauvegarde valide la plus
 récente sur le volume attaché ou sur le serveur B, et conserve une sauvegarde de sécurité du
-portefeuille actuel avant de modifier quoi que ce soit. Restaurer les canaux demande au pair de
+portefeuille actuel avant de modifier quoi que ce soit. Le serveur B garde jusqu'à 20 sauvegardes de
+sécurité (50 Go) ; quand il est plein, supprimez-y les anciennes. Restaurer les canaux demande au pair de
 chaque canal de fermer ce canal, et votre part revient on-chain.
 
 ## En option : une watchtower sur le serveur B

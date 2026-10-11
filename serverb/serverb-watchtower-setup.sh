@@ -179,7 +179,7 @@ else
         rest "https://$REST/v1/state" >/dev/null 2>&1 && break
         sleep 2
     done
-    state=$(rest "https://$REST/v1/state" 2>/dev/null | python3 -c 'import json,sys; print(json.load(sys.stdin).get("state",""))' 2>/dev/null || true)
+    state=$(rest "https://$REST/v1/state" 2>/dev/null | python3 -I -c 'import json,sys; print(json.load(sys.stdin).get("state",""))' 2>/dev/null || true)
 fi
 if [[ "$state" == NON_EXISTING ]]; then
     seed_json=$(rest "https://$REST/v1/genseed") || die "$(T "LND could not make a seed")"
@@ -187,12 +187,12 @@ if [[ "$state" == NON_EXISTING ]]; then
     say "🔑 The tower's seed. Write it down: it is the tower's identity (its public key). Without it,"
     say "   a lost tower is replaced by a new one with a new key, which Server A then adds instead."
     say "-----------------BEGIN TOWER SEED-----------------"
-    python3 -c 'import json,sys; w=json.load(sys.stdin)["cipher_seed_mnemonic"]; [print("%2d. %-12s" % (i+1, x), end="\n" if i % 4 == 3 else "") for i, x in enumerate(w)]' <<< "$seed_json"
+    python3 -I -c 'import json,sys; w=json.load(sys.stdin)["cipher_seed_mnemonic"]; [print("%2d. %-12s" % (i+1, x), end="\n" if i % 4 == 3 else "") for i, x in enumerate(w)]' <<< "$seed_json"
     say "------------------END TOWER SEED------------------"
     confirm_phrase "I WROTE IT DOWN" "$(T "Type 'I WROTE IT DOWN' once you have: ")" || die "$(T "Stopped: the tower's wallet was not made. Run this script again.")"
     clear 2>/dev/null || true
     # The password read as lndtower too
-    python3 -c '
+    python3 -I -c '
 import base64, json, sys
 seed = json.load(sys.stdin)["cipher_seed_mnemonic"]
 pw = open(sys.argv[1], "rb").read().strip()
@@ -248,19 +248,18 @@ else
 fi
 
 # === What Server A needs ===
-lncli_ro() {
-    as_tower /usr/local/bin/lncli --lnddir="$LND_HOME" --rpcserver="$RPC" \
-        --macaroonpath="$NET_DIR/readonly.macaroon" "$@"
-}
+# An array, not a function: timeout runs programs, not shell functions
+LNCLI_RO=(runuser -u lndtower -- /usr/local/bin/lncli --lnddir="$LND_HOME" --rpcserver="$RPC"
+          --macaroonpath="$NET_DIR/readonly.macaroon")
 echo
 info=""
 for _ in $(seq 1 36); do
-    info=$(timeout 20 lncli_ro tower info 2>/dev/null) && break
+    info=$(timeout 20 "${LNCLI_RO[@]}" tower info 2>/dev/null) && break
     info=""
     sleep 5
 done
 if [[ -n "$info" ]]; then
-    pubkey=$(python3 -c 'import json,sys; print(json.load(sys.stdin)["pubkey"])' <<< "$info")
+    pubkey=$(python3 -I -c 'import json,sys; print(json.load(sys.stdin)["pubkey"])' <<< "$info")
     say "✅ The watchtower runs. For Server A (lnd-manager: /tower add):"
     echo "   $pubkey@$WATCHTOWER_ADDRESS:$WATCHTOWER_PORT"
 else

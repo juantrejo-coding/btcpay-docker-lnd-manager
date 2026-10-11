@@ -26,6 +26,8 @@ if ! SCRIPT_DIR=$(dirname -- "$(realpath -- "${BASH_SOURCE[0]}")"); then
 fi
 CONFIG_FILE="$SCRIPT_DIR/config"
 [[ -f "$CONFIG_FILE" ]] || { echo "❌ Configuration file not found at $CONFIG_FILE" >&2; exit 1; }
+# Not in the caller's folder (sudo keeps it): nothing run from here may pick up files there
+cd /
 root_owned_chain() {
     local path
     for path in "$@"; do
@@ -81,9 +83,13 @@ lock_busy() {
     [[ -e "$1" ]] || return 1
     ! flock -n "$1" true 2>/dev/null
 }
+# The backup service's status file is its user's (a folder it owns): read as that user, briefly,
+# so root never follows a link there or waits on a pipe
 backup_busy_reason() {
-    local job
-    job=$(sed -n 's/^job=//p' "${STATUS_FILE:-/var/lib/rsync_gpg_backup/status}" 2>/dev/null | head -n 1 || true)
+    local file="${STATUS_FILE-/var/lib/rsync_gpg_backup/status}" job=""
+    [[ -n "$file" && -n "${SERVER_A_USER:-}" ]] || return 0
+    job=$(runuser -u "$SERVER_A_USER" -- timeout 5 head -c 4096 -- "$file" 2>/dev/null |
+          sed -n 's/^job=//p' | head -n 1 | LC_ALL=C tr -cd '[:print:]' || true)
     if [[ -n "$job" && "$job" != idle ]]; then
         T "the backup service is busy (%s)" "$job"
     fi
@@ -106,7 +112,8 @@ safe_check() {
 update_working_folder() {
     local tag="$1" folder="${BACKUP_SCRIPTS_FOLDER:-}" user="${MAIN_USER:-}" changes
     [[ -n "$folder" && -n "$user" && -d "$folder/.git" ]] || return 0
-    as_main() { runuser -u "$user" -- "$@"; }
+    # Without the update's lock descriptors: a git process left running must not hold them
+    as_main() { runuser -u "$user" -- "$@" 7>&- 8>&- 9>&-; }
     changes=$(as_main git -C "$folder" status --porcelain --untracked-files=no 2>/dev/null | grep -vE '^ ?M config$' || true)
     if [[ -n "$changes" ]]; then
         log_message "$(T "⚠️ Your working folder %s has changes of yours, so it was left as it is. Update it yourself before you run install-scripts.sh there again: git fetch --tags && git checkout %s" "$folder" "$tag")"
@@ -130,20 +137,33 @@ update_working_folder() {
     fi
 }
 
+# Drops a staged release (and its waiting note): applied, or no longer newer than what is installed
+drop_stage() {
+    rm -f -- "$PENDING_FILE"
+    rm -rf -- "$STATE/src"
+}
+
 apply_staged() {
     local at_boot="${1:-0}" tag
     [[ -f "$STATE/src/.release" ]] || die "$(T "No update is waiting")"
     tag=$(head -n 1 "$STATE/src/.release")
+    # Waited long enough for something newer to be installed meanwhile: never go back
+    if ! release_newer "$(installed_version)" "$tag"; then
+        log_message "$(T "ℹ️ %s waited to be installed, but %s is installed already: dropped" "$tag" "$(installed_version)")"
+        drop_stage
+        return 0
+    fi
     log_message "$(T "🔄 Installing %s..." "$tag")"
-    # The staged copy installs itself, keeping the installed config
-    bash "$STATE/src/install-scripts.sh" --update "$tag" "$DEST/config" || die "$(T "install-scripts.sh of %s failed; the backup service wasn't touched" "$tag")"
+    # The staged copy installs itself, keeping the installed config. The children get none of the
+    # lock descriptors.
+    bash "$STATE/src/install-scripts.sh" --update "$tag" "$DEST/config" 7>&- 8>&- 9>&- ||
+        die "$(T "install-scripts.sh of %s failed; the backup service wasn't touched" "$tag")"
     log_message "$(T "🔄 Reinstalling the backup service...")"
-    if ! (umask 022 && LND_UPDATE_AT_BOOT="$at_boot" "$DEST/rsync_gpg_backup.sh" < /dev/null >> "$LOG_FILE" 2>&1); then
+    if ! (umask 022 && LND_UPDATE_AT_BOOT="$at_boot" "$DEST/rsync_gpg_backup.sh" < /dev/null >> "$LOG_FILE" 2>&1 7>&- 8>&- 9>&-); then
         die "$(T "The backup service installer failed (details in %s). Run it by hand: sudo %s/rsync_gpg_backup.sh" "$LOG_FILE" "$DEST")"
     fi
     update_working_folder "$tag"
-    rm -f -- "$PENDING_FILE"
-    rm -rf -- "$STATE/src"
+    drop_stage
     # On disk before anything else happens (at boot, a power cut right after would lose it)
     sync
     log_message "$(T "✅ Updated to %s" "$tag")"
@@ -182,10 +202,9 @@ case "${1:-install}" in
     install)
         need_root
         [[ -t 0 ]] || die "$(T "lnd-update needs a terminal: you type UPDATE to confirm")"
-        # A wait from an earlier run is replaced by this one
-        systemctl stop lnd-update-wait.service 2>/dev/null || true
+        # The lock is only held while staging or installing; a waiting update doesn't hold it
         exec 9> /run/lnd-update.lock
-        flock -n 9 || die "$(T "Another update is running")"
+        flock -n 9 || die "$(T "An update is being installed right now: lnd-update check shows when it is done")"
         source_kind=$(update_source "$DEST/lnd-update.sh")
         [[ "$source_kind" == git ]] || die "$(T "These scripts come from a package: update them with apt (sudo apt upgrade)")"
         installed=$(installed_version)
@@ -193,6 +212,11 @@ case "${1:-install}" in
         latest=$(latest_release) || true
         [[ -n "$latest" ]] || die "$(T "No release found at %s (no network, or no release yet)" "$RELEASE_REPO_URL")"
         if ! release_newer "$installed" "$latest"; then
+            # A staged release that is no newer either is of no use any more
+            if [[ -f "$STATE/src/.release" ]] && ! release_newer "$installed" "$(head -n 1 "$STATE/src/.release")"; then
+                systemctl stop lnd-update-wait.service 2>/dev/null || true
+                drop_stage
+            fi
             say "✅ %s is the newest release: nothing to do" "$installed"
             exit 0
         fi
@@ -203,26 +227,52 @@ case "${1:-install}" in
         stage_release_git "$latest" "$STATE" "$DEST/release-key.asc"
         [[ -f "$STATE/src/install-scripts.sh" && -f "$STATE/src/lnd-update.sh" ]] ||
             die "$(T "%s doesn't look like a release of these scripts" "$latest")"
-        if apply_if_safe; then
-            exit 0
-        fi
-        reason=$(safe_check)
+        # This stage replaces whatever waited before
+        systemctl stop lnd-update-wait.service 2>/dev/null || true
         printf '%s waiting %s\n' "$latest" "$(date +%s)" > "$PENDING_FILE"
         chmod 644 "$PENDING_FILE"
-        log_message "$(T "⏳ Not safe to update now: %s" "${reason:-?}")"
+        flock -u 9
+        # It is installed by lnd-update-wait, a systemd unit: a dropped SSH connection doesn't stop
+        # it halfway. Now if it is safe, else once it is.
+        reason=$(safe_check)
+        since=$(date '+%Y-%m-%d %H:%M:%S')
         start_waiter lnd-update-wait "$DEST/lnd-update.sh" apply-wait ||
-            die "$(T "Could not start the background wait; the update is applied at the next boot")"
-        say "   It waits in the background (lnd-update-wait) and installs %s once it is safe, for up to" "$latest"
-        say "   24 hours. After that it is installed at the next boot. lnd-update check shows where it is."
-        exit 0
+            die "$(T "Could not start lnd-update-wait; the update is installed at the next boot")"
+        if [[ -n "$reason" ]]; then
+            log_message "$(T "⏳ Not safe to update now: %s" "$reason")"
+            say "   It waits in the background (lnd-update-wait) and installs %s once it is safe, for up to" "$latest"
+            say "   24 hours. After that it is installed at the next boot. lnd-update check shows where it is."
+            exit 0
+        fi
+        say "   Installing in the background (lnd-update-wait); its progress:"
+        # Only its own lines (-t), not those of sudo and systemd for the same unit
+        journalctl -u lnd-update-wait -t lnd-update.sh --since "$since" -f -o cat 2>/dev/null &
+        follow=$!
+        for _ in $(seq 1 600); do
+            systemctl is-active --quiet lnd-update-wait.service || break
+            sleep 1
+        done
+        sleep 1
+        kill "$follow" 2>/dev/null || true
+        if [[ "$(installed_version)" == "$latest" ]]; then
+            exit 0
+        fi
+        if systemctl is-active --quiet lnd-update-wait.service; then
+            say "   Still busy, or it became unsafe meanwhile: lnd-update-wait goes on by itself (journalctl -u lnd-update-wait)."
+            exit 0
+        fi
+        die "$(T "The update to %s didn't finish: journalctl -u lnd-update-wait, and %s" "$latest" "$LOG_FILE")"
         ;;
     apply-wait)
         need_root apply-wait
-        exec 9> /run/lnd-update.lock
-        flock 9
         deadline=$(wait_deadline "$(awk '{ print $3 }' "$PENDING_FILE" 2>/dev/null)")
         while wait_until_safe safe_check "$deadline"; do
+            exec 9> /run/lnd-update.lock
+            flock 9
+            # Replaced or dropped by a newer run meanwhile
+            [[ -f "$STATE/src/.release" ]] || exit 0
             apply_if_safe && exit 0
+            exec 9>&-
             # It changed at the last moment: look again shortly
             (( $(date +%s) < deadline )) || break
             sleep "$UPDATE_RETRY_SECONDS"

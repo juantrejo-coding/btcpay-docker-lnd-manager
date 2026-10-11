@@ -52,12 +52,13 @@ def load_translations(language):
     if not language or language == "en":
         return
     try:
-        with open(CATALOG_FILE, encoding="utf-8") as f:
+        # errors="replace": a damaged catalog gives odd characters, not a crash at start
+        with open(CATALOG_FILE, encoding="utf-8", errors="replace") as f:
             for line in f:
                 key, tab, value = line.rstrip("\n").partition("\t")
                 if tab and key and value and not key.startswith("#"):
                     TRANSLATIONS[catalog_unescape(key)] = catalog_unescape(value)
-    except OSError:
+    except (OSError, ValueError):
         pass
 
 
@@ -142,8 +143,15 @@ def helper(*args, timeout=30):
     try:
         result = subprocess.run(["sudo", "-n", HELPER] + list(args), capture_output=True,
                                 text=True, timeout=timeout, stdin=subprocess.DEVNULL)
-        return result.returncode, result.stdout + result.stderr
+        # The answer is stdout only: sudo may add warnings ("unable to resolve host") on stderr,
+        # which would break the JSON. stderr is the message when it fails.
+        if result.returncode != 0:
+            return result.returncode, result.stdout + result.stderr
+        return 0, result.stdout
     except subprocess.TimeoutExpired:
+        return 124, _("timed out")
+    except PermissionError:
+        # The time ran out, but the root helper can't be stopped from here
         return 124, _("timed out")
     except OSError as e:
         return 127, e.strerror
@@ -213,18 +221,39 @@ def newer(installed, latest):
         return False
 
 
+PENDING_DIR = "/var/lib/serverb-update"
+
+
+def read_pending():
+    """{"bitcoind": (version, "waiting"|"boot"), ...}: the updates staged and waiting, from
+    serverb-update's notes, read at every refresh (the network check runs every 12 hours only)."""
+    found = {}
+    for name in ("bitcoind", "tower"):
+        try:
+            with open(os.path.join(PENDING_DIR, "pending-" + name), encoding="utf-8", errors="replace") as f:
+                parts = f.read(200).split()
+        except OSError:
+            continue
+        if len(parts) >= 2 and parts[1] in ("waiting", "boot"):
+            found[name] = (clean(parts[0])[:40], parts[1])
+    return found
+
+
 def update_lines(updates):
-    """One line per available update, for the top of the screen."""
+    """One line per available or waiting update, for the top of the screen."""
     out = []
+    pending = read_pending()
+    for name, (version, state) in sorted(pending.items()):
+        what = _(UPDATE_NAMES[name])
+        if state == "boot":
+            out.append((_("Update waiting: %s %s is installed at the next boot (not safe for 24 hours)")
+                        % (what, version), "warn"))
+        else:
+            out.append((_("Update waiting: %s %s, installed once Server A says it is safe")
+                        % (what, version), "warn"))
     for name, (installed, latest) in sorted(updates.found.items()):
-        if name.startswith("pending "):
-            what = _(UPDATE_NAMES[name.split(" ", 1)[1]])
-            if latest == "boot":
-                out.append((_("Update waiting: %s %s is installed at the next boot (not safe for 24 hours)")
-                            % (what, installed), "warn"))
-            else:
-                out.append((_("Update waiting: %s %s, installed once Server A says it is safe")
-                            % (what, installed), "warn"))
+        # Waiting already: not offered again (that would start the 24 hours over)
+        if name.startswith("pending ") or name in pending:
             continue
         if name == "scripts" and newer(installed, latest):
             out.append((_("Update: these scripts %s are out (installed: %s). /update scripts")
@@ -388,9 +417,18 @@ def support_lines(settings):
     ]
 
 
+def cursor(visible):
+    """Shows or hides the cursor; some terminals (vt100, some web consoles) can't, which is fine."""
+    try:
+        curses.curs_set(visible)
+    except curses.error:
+        pass
+
+
 def clean(text):
-    """Control characters (escape codes among them) become "?", tabs spaces."""
-    return "".join(" " if ch == "\t" else "?" if unicodedata.category(ch) == "Cc" else ch
+    """Control characters (escape codes among them) and invisible format characters (which can
+    reorder a line on screen, such as right-to-left marks) become "?", tabs spaces."""
+    return "".join(" " if ch == "\t" else "?" if unicodedata.category(ch) in ("Cc", "Cf") else ch
                    for ch in text)
 
 
@@ -472,7 +510,7 @@ def ask_typed(stdscr, question, phrase, styles):
     """Asks for an exact phrase on the footer row; Enter ends, Esc cancels."""
     typed = ""
     stdscr.timeout(-1)
-    curses.curs_set(1)
+    cursor(1)
     try:
         while True:
             height, width = stdscr.getmaxyx()
@@ -491,7 +529,7 @@ def ask_typed(stdscr, question, phrase, styles):
             elif 32 <= key < 127:
                 typed += chr(key)
     finally:
-        curses.curs_set(0)
+        cursor(0)
         stdscr.timeout(REFRESH_SECONDS * 1000)
 
 
@@ -525,6 +563,8 @@ def do_action(stdscr, action, settings, styles, info, updates):
         updates.start(force=True)
         return _("Looking for new releases (the top line shows any)...")
     if verb == "update":
+        if name in read_pending():
+            return _("This update is waiting already: it installs once Server A says it is safe")
         current = updates.found.get(name)
         if current and not newer(*current):
             question = _("%s %s is the latest. Check again and update if newer?") % (_(UPDATE_NAMES[name]), current[0])
@@ -549,7 +589,7 @@ def do_action(stdscr, action, settings, styles, info, updates):
         show_page(stdscr, _("Log: ") + label, lines or [(_("(empty)"), "dim")], styles)
         return None
     if verb in ("start", "stop", "restart"):
-        if verb == "stop" and not ask_typed(stdscr, _("Stop %s?") % label, _("STOP"), styles):
+        if verb == "stop" and not ask_typed(stdscr, _("Stop %s?") % label, "STOP", styles):
             return _("Cancelled: %s keeps running") % label
         height, _width = stdscr.getmaxyx()
         doing = {"start": _("Starting %s..."), "stop": _("Stopping %s..."), "restart": _("Restarting %s...")}[verb]
@@ -623,7 +663,7 @@ def draw_palette(stdscr, palette, styles):
     stdscr.clrtoeol()
     put(stdscr, height - 1, line, curses.A_BOLD, footer=True)
     try:
-        curses.curs_set(1)
+        cursor(1)
         stdscr.move(height - 1, min(len(line), width - 1))
     except curses.error:
         pass
@@ -633,7 +673,7 @@ FOOTER_KEYS = N_(" / commands  q quit")
 
 
 def run_dashboard(stdscr, settings):
-    curses.curs_set(0)
+    cursor(0)
     stdscr.timeout(REFRESH_SECONDS * 1000)
     styles = {None: curses.A_NORMAL, "head": curses.A_BOLD, "dim": curses.A_DIM}
     if curses.has_colors():

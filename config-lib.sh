@@ -12,6 +12,11 @@
 # rewritten in place, so its owner, mode and ACLs stay.
 save_config_value() {
     local name="$1" value="$2" new orig
+    # config is bash that root reads: a value must stay a plain string between the quotes
+    if [[ "$value" == *[\"\$\`\\]* || "$value" == *[[:cntrl:]]* ]]; then
+        log_message "$(T "❌ %s can't hold \", \$, \`, \\ or control characters: %s" "$name" "$value")"
+        return 1
+    fi
     if [[ $(grep -c "^$name=" "$CONFIG_FILE") -ne 1 ]]; then
         log_message "$(T "❌ Expected exactly one %s= line in %s" "$name" "$CONFIG_FILE")"
         return 1
@@ -84,8 +89,8 @@ remote_user_problem() {
     # The same rule as serverb-user-setup.sh and adduser, which make this user on Server B
     if [[ ! "$1" =~ ^[a-z][a-z0-9_-]{0,31}$ ]]; then
         say "use up to 32 lowercase letters, digits, _ or -, starting with a letter"
-    elif [[ "$1" == root ]]; then
-        say "use a normal user on Server B, not root"
+    elif [[ "$1" == root || "$1" == bitcoin || "$1" == lndtower ]]; then
+        say "use an account of its own on Server B, not root, bitcoin or lndtower"
     fi
 }
 

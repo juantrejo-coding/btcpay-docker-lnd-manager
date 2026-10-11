@@ -40,7 +40,7 @@ lnd_latest() (
     cd "$(mktemp -d)" || exit 1
     trap 'rm -rf -- "$PWD"' EXIT
     fetch https://api.github.com/repos/lightningnetwork/lnd/releases/latest release.json || exit 1
-    tag=$(python3 -c 'import json; print(json.load(open("release.json"))["tag_name"])') || exit 1
+    tag=$(python3 -I -c 'import json; print(json.load(open("release.json"))["tag_name"])') || exit 1
     [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?-beta$ ]] || exit 1
     echo "$tag"
 )
@@ -110,9 +110,25 @@ bitcoin_core_install() (
     fi
 )
 
+# LND's release signers that count, by fingerprint. Their keys come from the lnd repository on
+# GitHub, and so do the releases: a key that isn't on this list proves nothing, since whoever
+# controlled that repository could add one. Taken from v0.21.4-beta's signers, each checked against
+# keyserver.ubuntu.com (2026-10-10). When LND's signers change, a new release of these scripts
+# brings the new list.
+LND_SIGNER_FINGERPRINTS=(
+    A5B61896952D9FDA83BC054CDC42612E89237182   # roasbeef, Olaoluwa Osuntokun
+    9FC6B0BFD597A94DBF09708280E5375C094198D8   # bhandras, Andras Banki-Horvath
+    BCEE34B0F9CD832214CE53005EA98470361ACB4F   # boris, Boris Nagaev
+    1583B601BB57CC7CD2DF8A87E08DEA9B12B66AF6   # georgetsagk, George Tsagkarelis
+    7530B54D5E45A68760E68926019A44857735FD20   # gijswijs, Gijs van Dam
+    3E9BD4436C288039CA827A9200C9E2BC2E45666F   # suheb (saubyk)
+    C20A78516A0944900EBFCA29961CC8259AE675D4   # ViktorT-11, Viktor Torstensson
+    5F75437E11695F86D50C11BB1AFF9C4DCED6D666   # ziggie1984
+)
+
 # Downloads LND $1 (a tag such as v0.21.4-beta), checks that its manifest carries good
-# signatures from at least $2 of LND's release signers (keys from the lnd repository at that
-# release) and that the download matches, then installs lnd and lncli into folder $3 (default
+# signatures from at least $2 of LND's release signers (only those in LND_SIGNER_FINGERPRINTS)
+# and that the download matches, then installs lnd and lncli into folder $3 (default
 # /usr/local/bin). Stops the script if anything fails; nothing is installed then.
 lnd_install() (
     local version="$1" min="$2" target="${3:-/usr/local/bin}" lnd_arch tarball base_url url file signer status fpr
@@ -129,7 +145,7 @@ lnd_install() (
     fetch "https://api.github.com/repos/lightningnetwork/lnd/releases/tags/$version" release.json ||
         die "$(T "No LND release %s" "$version")"
     # The manifest's signature files, one per signer: manifest-<signer>-<version>.sig
-    mapfile -t sig_urls < <(python3 -c '
+    mapfile -t sig_urls < <(python3 -I -c '
 import json, re, sys
 v = sys.argv[1]
 for a in json.load(open("release.json"))["assets"]:
@@ -158,14 +174,15 @@ for a in json.load(open("release.json"))["assets"]:
             die "$(T "The manifest has a BAD signature (%s): the download may have been tampered with" "$signer")"
         fi
         fpr=$(valid_signers <<< "$status" | head -n 1)
-        if [[ -n "$fpr" ]]; then
+        if [[ -n "$fpr" && " ${LND_SIGNER_FINGERPRINTS[*]} " == *" $fpr "* ]]; then
             signers["$fpr"]="$signer"
             say "   good signature: %s  %s" "$signer" "$fpr"
+        elif [[ -n "$fpr" ]]; then
+            say "   %s: a good signature, but its key %s isn't on this script's list of LND signers: not counted" "$signer" "$fpr"
         fi
     done
     (( ${#signers[@]} >= min )) ||
-        die "$(T "The manifest needs good signatures from at least %s signers (MIN_SIGNATURES), it has %s" "$min" "${#signers[@]}")"
-    say "   Compare these fingerprints with LND's own list (docs: \"verifying the release\") if you can."
+        die "$(T "The manifest needs good signatures from at least %s of LND's known signers, it has %s. If LND has new signers, a newer release of these scripts knows them." "$min" "${#signers[@]}")"
     grep -E "^[0-9a-f]{64}  $tarball\$" manifest.txt | sha256sum -c --quiet - || die "$(T "%s doesn't match the manifest" "$tarball")"
     say "✅ %s matches the manifest, which %s signers signed" "$tarball" "${#signers[@]}"
     tar -xzf "$tarball" || die "$(T "Could not unpack %s" "$tarball")"

@@ -30,8 +30,12 @@ SERVER_A_KEY=""
 
 need_root
 need_settings SERVER_B_USER SERVER_A_KEY
-[[ "$SERVER_B_USER" =~ ^[a-z][a-z0-9_-]{0,31}$ && "$SERVER_B_USER" != root ]] ||
+[[ "$SERVER_B_USER" =~ ^[a-z][a-z0-9_-]{0,31}$ ]] ||
     die "$(T "SERVER_B_USER (%s) is not a usable user name" "$SERVER_B_USER")"
+case "$SERVER_B_USER" in
+    root | bitcoin | lndtower | "${SERVER_B_ADMIN_USER:-root}")
+        die "$(T "SERVER_B_USER (%s) must be an account of its own, not root, bitcoin, lndtower or the dashboard's admin" "$SERVER_B_USER")" ;;
+esac
 read -r KEY_TYPE KEY_BLOB _ <<< "$SERVER_A_KEY"
 [[ "$KEY_TYPE" =~ ^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp(256|384|521))$ && "$KEY_BLOB" =~ ^[A-Za-z0-9+/=]+$ ]] ||
     die "$(T "SERVER_A_KEY doesn't look like an SSH public key")"
@@ -46,13 +50,26 @@ apt_install rsync
 # === The user ===
 if id "$SERVER_B_USER" &>/dev/null; then
     say "ℹ️ User %s exists already: its password (if any) is left as it is." "$SERVER_B_USER"
-    # Server A's key must never reach an account that can become root
+    # A person's or the system's account, not one for Server A: a system account (low UID, no login
+    # shell) or a home that isn't its own (root would change that folder's permissions below)
+    uid_min=$(awk '$1 == "UID_MIN" { print $2 }' /etc/login.defs 2>/dev/null || true)
+    [[ "$uid_min" =~ ^[0-9]+$ ]] || uid_min=1000
+    IFS=: read -r _ _ uid _ _ home shell < <(getent passwd "$SERVER_B_USER")
+    if (( uid < uid_min )) || [[ "$shell" == */nologin || "$shell" == */false ]] ||
+       [[ ! -d "$home" || "$(stat -c %u -- "$home")" != "$uid" ]]; then
+        die "$(T "%s is a system account, or its home %s isn't its own. Server A's key must reach an account of its own: set another SERVER_B_USER on Server A." "$SERVER_B_USER" "$home")"
+    fi
+    # Server A's key must never reach an account that can become root: sudo, or a group that is
+    # root in all but name (containers, virtual machines, raw disks)
     for g in $(id -nG "$SERVER_B_USER"); do
         case "$g" in
-            sudo | admin | wheel | root)
+            sudo | admin | wheel | root | docker | lxd | incus | incus-admin | libvirt | kvm | disk | shadow)
                 die "$(T "%s is in the %s group. Server A's key must reach an account of its own, without sudo: set another SERVER_B_USER on Server A." "$SERVER_B_USER" "$g")" ;;
         esac
     done
+    if command -v sudo >/dev/null && sudo -n -l -U "$SERVER_B_USER" 2>/dev/null | grep -q 'may run the following'; then
+        die "$(T "%s may run commands with sudo (sudo -l -U %s). Server A's key must reach an account of its own, without sudo: set another SERVER_B_USER on Server A." "$SERVER_B_USER" "$SERVER_B_USER")"
+    fi
     # The sshd limits below take password and terminal logins away from this user
     if [[ "$(passwd -S "$SERVER_B_USER" 2>/dev/null | awk '{ print $2 }')" == P ]]; then
         echo
@@ -78,7 +95,7 @@ else
         die "$(T "Could not create user %s" "$SERVER_B_USER")"
     say "✅ User %s created" "$SERVER_B_USER"
 fi
-B_HOME=$(getent passwd "$SERVER_B_USER" | cut -d: -f6)
+B_HOME=$(getent passwd "$SERVER_B_USER" | cut -d: -f6 || true)
 [[ -n "$B_HOME" && -d "$B_HOME" && ! -L "$B_HOME" ]] || die "$(T "%s has no usable home folder (%s)" "$SERVER_B_USER" "$B_HOME")"
 # Closed to other users; the group may read (adduser's default) but not write
 chmod g-w,o-rwx "$B_HOME"
@@ -88,20 +105,34 @@ chmod g-w,o-rwx "$B_HOME"
 as_user() {
     sudo -u "$SERVER_B_USER" -H "$@"
 }
-# The messages come translated as $1 to $4: the user's shell has no translations
+# How the key line must look: once the gate is installed, only ever with the gate as its forced
+# command (a plain "restrict" line would let the key run any command again); before that,
+# restricted (no terminal, no forwarding) until setup on Server A installs the gate over it.
+GATE_BIN="$B_HOME/.local/bin/lnd-backup-gate"
+if as_user test -x "$GATE_BIN"; then
+    KEY_OPTIONS="restrict,command=\"$GATE_BIN\""
+else
+    KEY_OPTIONS="restrict"
+fi
+# An update never adds a key that isn't there: you may have removed it (Server A broken into)
+ADD_MISSING=yes
+updating && ADD_MISSING=no
+# The messages come translated as $1 to $5: the user's shell has no translations
 printf '%s %s\n' "$KEY_TYPE" "$KEY_BLOB" | as_user bash -c '
     set -euo pipefail
     umask 077
     read -r type blob
+    options="$6" add_missing="$7"
     mkdir -p ~/.ssh
     chmod 700 ~/.ssh
     touch ~/.ssh/authorized_keys
     chmod 600 ~/.ssh/authorized_keys
-    # A line with this key and no "restrict" (a full shell) is replaced by the restricted one
+    # A line with this key and other options than these (a full shell, or no gate once there is
+    # one) is replaced by one with them
     if grep -qF " $blob" ~/.ssh/authorized_keys; then
-        awk -v type="$type" -v blob="$blob" "
+        awk -v type="$type" -v blob="$blob" -v options="$options" "
             { for (i = 1; i <= NF; i++) if (\$i == blob) break }
-            i <= NF && \$1 !~ /^restrict(,|\$)/ { print \"restrict \" type \" \" blob \" lnd-backup-server-a\"; changed = 1; next }
+            i <= NF && \$1 != options { print options \" \" type \" \" blob \" lnd-backup-server-a\"; changed = 1; next }
             { print }
             END { exit changed ? 3 : 0 }" ~/.ssh/authorized_keys > ~/.ssh/authorized_keys.new && rc=0 || rc=$?
         if (( rc == 3 )); then
@@ -115,14 +146,18 @@ printf '%s %s\n' "$KEY_TYPE" "$KEY_BLOB" | as_user bash -c '
             echo "$4" >&2
             exit 1
         fi
-    else
-        printf "restrict %s %s lnd-backup-server-a\n" "$type" "$blob" >> ~/.ssh/authorized_keys
+    elif [[ "$add_missing" == yes ]]; then
+        printf "%s %s %s lnd-backup-server-a\n" "$options" "$type" "$blob" >> ~/.ssh/authorized_keys
         echo "$3"
+    else
+        echo "$5"
     fi
 ' _ "$(T "✅ Server A's key was in ~/.ssh/authorized_keys without restrictions: now restricted")" \
     "$(T "ℹ️ Server A's key is in ~/.ssh/authorized_keys already, restricted: left as it is")" \
     "$(T "✅ Server A's key added, restricted (no terminal, no forwarding)")" \
-    "$(T "❌ Could not check ~/.ssh/authorized_keys")"
+    "$(T "❌ Could not check ~/.ssh/authorized_keys")" \
+    "$(T "⚠️ Server A's key isn't in ~/.ssh/authorized_keys: not added back by an update (run this step by hand to add it)")" \
+    "$KEY_OPTIONS" "$ADD_MISSING"
 
 # === sshd: what this user may do ===
 SSHD_DROPIN="/etc/ssh/sshd_config.d/60-lnd-backup-$SERVER_B_USER.conf"

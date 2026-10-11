@@ -40,14 +40,14 @@ lncli() {
         --macaroonpath=/data/readonly.macaroon "$@" 2>/dev/null
 }
 state=$(timeout 30 docker exec "${LND_CONTAINER_NAME:-btcpayserver_lnd_bitcoin}" lncli state 2>/dev/null |
-        python3 -c 'import json, sys; print(json.load(sys.stdin).get("state", ""))' 2>/dev/null) || state=""
+        python3 -I -c 'import json, sys; print(json.load(sys.stdin).get("state", ""))' 2>/dev/null) || state=""
 [[ "$state" =~ ^[A-Z_]{1,40}$ ]] || state=down
 htlcs=-1 pending=-1
 if [[ "$state" == SERVER_ACTIVE ]]; then
-    htlcs=$(lncli listchannels | python3 -c '
+    htlcs=$(lncli listchannels | python3 -I -c '
 import json, sys
 print(sum(len(c.get("pending_htlcs", [])) for c in json.load(sys.stdin).get("channels", [])))' 2>/dev/null) || htlcs=-1
-    pending=$(lncli pendingchannels | python3 -c '
+    pending=$(lncli pendingchannels | python3 -I -c '
 import json, sys
 d = json.load(sys.stdin)
 print(sum(len(d.get(k, [])) for k in ("pending_open_channels", "pending_closing_channels",

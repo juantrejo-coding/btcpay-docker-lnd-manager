@@ -38,6 +38,7 @@ need_settings SERVER_B_USER SERVER_A_KEY
 # This file must be one only root (or you, who ran sudo) can change, outside the backup user's home
 SELF=$(realpath -- "$0") || die "$(T "Could not find this script's file")"
 B_HOME=$(getent passwd "$SERVER_B_USER" | cut -d: -f6 || true)
+[[ -n "$B_HOME" ]] && B_HOME=$(realpath -m -- "$B_HOME")
 read -r owner mode owner_name group_name < <(stat -c '%u %a %U %G' -- "$SELF")
 # Group-writable is fine only for the owner's own group (Ubuntu's usual umask 002)
 if [[ "$owner" != 0 && "$owner" != "${SUDO_UID:-0}" ]] || (( 8#$mode & 8#002 )) ||

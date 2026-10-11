@@ -19,6 +19,7 @@ import re
 import stat
 import subprocess
 import sys
+import time
 
 SERVICES = {"bitcoind": "bitcoind", "tower": "lnd-watchtower"}
 # As the bitcoin user: it reads the RPC cookie in /var/lib/bitcoind, which that user owns (a link
@@ -36,7 +37,17 @@ LOG_LINES = 400
 ENV = {"PATH": "/usr/sbin:/usr/bin:/sbin:/bin", "LANG": "C.UTF-8", "HOME": "/root"}
 
 
+# status must answer within this many seconds in all: the dashboard can't stop a root process
+# that hangs (bitcoin-cli or lncli waiting on a stuck daemon), so its screen would freeze
+STATUS_SECONDS = 20
+DEADLINE = None
+
+
 def run(command, timeout=20):
+    if DEADLINE is not None:
+        timeout = min(timeout, DEADLINE - time.monotonic())
+        if timeout <= 0:
+            return 1, ""
     try:
         result = subprocess.run(command, capture_output=True, text=True, timeout=timeout, env=ENV,
                                 stdin=subprocess.DEVNULL)
@@ -56,16 +67,20 @@ def as_json(command):
 
 
 def status():
+    global DEADLINE
+    DEADLINE = time.monotonic() + STATUS_SECONDS
     out = {}
     for name, unit in SERVICES.items():
         out[name + "_state"] = run(["systemctl", "is-active", unit], timeout=5)[1].strip() or "unknown"
     if out["bitcoind_state"] == "active":
-        chain = as_json(BITCOIN_CLI + ["getblockchaininfo"]) or {}
-        net = as_json(BITCOIN_CLI + ["getnetworkinfo"]) or {}
-        out["bitcoind"] = {k: chain.get(k) for k in ("chain", "blocks", "headers", "verificationprogress",
-                                                       "initialblockdownload", "pruned", "size_on_disk")}
-        out["bitcoind"]["connections"] = net.get("connections")
-        out["bitcoind"]["version"] = net.get("subversion")
+        chain = as_json(BITCOIN_CLI + ["getblockchaininfo"])
+        # No answer yet (bitcoind loading its index): nothing, so the dashboard says "starting"
+        if chain:
+            net = as_json(BITCOIN_CLI + ["getnetworkinfo"]) or {}
+            out["bitcoind"] = {k: chain.get(k) for k in ("chain", "blocks", "headers", "verificationprogress",
+                                                           "initialblockdownload", "pruned", "size_on_disk")}
+            out["bitcoind"]["connections"] = net.get("connections")
+            out["bitcoind"]["version"] = net.get("subversion")
     if out["tower_state"] == "active":
         info = as_json(LNCLI + ["tower", "info"])
         if info:
@@ -126,9 +141,18 @@ def setup_facts():
     facts["tower_installed"] = os.path.isfile("/etc/lndtower/lnd.conf")
     code, ufw = run(["ufw", "status"], timeout=10)
     facts["ufw_active"] = code == 0 and "Status: active" in ufw
+    # A rule that lets only Server A reach the tower's port: "9911/tcp  ALLOW  <Server A>". An
+    # ALLOW from Anywhere, or a DENY, doesn't count. Settings from before server_a_ip: any ALLOW
+    # that isn't from Anywhere.
     port = str(settings.get("watchtower_port") or "")
-    facts["ufw_tower_rule"] = bool(port) and any(
-        line.split()[0] in (port, port + "/tcp") for line in ufw.splitlines() if line.strip())
+    server_a = str(settings.get("server_a_ip") or "")
+
+    def tower_rule(parts):
+        if len(parts) < 3 or parts[0] not in (port, port + "/tcp") or parts[1] != "ALLOW":
+            return False
+        source = parts[2] if parts[2] != "IN" or len(parts) < 4 else parts[3]
+        return source == server_a if server_a else not source.startswith("Anywhere")
+    facts["ufw_tower_rule"] = bool(port) and any(tower_rule(line.split()) for line in ufw.splitlines())
     return facts
 
 
@@ -169,6 +193,10 @@ def log(name):
 
 
 def main():
+    # sudo keeps the caller's working folder: nothing started from here may find its files there
+    # (Python, for one, loads modules from it)
+    os.chdir("/")
+    os.umask(0o022)
     args = sys.argv[1:]
     if args == ["status"]:
         status()

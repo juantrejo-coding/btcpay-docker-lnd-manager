@@ -158,7 +158,8 @@ sudo lnd-wallet channels     # das Guthaben und die Kanäle
 
 Oder verwenden Sie `/wallet` im Dashboard. Das Skript sucht das neueste gültige Backup auf dem
 angehängten Volume oder auf Server B und legt eine Sicherheitskopie der aktuellen Wallet an, bevor
-es etwas ändert. Beim Wiederherstellen der Kanäle wird jeder Peer gebeten, seinen Kanal zu
+es etwas ändert. Server B behält bis zu 20 Sicherheitskopien (50 GB); ist er voll, löschen Sie dort
+die alten. Beim Wiederherstellen der Kanäle wird jeder Peer gebeten, seinen Kanal zu
 schließen, und Ihr Anteil kommt on-chain zurück.
 
 ## Optional: ein Watchtower auf Server B

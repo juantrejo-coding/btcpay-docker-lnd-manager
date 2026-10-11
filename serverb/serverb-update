@@ -36,6 +36,8 @@ LND_MIN_SIGNATURES=2
 # @@INCLUDE serverb-releases.sh
 # @@INCLUDE update-lib.sh
 
+# Not in the caller's folder (sudo keeps it): nothing run from here may pick up files there
+cd /
 SELF=/usr/local/lib/serverb-dashboard/serverb-update
 SETTINGS_FILE=/usr/local/lib/serverb-dashboard/settings.json
 # Root's: what waits to be installed (staged/<name>), and "<version> waiting|boot <since>" per name
@@ -94,7 +96,7 @@ restart_service() {
 # === Is it safe to take the tower down? Prints why not; nothing when it is ===
 server_a_not_safe() {
     local user home file mtime age line lnd="" htlcs="" pending=""
-    user=$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1])).get("backup_user", ""))' "$SETTINGS_FILE" 2>/dev/null || true)
+    user=$(python3 -I -c 'import json, sys; print(json.load(open(sys.argv[1])).get("backup_user", ""))' "$SETTINGS_FILE" 2>/dev/null || true)
     if [[ ! "$user" =~ ^[a-z][a-z0-9_-]{0,31}$ ]] || ! home=$(getent passwd "$user" | cut -d: -f6) || [[ -z "$home" ]]; then
         T "the backup user isn't known here (rerun serverb-dashboard-setup.sh)"
         return
@@ -106,6 +108,10 @@ server_a_not_safe() {
         return
     fi
     age=$(( $(date +%s) - mtime ))
+    if (( age < -60 )); then
+        T "Server A's last status is dated in the future: check this server's clock"
+        return
+    fi
     if (( age > STATUS_MAX_AGE )); then
         T "Server A's last status is %s minutes old: Server A may be off, and then its channels need the tower" "$(( age / 60 ))"
         return
@@ -149,7 +155,10 @@ stage_bitcoind() {
     fi
     rm -rf -- "$UPDATE_DIR/staged/bitcoind"
     install -d -o root -g root -m 700 "$UPDATE_DIR/staged/bitcoind"
+    # Not left of ||: there set -e would be off, and a failed check inside wouldn't stop this
     bitcoin_core_install "$latest" "$BITCOIN_CORE_MIN_SIGNATURES" "$UPDATE_DIR/staged/bitcoind"
+    [[ -x "$UPDATE_DIR/staged/bitcoind/bitcoind" && -x "$UPDATE_DIR/staged/bitcoind/bitcoin-cli" ]] ||
+        die "$(T "Bitcoin Core %s wasn't checked and staged: nothing was changed" "$latest")"
     echo "$latest" > "$UPDATE_DIR/staged/bitcoind/.version"
 }
 stage_tower() {
@@ -167,14 +176,35 @@ stage_tower() {
     rm -rf -- "$UPDATE_DIR/staged/tower"
     install -d -o root -g root -m 700 "$UPDATE_DIR/staged/tower"
     lnd_install "$latest" "$LND_MIN_SIGNATURES" "$UPDATE_DIR/staged/tower"
+    [[ -x "$UPDATE_DIR/staged/tower/lnd" && -x "$UPDATE_DIR/staged/tower/lncli" ]] ||
+        die "$(T "LND %s wasn't checked and staged: nothing was changed" "$latest")"
     echo "$latest" > "$UPDATE_DIR/staged/tower/.version"
+}
+
+# Removes what waits for $1 if it is no newer than what is installed (only removes, never installs)
+drop_stale_stage() {
+    local name="$1" dir="$UPDATE_DIR/staged/$1" version installed
+    [[ -f "$dir/.version" ]] || return 0
+    version=$(head -n 1 "$dir/.version")
+    if [[ "$name" == bitcoind ]]; then installed=$(bitcoin_core_installed); else installed=$(lnd_installed); fi
+    if [[ -n "$installed" ]] && ! newer_version "$installed" "$version"; then
+        systemctl stop "serverb-update-wait-$name.service" 2>/dev/null || true
+        rm -rf -- "$dir" "$UPDATE_DIR/pending-$name"
+    fi
 }
 
 # Installs what is staged for $1; restarts it unless $2 is "boot" (then it starts after this)
 apply_staged() {
-    local name="$1" when="${2:-now}" dir="$UPDATE_DIR/staged/$1" version tower_ran=false
+    local name="$1" when="${2:-now}" dir="$UPDATE_DIR/staged/$1" version installed tower_ran=false
     [[ -f "$dir/.version" ]] || return 0
     version=$(head -n 1 "$dir/.version")
+    # It may have waited long enough for a newer one to be installed meanwhile: never go back
+    if [[ "$name" == bitcoind ]]; then installed=$(bitcoin_core_installed); else installed=$(lnd_installed); fi
+    if [[ -n "$installed" ]] && ! newer_version "$installed" "$version"; then
+        say "ℹ️ %s waited to be installed, but %s is installed already: dropped" "$version" "$installed"
+        rm -rf -- "$dir" "$UPDATE_DIR/pending-$name"
+        return 0
+    fi
     if [[ "$name" == bitcoind ]]; then
         install -o root -g root -m 755 "$dir/bitcoind" "$dir/bitcoin-cli" /usr/local/bin/ ||
             die "$(T "Could not install bitcoind and bitcoin-cli")"
@@ -205,8 +235,15 @@ apply_staged() {
 }
 
 install_release() {
-    local name="$1" reason version
-    if [[ "$name" == bitcoind ]]; then stage_bitcoind || return 0; else stage_tower || return 0; fi
+    local name="$1" reason version rc=0
+    # stage_* returns 1 for "nothing to do" and stops the script (die) when a check fails
+    if [[ "$name" == bitcoind ]]; then stage_bitcoind || rc=$?; else stage_tower || rc=$?; fi
+    if (( rc != 0 )); then
+        drop_stale_stage "$name"
+        return 0
+    fi
+    # This stage replaces whatever waited before
+    systemctl stop "serverb-update-wait-$name.service" 2>/dev/null || true
     version=$(head -n 1 "$UPDATE_DIR/staged/$name/.version")
     reason=$(server_a_not_safe)
     if [[ -z "$reason" ]]; then
@@ -280,7 +317,6 @@ case "${1:-} ${2:-}" in
         if [[ "$2" == scripts ]]; then
             install_scripts
         else
-            systemctl stop "serverb-update-wait-$2.service" 2>/dev/null || true
             install_release "$2"
         fi
         ;;

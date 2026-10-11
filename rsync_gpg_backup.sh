@@ -382,14 +382,17 @@ for required_path in "$TMP_BACKUP_DIR" "$ATTACHED_VOLUME" "$BACKUP_METADATA_FOLD
     fi
 done
 
-# Ensure metadata root exists
-sudo mkdir -p "$BACKUP_METADATA_FOLDER"
-
-# Set ownership to the service user
-sudo chown -R "$SERVER_A_USER":"$SERVER_A_USER" "$BACKUP_METADATA_FOLDER"
-
-# Set safe permissions (user-only access)
-sudo chmod 700 "$BACKUP_METADATA_FOLDER"
+# Ensure metadata root exists. It is in the backup user's home: made and closed by that user,
+# never by root through a path that user could turn into a link.
+if sudo test -L "$BACKUP_METADATA_FOLDER"; then
+    log_message "$(T "❌ %s is a symlink. Stopping: changing it as root could change its target." "$BACKUP_METADATA_FOLDER")"
+    exit 1
+fi
+sudo -u "$SERVER_A_USER" mkdir -p -- "$BACKUP_METADATA_FOLDER"
+# Older installers made it as root: what is there goes to the backup user (-h and -R never
+# follow links)
+sudo chown -R -h "$SERVER_A_USER":"$SERVER_A_USER" -- "$BACKUP_METADATA_FOLDER"
+sudo -u "$SERVER_A_USER" chmod 700 -- "$BACKUP_METADATA_FOLDER"
 
 # === ENSURE CONFIG IS READABLE BY SERVER_A_USER ===
 # Read-only ACLs, not group membership: the config usually belongs to MAIN_USER's own group,
@@ -731,9 +734,15 @@ grant_inotify_acls() {
         "$LND_BACKUP_ARCHIVE"
     )
 
+    # The LND volume can be written from inside BTCPay's containers: a folder there replaced by a
+    # link would get these ACLs on the link's target (setfacl follows links). Refused instead.
     for dir in "${watched[@]}"; do
         if ! sudo test -d "$dir"; then
             log_message "$(T "❌ LND folder does not exist: %s" "$dir")"
+            return 1
+        fi
+        if [[ "$(sudo realpath -m -- "$dir")" != "$(realpath -m -s -- "$dir")" ]]; then
+            log_message "$(T "❌ %s, or a folder above it, is a symlink: no ACLs set there" "$dir")"
             return 1
         fi
     done
@@ -749,13 +758,13 @@ grant_inotify_acls() {
     for (( i=${#parents[@]}-1; i>=0; i-- )); do
         dir="${parents[i]}"
         if ! sudo -u "$SERVER_A_USER" test -x "$dir"; then
-            sudo setfacl -m "u:$SERVER_A_USER:x" "$dir" || return 1
+            sudo setfacl -P -m "u:$SERVER_A_USER:x" "$dir" || return 1
             log_message "$(T "🔑 Added x ACL for %s on %s" "$SERVER_A_USER" "$dir")"
         fi
     done
 
     for dir in "${watched[@]}"; do
-        sudo setfacl -m "u:$SERVER_A_USER:rx" "$dir" || return 1
+        sudo setfacl -P -m "u:$SERVER_A_USER:rx" "$dir" || return 1
         log_message "$(T "🔑 Added rx ACL for %s on %s" "$SERVER_A_USER" "$dir")"
     done
 
@@ -813,7 +822,9 @@ if [[ ! -d "$SECOND_BACKUP_DIR" ]]; then
 fi
 
 # === Stop Existing Service if Exists === #
-if ! sudo systemctl stop "$RSYNC_BACKUP_SERVICE_NAME"; then
+# Not at boot (lnd-update-boot.service): the service hasn't started yet, and a stop would cancel
+# the start systemd has queued for after this step
+if [[ "${LND_UPDATE_AT_BOOT:-}" != 1 ]] && ! sudo systemctl stop "$RSYNC_BACKUP_SERVICE_NAME"; then
     log_message "$(T "⚠️ Failed to stop service (may not exist or already stopped)")"
 fi
 
@@ -2131,11 +2142,18 @@ start_reconciliation_loop() {
                 continue
             fi
 
-            # Compute current fingerprint (without the files LND rewrites by itself)
-            CURRENT_HASH=$(build_change_fingerprint "${SNAPSHOT[@]}")
+            # Compute current fingerprint (without the files LND rewrites by itself). Checked, not
+            # a plain statement: under set -e a failure (a file LND replaced just then) would end
+            # this whole loop, and the hourly checks with it.
+            if ! CURRENT_HASH=$(build_change_fingerprint "${SNAPSHOT[@]}") || [[ -z "$CURRENT_HASH" ]]; then
+                log_message "$(T "⚠️ Could not fingerprint LND's files this time (a file changed while being read?): next check in an hour")"
+                set_status check_last_result "$(T "skipped: files changed while being read")"
+                set_job idle
+                continue
+            fi
 
             # Load last known fingerprint
-            LAST_HASH=$(load_last_snapshot_hash)
+            LAST_HASH=$(load_last_snapshot_hash) || LAST_HASH=""
 
             if [[ "$CURRENT_HASH" == "$LAST_HASH" ]]; then
                 log_message "$(T "✅ No changes detected (fingerprint match)")"
@@ -2186,10 +2204,14 @@ copy_to_remote() {
 }
 
 # The upload itself, for run_with_heartbeat: a background command only gets stdin from a
-# redirect of its own, and timeout can't run a function, so both are in here
+# redirect of its own, and timeout can't run a function, so both are in here. The sha256 ($2)
+# lets the gate refuse an upload cut off on the way; a gate older than that (it answers "too many
+# words") gets the old form, see copy_to_remote_attempts.
+PUT_WITH_SUM=true
 put_to_gate() {
-    timeout "$RSYNC_TIMEOUT" "${SSH_COMMAND_ARR[0]}" -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" \
-        "put main $(basename -- "$1")" < "$1"
+    local cmd="put main $(basename -- "$1")"
+    $PUT_WITH_SUM && cmd+=" $2"
+    timeout "$RSYNC_TIMEOUT" "${SSH_COMMAND_ARR[0]}" -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "$cmd" < "$1"
 }
 
 copy_to_remote_attempts() {
@@ -2206,8 +2228,15 @@ copy_to_remote_attempts() {
         output=$(mktemp)
         update_heartbeat
         rc=0
-        run_with_heartbeat "$output" put_to_gate "$file" || rc=$?
+        run_with_heartbeat "$output" put_to_gate "$file" "$local_sum" || rc=$?
         update_heartbeat
+        if (( rc != 0 )) && $PUT_WITH_SUM && grep -q 'too many words' "$output"; then
+            log_message "$(T "⚠️ Server B's backup gate is older and can't check uploads: update it there (step 1 of serverb-setup.sh, or /update scripts)")"
+            PUT_WITH_SUM=false
+            rm -f "$output"
+            i=$((i - 1))
+            continue
+        fi
         stored_sum=$(grep -m1 -oE '^[0-9a-f]{64}$' "$output" || true)
 
         # An earlier attempt may have got there before its answer was lost: the gate never
@@ -2726,7 +2755,9 @@ perform_backup() {
 	sleep 1
 
     # === Define Timestamp for Backup in TMP Directory ===
-    TIMESTAMP=$(date --iso-8601=seconds)
+    # In UTC: the same on both servers and through daylight-saving changes (older backups carry the
+    # local offset; everything orders them by their real time, not the name's text)
+    TIMESTAMP=$(date -u --iso-8601=seconds)
     TIMESTAMPED_BACKUP="${TMP_BACKUP_DIR}/backup_${TIMESTAMP}"
     if ! mkdir -p "$TIMESTAMPED_BACKUP"; then
         log_message "$(T "❌ Failed to create timestamped backup directory: %s" "$TIMESTAMPED_BACKUP")"
@@ -3090,17 +3121,26 @@ perform_backup() {
 	
 	shopt -s nullglob
 	
-	# Build array safely
-	files=("$SECOND_BACKUP_DIR"/encrypted_backup_*.gpg)
-	
-	# Sort newest first
-	IFS=$'\n' sorted=($(printf "%s\n" "${files[@]}" | sort -r))
-	unset IFS
-	
+	# Newest first by the real time in the name, not its text (names from before the switch to
+	# UTC carry a local offset; a clock that was wrong gives odd names too)
+	sorted=()
+	for f in "$SECOND_BACKUP_DIR"/encrypted_backup_*.gpg; do
+	    stamp="${f##*/encrypted_backup_}"
+	    epoch=$(date -d "${stamp%.gpg}" +%s 2>/dev/null) || continue
+	    sorted+=("$epoch $f")
+	done
+	mapfile -t sorted < <(printf '%s\n' "${sorted[@]}" | sort -k1,1nr | cut -d' ' -f2-)
+	# Never the backup just made, nor one a retry still needs (its Server B copy or milestones):
+	# with the clock behind, the newest file could otherwise sort as the oldest
+	keep_anyway=("$SECOND_BACKUP_COPY")
+	[[ -f "$REMOTE_PENDING_FILE" ]] && keep_anyway+=("$(<"$REMOTE_PENDING_FILE")")
+	[[ -f "$MILESTONES_PENDING_FILE" ]] && keep_anyway+=("$(<"$MILESTONES_PENDING_FILE")")
+
 	# Skip first 10, delete the rest
 	update_heartbeat
 	for f in "${sorted[@]:10}"; do
 	    [[ -z "$f" ]] && continue
+	    [[ " ${keep_anyway[*]} " == *" $f "* ]] && continue
 	
 	    if ! safe_delete "$f"; then
 	        log_message "$(T "❌ Failed to delete old backup: %s" "$f")"
@@ -3285,6 +3325,12 @@ while true; do
         # Heartbeat ALWAYS runs even during idle periods
         update_heartbeat
 
+        # The hourly-check loop runs on its own: if it ever ended, start it again
+        if [[ -n "${RECON_PID:-}" ]] && ! kill -0 "$RECON_PID" 2>/dev/null; then
+            log_message "$(T "⚠️ The hourly check had stopped: starting it again")"
+            start_reconciliation_loop
+        fi
+
     done < <(start_watcher)
 
     # ================================
@@ -3386,10 +3432,11 @@ if ! sudo systemctl daemon-reload; then
 fi
 log_message "$(T "✅ systemctl daemon-reload completed")"
 
-# lnd-update.sh at boot runs before the service starts: there it is only enabled (starting it
-# from there would wait for the boot step that waits for this), and systemd starts it next
+# lnd-update.sh at boot runs before the service starts: there its start is only queued
+# (--no-block: waiting for it would wait for the boot step that runs this)
 if [[ "${LND_UPDATE_AT_BOOT:-}" == 1 ]]; then
-    if ! sudo systemctl enable "$RSYNC_BACKUP_SERVICE_NAME"; then
+    if ! sudo systemctl enable "$RSYNC_BACKUP_SERVICE_NAME" ||
+       ! sudo systemctl start --no-block "$RSYNC_BACKUP_SERVICE_NAME"; then
         log_message "$(T "❌ Failed to enable/start service: %s" "$RSYNC_BACKUP_SERVICE_NAME")"
         exit 1
     fi

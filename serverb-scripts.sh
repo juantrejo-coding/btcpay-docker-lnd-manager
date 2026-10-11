@@ -88,7 +88,7 @@ if wanted user || wanted bitcoind || wanted import || wanted dashboard; then
     V[SERVER_B_USER]="$SERVER_B_USER"
 fi
 if wanted user; then
-    if [[ -z "${SERVER_A_USER:-}" || -z "${KEY_FILENAME:-}" ]] || ! V[SERVER_A_KEY]=$(sudo cat -- "$PUB_KEY_FILE" 2>/dev/null) ||
+    if [[ -z "${SERVER_A_USER:-}" || -z "${KEY_FILENAME:-}" ]] || ! V[SERVER_A_KEY]=$(sudo -u "$SERVER_A_USER" cat -- "$PUB_KEY_FILE" 2>/dev/null) ||
        [[ "${V[SERVER_A_KEY]}" != ssh-* && "${V[SERVER_A_KEY]}" != ecdsa-* ]]; then
         say "❌ Server A's public key (%s) isn't there yet. Run setup first (lnd-manager: /setup):" "$PUB_KEY_FILE"
         say "   it makes the backup user and its key, then offers this script."
@@ -114,7 +114,8 @@ if wanted tower || wanted dashboard; then
     V[WATCHTOWER_PORT]="$WATCHTOWER_PORT"
     V[WATCHTOWER_ADDRESS]="$WATCHTOWER_IP"
 fi
-if wanted tower; then
+# The tower's firewall rule lets only it in, and the Server B dashboard checks that rule
+if wanted tower || wanted dashboard; then
     if [[ -z "${SERVER_A_PUBLIC_IP:-}" ]]; then
         say "Server A's address as Server B sees it: Server B's firewall lets only this address reach the tower."
     fi

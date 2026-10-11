@@ -196,6 +196,7 @@ sudo lnd-wallet channels     # the funds and the channels
 
 Or use `/wallet` in the dashboard. The script finds the newest good backup on the attached
 volume or Server B, and keeps a safety copy of the current wallet before it changes anything.
+Server B keeps up to 20 safety copies (50 GB); when it is full, delete old ones there.
 Restoring channels asks each channel peer to close its channel, and your share comes back
 on-chain. Never run a restored node while the old one still runs with the same seed.
 

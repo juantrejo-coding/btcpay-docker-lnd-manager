@@ -157,6 +157,30 @@ def subset(cat_path, files):
 
 
 FORMAT_RE = re.compile(r"%(?:%|[-+ #0]*[0-9*]*(?:\.[0-9*]+)?[a-zA-Z])")
+# What bash's printf and Python's % take: any other % (a lone "100 %", %1$s) makes bash's printf
+# fail, which stops a set -e script
+STRICT_RE = re.compile(r"%(?:%|[-+ #0]*[0-9]*(?:\.[0-9]+)?[diouxXeEfFgGcsbq])")
+
+
+def stray_percents(text):
+    """The % signs in text that don't start a format bash's printf and Python both take."""
+    out, i = [], 0
+    while True:
+        i = text.find("%", i)
+        if i < 0:
+            return out
+        m = STRICT_RE.match(text, i)
+        if m:
+            i = m.end()
+        else:
+            out.append(text[i:i + 3])
+            i += 1
+
+
+def unsafe_chars(text):
+    """Backslashes and control characters other than newline and tab: bash's printf turns
+    backslash escapes into control codes, which could rewrite or clear the terminal."""
+    return sorted({c for c in text if c == "\\" or (ord(c) < 32 and c not in "\n\t") or ord(c) == 127})
 
 
 def check_format(po_path):
@@ -166,6 +190,13 @@ def check_format(po_path):
             continue
         if FORMAT_RE.findall(msgid) != FORMAT_RE.findall(msgstr):
             print("ERROR   placeholders %s -> %s: %r" % (FORMAT_RE.findall(msgid), FORMAT_RE.findall(msgstr), msgid))
+            errors += 1
+        if len(stray_percents(msgstr)) > len(stray_percents(msgid)):
+            print("ERROR   a %% that is no format (write %%%% for a percent sign) %s: %r" % (stray_percents(msgstr), msgid))
+            errors += 1
+        extra = [c for c in unsafe_chars(msgstr) if c not in unsafe_chars(msgid)]
+        if extra:
+            print("ERROR   backslash or control characters %r the English doesn't have: %r" % (extra, msgid))
             errors += 1
         lead = lambda t: t[:len(t) - len(t.lstrip())]
         trail = lambda t: t[len(t.rstrip()):]
@@ -220,6 +251,9 @@ def set_translations(po_path, json_path):
 def main():
     args = sys.argv[1:]
     if len(args) == 2 and args[0] == "compile":
+        # Never a catalog with a translation that would break the scripts
+        if check_format(args[1]):
+            sys.exit("%s: not compiled, fix the errors above" % args[1])
         compile_po(args[1])
     elif args == ["check"]:
         sys.exit(check())

@@ -21,16 +21,14 @@ prune_problem() {
         say "enter a size in MB, at least 550 (Bitcoin Core's minimum)"
     fi
 }
+# One host's address: Server B's firewall lets only it reach the tower, so never an "any" address
 ipv4_problem() {
-    local IFS=. part
-    if [[ ! "$1" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ && ! "$1" =~ ^[0-9A-Fa-f:]{2,39}$ ]]; then
+    if [[ ! "$1" =~ ^[0-9A-Fa-f:.]{2,45}$ ]] ||
+       ! python3 -I -c '
+import ipaddress, sys
+a = ipaddress.ip_address(sys.argv[1])
+sys.exit(1 if a.is_unspecified or a.is_multicast else 0)' "$1" 2>/dev/null; then
         say "enter an IPv4 or IPv6 address"
-        return
-    fi
-    if [[ "$1" == *.* ]]; then
-        for part in $1; do
-            (( 10#$part <= 255 )) || { say "enter an IPv4 or IPv6 address"; return; }
-        done
     fi
 }
 admin_user_problem() {
@@ -71,8 +69,13 @@ serverb_setting_problem() {
 # The sha256 of everything the scripts are made from, in language $1: Server B compares it with
 # its own copy, so both make the same scripts
 templates_sha256() {
-    local lang="${1:-en}" files=()
-    files=("$SCRIPT_DIR/i18n.sh" "$SCRIPT_DIR/server-b-install.sh" "$SCRIPT_DIR/update-lib.sh" "$SCRIPT_DIR/release-key.asc" "$TEMPLATES"/*)
+    local lang="${1:-en}" files=() f LC_ALL=C
+    # In one fixed order (LC_ALL=C: the same on every server, whatever its language), regular
+    # files only (no __pycache__ and the like)
+    for f in "$SCRIPT_DIR/i18n.sh" "$SCRIPT_DIR/server-b-install.sh" "$SCRIPT_DIR/update-lib.sh" \
+             "$SCRIPT_DIR/release-key.asc" "$TEMPLATES"/serverb-*; do
+        [[ -f "$f" && ! -L "$f" ]] && files+=("$f")
+    done
     [[ "$lang" != en && -f "$SCRIPT_DIR/locale/$lang.cat" ]] && files+=("$SCRIPT_DIR/locale/$lang.cat")
     cat -- "${files[@]}" | sha256sum | cut -d' ' -f1
 }

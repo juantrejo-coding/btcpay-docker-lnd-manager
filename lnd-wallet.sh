@@ -426,6 +426,17 @@ remote_ssh() {
 remote_ssh_stdin() {
     timeout 1800 sudo -u "$SERVER_A_USER" -- "${SSH_COMMAND_ARR[0]}" -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "$@"
 }
+# put <area> <name> of file $3 with its sha256 $4: the gate refuses an upload cut off on the way.
+# A gate older than that refuses the sha256 ("too many words"): then the old form.
+remote_put() {
+    local out rc=0
+    out=$(remote_ssh_stdin "put $1 $2 $4" < "$3" 2>&1 >/dev/null) || rc=$?
+    if (( rc != 0 )) && [[ "$out" == *"too many words"* ]]; then
+        remote_ssh_stdin "put $1 $2" < "$3" > /dev/null
+        return
+    fi
+    return "$rc"
+}
 
 # Server B only runs the commands of its backup gate (server-b-install.sh): ping, list <area>,
 # get <area> <name>, put <area> <name>. Areas: main, daily, monthly, pre-recovery.
@@ -810,7 +821,7 @@ make_safety_backup() {
         return 0
     fi
 
-    ts=$(date --iso-8601=seconds)
+    ts=$(date -u --iso-8601=seconds)
     name="pre-recovery_${ts}.gpg"
     size=$(du -sb "$LND_DIR" | cut -f1)
     free=$(df --output=avail -B1 "$BULK_DIR" | tail -n 1)
@@ -856,7 +867,7 @@ make_safety_backup() {
     if $REMOTE_OK; then
         # The gate stores it under a new name only (never overwrites); downloaded back and checked
         # here rather than taken on Server B's word
-        if remote_ssh_stdin "put pre-recovery $name" < "$BULK_DIR/$name" > /dev/null &&
+        if remote_put pre-recovery "$name" "$BULK_DIR/$name" "$local_sum" &&
            remote_sum=$(remote_ssh_stdin "get pre-recovery $name" < /dev/null | sha256sum | cut -d' ' -f1) &&
            [[ "$remote_sum" == "$local_sum" ]]; then
             log_message "$(T "✅ Safety backup stored and checked on Server B: pre-recovery/%s" "$name")"
@@ -893,11 +904,16 @@ confirm_btcpay_stop() {
 
 stop_everything() {
     confirm_btcpay_stop
-    if systemctl is-active --quiet "$RSYNC_BACKUP_SERVICE_NAME"; then
+    # Running, or about to run again (activating, e.g. waiting to restart after a failure, which is
+    # likely just when the wallet is broken): stopped either way, or systemd would start it in the
+    # middle of the wallet change
+    local state
+    state=$(systemctl show -p ActiveState --value "$RSYNC_BACKUP_SERVICE_NAME" 2>/dev/null || true)
+    if [[ "$state" == active || "$state" == activating || "$state" == reloading ]]; then
         BACKUP_SERVICE_WAS_ACTIVE=true
         log_message "$(T "🛑 Stopping the backup service (it would otherwise back up the new wallet and rotate the old one's backups out)...")"
-        systemctl stop "$RSYNC_BACKUP_SERVICE_NAME"
     fi
+    systemctl stop "$RSYNC_BACKUP_SERVICE_NAME" 2>/dev/null || true
     STAGE="stopped"
     # A reboot in the middle would otherwise start BTCPay on an unfinished volume
     if systemctl is-enabled --quiet "$BTCPAY_SERVICE" 2>/dev/null; then
@@ -1180,7 +1196,8 @@ collect_channel_backups() {
     # Only a plain file: a container that can write the volume could make it a symlink to a host
     # file, which root would then copy into the volume
     if plain_file "$live"; then
-        install -m 600 "$live" "$SECRET_DIR/scb.live"
+        # -p: with its time, for the "newer" comparison below
+        install -p -m 600 "$live" "$SECRET_DIR/scb.live"
     elif [[ -e "$live" || -L "$live" ]]; then
         log_message "$(T "⚠️ This server's channel.backup is not a plain file (a symlink?), so it is not used")"
     fi
@@ -1205,29 +1222,39 @@ collect_channel_backups() {
     fi
 }
 
-# Checks the channel backups against the wallet in a container, best first. Sets SCB_FILE, SCB_LABEL
-# and SCB_COUNT for the first one that opens with this wallet's keys (which also proves it belongs
-# to this seed). Usage: verify_channel_backups <lncli function>
+# Checks the channel backups against the wallet in a container. Of those that open with this
+# wallet's keys (which also proves they belong to this seed), it takes the one listing the most
+# channels (the newer one when both list as many): a live file older than the backup, after an
+# undo for example, could miss channels opened later. Sets SCB_FILE, SCB_LABEL and SCB_COUNT.
+# Usage: verify_channel_backups <lncli function>
 SCB_FILE=""
 SCB_LABEL=""
 SCB_COUNT=0
 verify_channel_backups() {
-    local lncli_fn="$1" i out
+    local lncli_fn="$1" i out count opened=0
     SCB_FILE=""
+    SCB_COUNT=0
     for i in "${!SCB_CANDIDATES[@]}"; do
         install -m 600 "${SCB_CANDIDATES[$i]}" "$LND_DIR/$SCB_STAGING_REL"
         if out=$("$lncli_fn" verifychanbackup --multi_file="/data/$SCB_STAGING_REL" 2>&1); then
-            SCB_FILE="${SCB_CANDIDATES[$i]}"
-            SCB_LABEL="${SCB_LABELS[$i]}"
-            SCB_COUNT=$(jq '.chan_points | length' <<< "$out" 2>/dev/null || echo 0)
-            log_message "$(T "✅ %s belongs to this wallet: %s channels" "${SCB_LABEL}" "$SCB_COUNT")"
-            rm -f "$LND_DIR/$SCB_STAGING_REL"
-            return 0
+            count=$(jq '.chan_points | length' <<< "$out" 2>/dev/null || echo 0)
+            [[ "$count" =~ ^[0-9]+$ ]] || count=0
+            log_message "$(T "✅ %s belongs to this wallet: %s channels" "${SCB_LABELS[$i]}" "$count")"
+            opened=$((opened + 1))
+            if [[ -z "$SCB_FILE" ]] || (( count > SCB_COUNT )); then
+                SCB_FILE="${SCB_CANDIDATES[$i]}"
+                SCB_LABEL="${SCB_LABELS[$i]}"
+                SCB_COUNT=$count
+            fi
+        else
+            log_message "$(T "⚠️ %s doesn't open with this wallet: %s" "${SCB_LABELS[$i]}" "$(tail -n 1 <<< "$out")")"
         fi
-        log_message "$(T "⚠️ %s doesn't open with this wallet: %s" "${SCB_LABELS[$i]}" "$(tail -n 1 <<< "$out")")"
     done
     rm -f "$LND_DIR/$SCB_STAGING_REL"
-    return 1
+    [[ -n "$SCB_FILE" ]] || return 1
+    if (( opened > 1 )); then
+        log_message "$(T "➡️ Using %s: it lists the most channels (%s)" "$SCB_LABEL" "$SCB_COUNT")"
+    fi
 }
 
 # === STEP: SCAN FOR OLD FUNDS ===
@@ -1463,7 +1490,16 @@ if [[ "$CHOICE" == "5" ]]; then
     stop_everything
     make_safety_backup
     recreate_volume
-    tar -xzpf "$BULK_DIR/undo/backup_compressed.tar.gz" -C "$LND_DIR" --numeric-owner ||
+    # Unpacked and checked first, as a restore does: plain files and folders only, no setuid,
+    # setgid or sticky bits. The backup user holds the signing key and owns the pre-recovery
+    # folder, so the signature alone doesn't prove root may put this into the LND volume as it is.
+    mkdir -p "$BULK_DIR/undo/files"
+    tar -xzf "$BULK_DIR/undo/backup_compressed.tar.gz" -C "$BULK_DIR/undo/files" --no-same-owner ||
+        die "$(T "Could not unpack the safety backup")"
+    odd=$(find "$BULK_DIR/undo/files" \( ! -type f ! -type d -o -perm /7000 \) -print -quit)
+    [[ -z "$odd" ]] ||
+        die "$(T "The safety backup holds links, special files or setuid/setgid files (%s), which a safety backup never has: not used" "${odd#"$BULK_DIR/undo/files"}")"
+    cp -a --no-preserve=ownership -- "$BULK_DIR/undo/files/." "$LND_DIR/" ||
         die "$(T "Could not unpack the safety backup into %s" "$LND_DIR")"
     remove_work_path "$BULK_DIR/undo"
     log_message "$(T "✅ Safety backup put back into %s" "$LND_DIR")"

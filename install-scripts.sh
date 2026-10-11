@@ -157,7 +157,9 @@ write_unit() {
 write_unit lnd-update-boot.service "[Unit]
 Description=Installs a waiting update of btcpay-docker-lnd-manager (lnd-update) before the backup service starts
 ConditionPathExists=/var/lib/lnd-update/src/.release
-After=local-fs.target
+# The network for the working folder's git fetch (the update itself needs none)
+Wants=network-online.target
+After=local-fs.target network-online.target
 Before=$SERVICE_NAME
 
 [Service]
@@ -169,6 +171,7 @@ TimeoutStartSec=600
 WantedBy=multi-user.target"
 write_unit server-a-status.service "[Unit]
 Description=Tells Server B whether it is safe to restart its watchtower (server-a-status.sh)
+Wants=network-online.target
 After=network-online.target docker.service
 
 [Service]
@@ -204,7 +207,8 @@ else
 fi
 say "   Wallet: sudo lnd-wallet [new|restore|channels|channels-only|undo]   Dashboard: lnd-manager"
 say "   Version: %s   Updates: sudo lnd-update" "$NEW_VERSION"
-if [[ " ${changed[*]} " == *" rsync_gpg_backup.sh "* || " ${changed[*]} " == *" config "* ]]; then
+# (lnd-update reinstalls the service itself right after an --update)
+if [[ -z "$UPDATE_TAG" ]] && [[ " ${changed[*]} " == *" rsync_gpg_backup.sh "* || " ${changed[*]} " == *" config "* ]]; then
     say "   The backup service uses the installed copy: rerun %s/rsync_gpg_backup.sh to apply the changes." "$DEST"
 fi
 

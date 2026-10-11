@@ -28,6 +28,7 @@ import datetime
 import os
 import re
 import subprocess
+import stat
 import sys
 import threading
 import time
@@ -72,12 +73,13 @@ def load_translations(language):
     if not re.fullmatch(r"[a-z]{2}", language or "") or language == "en":
         return
     try:
-        with open(os.path.join(SCRIPT_DIR, "locale", language + ".cat"), encoding="utf-8") as f:
+        # errors="replace": a damaged catalog gives odd characters, not a crash at start
+        with open(os.path.join(SCRIPT_DIR, "locale", language + ".cat"), encoding="utf-8", errors="replace") as f:
             for line in f:
                 key, tab, value = line.rstrip("\n").partition("\t")
                 if tab and key and value and not key.startswith("#"):
                     TRANSLATIONS[catalog_unescape(key)] = catalog_unescape(value)
-    except OSError:
+    except (OSError, ValueError):
         pass
 
 
@@ -236,7 +238,7 @@ def load_config():
     script = 'source "$1" >/dev/null 2>&1 || exit 1; shift; for v in "$@"; do printf "%s=%s\\0" "$v" "${!v-}"; done'
     try:
         out = subprocess.run(["bash", "-c", script, "_", CONFIG_FILE] + CONFIG_VARS,
-                             capture_output=True, check=True).stdout.decode()
+                             capture_output=True, check=True).stdout.decode(errors="replace")
     except (OSError, subprocess.CalledProcessError):
         sys.exit("Could not load %s (keep config next to lnd-manager.py)" % CONFIG_FILE)
     values = dict(item.split("=", 1) for item in out.split("\0") if "=" in item)
@@ -245,15 +247,27 @@ def load_config():
     return values
 
 
+STATUS_MAX_BYTES = 64 * 1024
+
+
 def read_status(path):
-    """The service's status file as a dict, or None if there is none to read."""
+    """The service's status file as a dict, or None if there is none to read. It is the backup
+    user's: opened without following a link and without waiting (a pipe there would hang the
+    screen), only if it is a plain file, and only its first STATUS_MAX_BYTES."""
     if not path:
         return None
     try:
-        with open(path, encoding="utf-8", errors="replace") as f:
-            lines = f.read().splitlines()
+        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
     except OSError:
         return None
+    try:
+        if not stat.S_ISREG(os.fstat(fd).st_mode):
+            return None
+        lines = os.read(fd, STATUS_MAX_BYTES).decode("utf-8", errors="replace").splitlines()
+    except OSError:
+        return None
+    finally:
+        os.close(fd)
     status = {}
     for line in lines:
         if "=" in line:
@@ -329,10 +343,13 @@ def is_noise(line):
 
 
 def num(status, key):
+    """A time or count from the status file; None when it isn't a sensible one (a time before
+    2000 or after 2200 can't be right, and would make the time functions fail)."""
     try:
-        return int(status.get(key, ""))
+        value = int(status.get(key, ""))
     except ValueError:
         return None
+    return value if 0 <= value < 7258118400 else None
 
 
 def fmt_time(ts, now):
@@ -526,11 +543,27 @@ def release_newer(installed, latest):
     return bool(re.fullmatch(r"v\d+\.\d+\.\d+", latest or "")) and key(latest) > key(installed or "")
 
 
+PENDING_FILE = "/var/lib/lnd-update.pending"
+
+
+def read_pending():
+    """(tag, "waiting"|"boot") from lnd-update's note, read at every refresh, or None."""
+    try:
+        with open(PENDING_FILE, encoding="utf-8", errors="replace") as f:
+            parts = f.read(200).split()
+    except OSError:
+        return None
+    if len(parts) >= 2 and parts[1] in ("waiting", "boot") and re.fullmatch(r"v\d+\.\d+\.\d+", parts[0]):
+        return parts[0], parts[1]
+    return None
+
+
 def update_lines():
     found = UPDATES.found
     out = []
-    if "pending" in found:
-        tag, state = found["pending"]
+    pending = read_pending()
+    if pending:
+        tag, state = pending
         if state == "boot":
             out.append((_("Update waiting: %s is installed at the next boot (not safe for 24 hours)") % tag, "warn"))
         else:
@@ -920,7 +953,7 @@ def matching_commands(text):
 
 
 def run_dashboard(stdscr, config):
-    curses.curs_set(0)
+    cursor(0)
     stdscr.timeout(REFRESH_SECONDS * 1000)
     styles = {None: curses.A_NORMAL, "head": curses.A_BOLD, "dim": curses.A_DIM}
     if curses.has_colors():
@@ -991,10 +1024,20 @@ def run_dashboard(stdscr, config):
             info = None
 
 
+def cursor(visible):
+    """Shows or hides the cursor; some terminals (vt100, some web consoles) can't, which is fine."""
+    try:
+        curses.curs_set(visible)
+    except curses.error:
+        pass
+
+
 def clean(text):
     """Text safe to show: control characters (escape codes among them, which could change the
-    terminal) become "?", tabs become spaces. Log lines and status values can hold anything."""
-    return "".join(" " if ch == "\t" else "?" if unicodedata.category(ch) == "Cc" else ch
+    terminal) and invisible format characters (which can reorder a line on screen, such as
+    right-to-left marks) become "?", tabs become spaces. Log lines and status values can hold
+    anything."""
+    return "".join(" " if ch == "\t" else "?" if unicodedata.category(ch) in ("Cc", "Cf") else ch
                    for ch in text)
 
 
@@ -1055,7 +1098,7 @@ def draw(stdscr, info, styles, footer, palette=None):
 
     if palette is None:
         put(stdscr, height - 1, footer + " " * width, curses.A_REVERSE, footer=True)
-        curses.curs_set(0)
+        cursor(0)
     else:
         draw_palette(stdscr, palette, styles)
     stdscr.refresh()
@@ -1113,7 +1156,7 @@ def draw_palette(stdscr, palette, styles):
     stdscr.clrtoeol()
     put(stdscr, height - 1, line, curses.A_BOLD, footer=True)
     try:
-        curses.curs_set(1)
+        cursor(1)
         stdscr.move(height - 1, min(len(line), width - 1))
     except curses.error:
         pass

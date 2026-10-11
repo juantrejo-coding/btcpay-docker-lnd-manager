@@ -39,7 +39,7 @@ run_steps() {
     local step script done_text answer home state
     local -a steps=(user bitcoind import tower dashboard)
     for step in "${steps[@]}"; do
-        home=$(getent passwd "$SERVER_B_USER" | cut -d: -f6)
+        home=$(getent passwd "$SERVER_B_USER" | cut -d: -f6 || true)
         done_text=""
         case "$step" in
             user)

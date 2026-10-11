@@ -325,8 +325,12 @@ cmd_tower_add() {
         log_message "$(T "⏳ LND is still catching up with the chain; the watchtower client waits for that (up to 10 minutes here)...")"
     fi
     log_message "$(T "➕ Adding the watchtower %s..." "$uri")"
-    timeout 600 docker exec "$LND_CONTAINER_NAME" lncli --macaroonpath=/data/admin.macaroon wtclient add "$uri" 2>&1 | show_lines
-    case ${PIPESTATUS[0]} in
+    # Its exit code taken here: as a plain pipeline under pipefail a failure would end the script
+    # before the message below
+    code=0
+    timeout 600 docker exec "$LND_CONTAINER_NAME" lncli --macaroonpath=/data/admin.macaroon wtclient add "$uri" 2>&1 | show_lines ||
+        code=${PIPESTATUS[0]}
+    case $code in
         0) ;;
         124) die "$(T "LND's watchtower client didn't answer within 10 minutes (LND not synced to the chain yet?). The client is on; run /tower add again later.")" ;;
         *) die "$(T "lncli wtclient add failed")" ;;

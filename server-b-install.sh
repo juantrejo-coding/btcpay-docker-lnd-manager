@@ -69,8 +69,12 @@ cat > "$BIN/lnd-backup-gate.new" <<'GATE'
 #   client-address             the address Server A connects from, as this server sees it
 #   list <area>                the backup names in an area, one per line
 #   get <area> <name>          a backup's contents
-#   put <area> <name>          stores a NEW backup from stdin, prints its sha256; never
-#                              overwrites, refuses names dated in the future
+#   put <area> <name> [<sha256>]
+#                              stores a NEW backup from stdin, prints its sha256; never
+#                              overwrites, refuses names dated in the future. With the sha256
+#                              (Server A sends it), an upload cut off on the way is refused
+#                              instead of being kept as if complete. pre-recovery holds at most
+#                              20 backups and 50 GiB.
 #   put-setup <name>           stores Server B's settings or scripts from stdin in
 #                              ~/serverb-setup, prints the sha256: serverb.conf or
 #                              serverb-install.sh only, replacing the one there. Never run here:
@@ -84,16 +88,26 @@ cat > "$BIN/lnd-backup-gate.new" <<'GATE'
 # it when you choose to copy Server A's blockchain, serverb-import-chain.sh removes it).
 set -euo pipefail
 umask 077
+# sshd may pass on Server A's language settings; ranges like [a-z] must mean ASCII here
+export LC_ALL=C
 
 BASE="$HOME/encrypted_lnd_backups"
 LOG="$HOME/.local/state/lnd-backup-gate.log"
+LOG_MAX_BYTES=$((5 * 1024 * 1024))       # above this the gate stops logging (rotation trims it)
+PRE_RECOVERY_MAX_FILES=20
+PRE_RECOVERY_MAX_KB=$((50 * 1024 * 1024))
 MAX_BYTES=$((20 * 1024 * 1024 * 1024))   # largest backup accepted (a whole LND volume fits)
 RESERVE_KB=$((1024 * 1024))              # free space that must stay after a put
 CHAIN_RESERVE_KB=$((5 * 1024 * 1024))    # free space a chain copy needs to start
 TS='[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}[+-][0-9]{2}:[0-9]{2}'
 
+# One short line per event: a refused command is cut to 200 characters, and nothing is logged once
+# the log is LOG_MAX_BYTES, so Server A can't fill this disk through it
 log() {
-    local msg="${*//[[:cntrl:]]/?}"
+    local msg="${*//[[:cntrl:]]/?}" size
+    (( ${#msg} <= 200 )) || msg="${msg:0:200}..."
+    size=$(stat -c %s -- "$LOG" 2>/dev/null || echo 0)
+    (( size < LOG_MAX_BYTES )) || return 0
     printf '[%s] %s\n' "$(date --iso-8601=seconds)" "$msg" >> "$LOG" 2>/dev/null || true
 }
 
@@ -141,7 +155,7 @@ if [[ "${SSH_ORIGINAL_COMMAND:-}" == "rsync --server "* ]]; then
 fi
 
 read -r -a WORDS <<< "${SSH_ORIGINAL_COMMAND:-}"
-(( ${#WORDS[@]} <= 3 )) || refuse "too many words: ${SSH_ORIGINAL_COMMAND:-}"
+(( ${#WORDS[@]} <= 4 )) || refuse "too many words: ${SSH_ORIGINAL_COMMAND:-}"
 VERB="${WORDS[0]:-}"
 
 case "$VERB" in
@@ -174,8 +188,9 @@ case "$VERB" in
         cat -- "$f"
         ;;
     put)
-        (( ${#WORDS[@]} == 3 )) || refuse "usage: put <area> <name>"
-        area="${WORDS[1]}" name="${WORDS[2]}"
+        (( ${#WORDS[@]} == 3 || ${#WORDS[@]} == 4 )) || refuse "usage: put <area> <name> [<sha256>]"
+        area="${WORDS[1]}" name="${WORDS[2]}" want="${WORDS[3]:-}"
+        [[ -z "$want" || "$want" =~ ^[0-9a-f]{64}$ ]] || refuse "bad sha256: $want"
         [[ "$area" == main || "$area" == pre-recovery ]] || refuse "put only into main or pre-recovery"
         name_ok "$area" "$name" || refuse "bad name: $name"
         stamp="${name%.gpg}"; stamp="${stamp#encrypted_backup_}"; stamp="${stamp#pre-recovery_}"
@@ -183,16 +198,39 @@ case "$VERB" in
         (( epoch <= $(date +%s) + 300 )) || refuse "name dated in the future: $name"
         dir=$(area_dir "$area")
         mkdir -p "$dir"
+        # One upload at a time, so the free-space checks below can't be raced
+        exec 8> "$HOME/.local/state/lnd-backup-gate-put.lock"
+        flock 8
         final="$dir/$name"
         [[ -e "$final" || -L "$final" ]] && refuse "already exists, never overwritten: $area/$name"
+        # Safety backups are never rotated: only so many of them
+        if [[ "$area" == pre-recovery ]]; then
+            count=0 used=0
+            for f in "$dir"/pre-recovery_*.gpg; do
+                [[ -f "$f" && ! -L "$f" ]] || continue
+                count=$((count + 1))
+                used=$((used + $(du -k -- "$f" | cut -f1)))
+            done
+            (( count < PRE_RECOVERY_MAX_FILES )) ||
+                refuse "pre-recovery holds $PRE_RECOVERY_MAX_FILES safety backups already: delete old ones on Server B first"
+            (( used < PRE_RECOVERY_MAX_KB )) ||
+                refuse "pre-recovery holds $(( PRE_RECOVERY_MAX_KB / 1024 / 1024 )) GiB already: delete old ones on Server B first"
+        fi
+        # Never more than would leave RESERVE_KB free
+        free=$(df --output=avail -k "$dir" | tail -n 1)
+        (( free > RESERVE_KB )) || refuse "not enough free space for $area/$name"
+        cap=$(( (free - RESERVE_KB) * 1024 ))
+        (( cap < MAX_BYTES )) || cap=$MAX_BYTES
         tmp="$dir/.incoming-$name.$$"
         trap 'rm -f -- "$tmp"' EXIT
-        head -c $((MAX_BYTES + 1)) > "$tmp"
+        head -c $((cap + 1)) > "$tmp"
         size=$(stat -c %s "$tmp")
         (( size > 0 )) || refuse "empty upload: $area/$name"
-        (( size <= MAX_BYTES )) || refuse "too large: $area/$name"
-        free=$(df --output=avail -k "$dir" | tail -n 1)
-        (( free > RESERVE_KB )) || refuse "not enough free space left after $area/$name"
+        (( size <= cap )) || refuse "too large, or not enough free space: $area/$name"
+        # Cut off on the way (Server A's ssh was stopped): stdin just ended early
+        if [[ -n "$want" && "$(sha256sum -- "$tmp" | cut -d' ' -f1)" != "$want" ]]; then
+            refuse "incomplete upload (sha256 differs), not kept: $area/$name"
+        fi
         sync -f "$tmp" 2>/dev/null || true
         # A hard link fails if the name exists: no overwrite, even when two puts race
         ln -- "$tmp" "$final" || refuse "already exists, never overwritten: $area/$name"
@@ -272,16 +310,28 @@ flock -n 9 || exit 0
 mkdir -p "$BASE/milestones/daily" "$BASE/milestones/monthly"
 shopt -s nullglob
 
-# Oldest first, so the first one of each day and month becomes its milestone
+# The backups in main as "<epoch> <name>", oldest first. By the real time in the name, not its
+# text: names from Server A may carry any UTC offset, and its text would sort them wrongly.
 mapfile -t backups < <(for f in "$BASE"/encrypted_backup_*.gpg; do
     n="${f##*/}"
-    [[ -f "$f" && ! -L "$f" && "$n" =~ ^encrypted_backup_${TS}\.gpg$ ]] && echo "$n"
-done | sort)
+    [[ -f "$f" && ! -L "$f" && "$n" =~ ^encrypted_backup_${TS}\.gpg$ ]] || continue
+    stamp="${n#encrypted_backup_}"
+    epoch=$(date -d "${stamp%.gpg}" +%s 2>/dev/null) || continue
+    echo "$epoch $n"
+done | sort -n)
 
-for n in "${backups[@]}"; do
+# The first one of each day and month becomes its milestone. The day is the one in the name:
+# lnd-wallet.sh checks a milestone's name against the time signed inside the backup.
+for line in "${backups[@]}"; do
+    n="${line#* }"
     day="${n:17:10}" month="${n:17:7}"
     [[ -e "$BASE/milestones/daily/backup_$day.gpg" ]] || ln -- "$BASE/$n" "$BASE/milestones/daily/backup_$day.gpg"
     [[ -e "$BASE/milestones/monthly/backup_$month.gpg" ]] || ln -- "$BASE/$n" "$BASE/milestones/monthly/backup_$month.gpg"
+done
+
+# main: the KEEP_MAIN newest by time
+for line in "${backups[@]:0:$(( ${#backups[@]} > KEEP_MAIN ? ${#backups[@]} - KEEP_MAIN : 0 ))}"; do
+    rm -f -- "$BASE/${line#* }"
 done
 
 keep_newest() {
@@ -294,11 +344,16 @@ keep_newest() {
         rm -f -- "$dir/$n"
     done
 }
-keep_newest "$BASE" "$KEEP_MAIN" "^encrypted_backup_${TS}\.gpg$"
 keep_newest "$BASE/milestones/daily" "$KEEP_DAILY" '^backup_[0-9]{4}-[0-9]{2}-[0-9]{2}\.gpg$'
 keep_newest "$BASE/milestones/monthly" "$KEEP_MONTHLY" '^backup_[0-9]{4}-[0-9]{2}\.gpg$'
 
 find "$BASE" -maxdepth 2 -name '.incoming-*' -type f -mmin +1440 -delete
+
+# The gate's log: the newest 1 MiB is kept
+GATE_LOG="$HOME/.local/state/lnd-backup-gate.log"
+if [[ -f "$GATE_LOG" && ! -L "$GATE_LOG" ]] && (( $(stat -c %s -- "$GATE_LOG") > 1024 * 1024 )); then
+    tail -c $((1024 * 1024)) -- "$GATE_LOG" > "$GATE_LOG.new" && mv -f -- "$GATE_LOG.new" "$GATE_LOG"
+fi
 ROTATE
 
 chmod 700 "$BIN/lnd-backup-gate.new" "$BIN/lnd-backup-rotate.new"

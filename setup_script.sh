@@ -66,7 +66,7 @@ gate_installer() {
     printf 'UI_LANGUAGE=%q\n' "${UI_LANGUAGE:-en}"
     if [[ "${UI_LANGUAGE:-en}" != en && -f "$catalog" ]]; then
         printf '%s\n' "i18n_read <<'I18N_CATALOG_EOF'"
-        python3 "$SCRIPT_DIR/tools/i18n.py" subset "$catalog" "$SCRIPT_DIR/server-b-install.sh"
+        python3 -I "$SCRIPT_DIR/tools/i18n.py" subset "$catalog" "$SCRIPT_DIR/server-b-install.sh"
         printf '%s\n' "I18N_CATALOG_EOF"
     fi
     cat -- "$SCRIPT_DIR/server-b-install.sh"
@@ -90,6 +90,15 @@ mark_setup_state() {
 # SERVER_A_USER can change. chown, chmod and setfacl follow symlinks, so a symlink planted there
 # (tmp_backups -> /etc) would hand that target to SERVER_A_USER. Stop if the path, or any folder
 # between it and the home, is a symlink. chown -h and setfacl -P below also don't follow links.
+# Server A's public key, read as the backup user (its .ssh is that user's: root reading it by path
+# would follow a link there), and only if it is one SSH key line
+read_server_a_pubkey() {
+    local line
+    line=$(sudo -u "$SERVER_A_USER" cat -- "$PUB_KEY_FILE" 2>/dev/null | head -n 1) || return 1
+    [[ "$line" =~ ^(ssh-ed25519|ssh-rsa|ecdsa-sha2-nistp(256|384|521))\ [A-Za-z0-9+/=]+(\ [[:print:]]*)?$ ]] || return 1
+    printf '%s\n' "$line"
+}
+
 refuse_links() {
     local path home
     home=$(realpath -m -- "$SERVER_A_USER_HOME")
@@ -624,7 +633,7 @@ view_private_key() {
     read -p "$(T "Do you want to view the private key now so you can save it securely? (y/n): ")" view_key_choice
     if [[ "$view_key_choice" =~ ^[Yy]$ ]]; then
         say "📋 Here is your private key (ensure you save it in a secure location):"
-        sudo cat "$KEY_PATH"
+        sudo -u "$SERVER_A_USER" cat -- "$KEY_PATH"
     else
         say "❗ Make sure to save the private key in a secure location later."
     fi
@@ -674,8 +683,10 @@ if [ "$SKIP_SSH_SETUP" = false ]; then
             PASTED_PRIVATE_KEY=$(cat)
 
             if [ -n "$PASTED_PRIVATE_KEY" ]; then
-                # Created with mode 600 before the key goes in, so it's never readable by others
-                if ! sudo install -m 600 -o "$SERVER_A_USER" -g "$SERVER_A_USER" /dev/null "$KEY_PATH" ||
+                # Created with mode 600 before the key goes in, so it's never readable by others;
+                # by the backup user, in its own .ssh, after making sure that is no link
+                refuse_links "$SERVER_A_USER_HOME/.ssh" "$KEY_PATH"
+                if ! sudo -u "$SERVER_A_USER" install -m 600 /dev/null "$KEY_PATH" ||
                    ! printf '%s\n' "$PASTED_PRIVATE_KEY" | sudo -u "$SERVER_A_USER" tee "$KEY_PATH" > /dev/null; then
                     say "❌ Failed to save the private key to %s. Exiting." "$KEY_PATH"
                     exit 1
@@ -777,7 +788,7 @@ if [ "$SKIP_SSH_SETUP" = false ]; then
     # Copy public key to remote server
     say "📤 Copying SSH public key to remote server..."
 
-    PUB_KEY_CONTENT=$(sudo cat "$PUB_KEY_FILE" 2>/dev/null)
+    PUB_KEY_CONTENT=$(read_server_a_pubkey || true)
     if [[ "$PUB_KEY_CONTENT" != ssh-* ]]; then
         say "❌ No public key found in %s. Exiting." "$PUB_KEY_FILE"
         exit 1
@@ -872,7 +883,7 @@ if [[ "$(server_b_mode)" == shell ]]; then
         # shellcheck disable=SC2088
         GATE_DIR='~/.local/share/lnd-backup-gate'
         if gate_installer | "${GATE_SSH[@]}" "mkdir -p $GATE_DIR && cat > $GATE_DIR/server-b-install.sh" &&
-           sudo cat "$PUB_KEY_FILE" | "${GATE_SSH[@]}" "cat > $GATE_DIR/server-a-key.pub" &&
+           read_server_a_pubkey | "${GATE_SSH[@]}" "cat > $GATE_DIR/server-a-key.pub" &&
            "${GATE_SSH[@]}" -n "bash $GATE_DIR/server-b-install.sh $GATE_DIR/server-a-key.pub" &&
            [[ "$(server_b_mode)" == gate ]]; then
             log_message "$(T "✅ Server B's backup gate is installed: this key can no longer delete or overwrite there")"
@@ -882,7 +893,7 @@ if [[ "$(server_b_mode)" == shell ]]; then
             out="${SERVER_B_SCRIPTS_DIR:-$HOME/serverb-scripts}"
             if [[ ! -L "$out" ]] && install -d -m 700 "$out" &&
                gate_installer > "$out/server-b-install.sh" && chmod 600 "$out/server-b-install.sh" &&
-               sudo cat "$PUB_KEY_FILE" > "$out/server-a-key.pub" && chmod 600 "$out/server-a-key.pub"; then
+               read_server_a_pubkey > "$out/server-a-key.pub" && chmod 600 "$out/server-a-key.pub"; then
                 log_message "$(T "❌ Installing Server B's backup gate failed. Install it there by hand: copy server-b-install.sh and server-a-key.pub from %s to Server B and run there, as %s: bash server-b-install.sh server-a-key.pub" "$out" "$SERVER_B_USER")"
             else
                 log_message "$(T "❌ Installing Server B's backup gate failed. Install it there by hand: copy server-b-install.sh and %s to Server B and run, as %s: ./server-b-install.sh server-a-key.pub" "$PUB_KEY_FILE" "$SERVER_B_USER")"

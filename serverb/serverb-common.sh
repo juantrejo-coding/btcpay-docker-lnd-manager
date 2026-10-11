@@ -39,8 +39,10 @@ apt_install() {
     done
     (( ${#missing[@]} == 0 )) && return 0
     say "📦 Installing %s..." "${missing[*]}"
+    # NEEDRESTART_SUSPEND: Ubuntu's needrestart would otherwise restart services (bitcoind, the
+    # tower) by itself, without the checks serverb-update makes first
     apt-get update -q >/dev/null &&
-        DEBIAN_FRONTEND=noninteractive apt-get install -y -q "${missing[@]}" >/dev/null ||
+        NEEDRESTART_SUSPEND=1 DEBIAN_FRONTEND=noninteractive apt-get install -y -q "${missing[@]}" >/dev/null ||
         die "$(T "Could not install %s" "${missing[*]}")"
 }
 

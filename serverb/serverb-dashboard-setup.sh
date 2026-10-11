@@ -21,6 +21,7 @@ SERVER_B_ADMIN_USER=""
 SERVER_B_USER=""
 WATCHTOWER_PORT=""
 WATCHTOWER_ADDRESS=""
+SERVER_A_IP=""
 SUPPORT_BTC_ADDRESS=""
 SUPPORT_URL=""
 # @@END-SETTINGS
@@ -54,7 +55,7 @@ else
     # A way to log in: the SSH keys of the account running this, and/or a password
     keys_from="${SUDO_USER:-}"
     keys_home=""
-    [[ -n "$keys_from" && "$keys_from" != root ]] && keys_home=$(getent passwd "$keys_from" | cut -d: -f6)
+    [[ -n "$keys_from" && "$keys_from" != root ]] && keys_home=$(getent passwd "$keys_from" | cut -d: -f6 || true)
     if [[ -n "$keys_home" && -s "$keys_home/.ssh/authorized_keys" && ! -L "$keys_home/.ssh/authorized_keys" ]] &&
        confirm_phrase yes "$(T "Let the SSH keys that log in as %s log in as %s too? Type yes: " "$keys_from" "$SERVER_B_ADMIN_USER")"; then
         # Only plain key lines, without options such as command= that belong to $keys_from
@@ -105,10 +106,10 @@ chown root:root "$LIB/messages.cat.new"
 chmod 644 "$LIB/messages.cat.new"
 mv -f "$LIB/messages.cat.new" "$LIB/messages.cat"
 ln -sfn "$LIB/serverb-dashboard.py" /usr/local/bin/serverb-dashboard
-python3 - "$LIB/settings.json.new" "$WATCHTOWER_PORT" "$WATCHTOWER_ADDRESS" "$SUPPORT_BTC_ADDRESS" "$SUPPORT_URL" "${SERVER_B_USER:-}" "${UI_LANGUAGE:-en}" <<'PY'
+python3 -I - "$LIB/settings.json.new" "$WATCHTOWER_PORT" "$WATCHTOWER_ADDRESS" "$SUPPORT_BTC_ADDRESS" "$SUPPORT_URL" "${SERVER_B_USER:-}" "${UI_LANGUAGE:-en}" "$SERVER_A_IP" <<'PY'
 import json, sys
-path, port, address, btc, url, backup_user, language = sys.argv[1:]
-json.dump({"watchtower_port": port, "watchtower_address": address,
+path, port, address, btc, url, backup_user, language, server_a_ip = sys.argv[1:]
+json.dump({"watchtower_port": port, "watchtower_address": address, "server_a_ip": server_a_ip,
            "support_btc_address": btc, "support_url": url, "backup_user": backup_user,
            "language": language},
           open(path, "w"), indent=1)

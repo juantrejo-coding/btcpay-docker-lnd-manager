@@ -153,6 +153,7 @@ sudo lnd-wallet channels     # los fondos y los canales
 
 O use `/wallet` en el panel. El script busca la copia válida más reciente en el volumen adjunto o
 en el Servidor B, y guarda una copia de resguardo de la billetera actual antes de cambiar nada.
+El Servidor B guarda hasta 20 copias de resguardo (50 GB); cuando esté lleno, borre allí las antiguas.
 Restaurar los canales le pide a cada par que cierre su canal, y su parte vuelve on-chain.
 
 ## Opcional: un watchtower en el Servidor B

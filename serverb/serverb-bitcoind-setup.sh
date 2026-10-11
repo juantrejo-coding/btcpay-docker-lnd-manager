@@ -127,7 +127,7 @@ COPY=false
 HAS_CHAIN=false
 [[ -d "$DATA_DIR/blocks/index" && -d "$DATA_DIR/chainstate" ]] && HAS_CHAIN=true
 INCOMING=""
-[[ -n "${SERVER_B_USER:-}" ]] && INCOMING="$(getent passwd "$SERVER_B_USER" | cut -d: -f6)/chain-incoming"
+[[ -n "${SERVER_B_USER:-}" ]] && INCOMING="$(getent passwd "$SERVER_B_USER" | cut -d: -f6 || true)/chain-incoming"
 if $HAS_CHAIN; then
     say "ℹ️ bitcoind has its blockchain already: no copy from Server A is needed."
     if [[ "$INCOMING" != /chain-incoming && -d "$INCOMING" ]]; then

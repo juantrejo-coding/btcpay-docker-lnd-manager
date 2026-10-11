@@ -20,6 +20,7 @@
    %s holds files this project didn't put there; left as it is	   %s contiene archivos que este proyecto no puso allí; se deja como está
    %s is disabled meanwhile, so a reboot can't start BTCPay too early;	   %s queda desactivado mientras tanto, para que un reinicio no inicie BTCPay antes de tiempo;
    %s were not added. The restricted key line still applies.	   %s no se agregaron. La línea de clave restringida sigue vigente.
+   %s: a good signature, but its key %s isn't on this script's list of LND signers: not counted	   %s: una firma válida, pero su clave %s no está en la lista de firmantes de LND de este script: no cuenta
    %s: no key in the lnd repository, skipped	   %s: no hay clave en el repositorio de lnd, se omite
    (%s)	   (%s)
    (--force installs the older version anyway)	   (--force instala la versión más antigua de todos modos)
@@ -37,11 +38,11 @@
    A release that changes their own setup says so: then rerun that step (sudo ./serverb-setup.sh).	   Una versión que cambie su propia configuración lo indica: en ese caso, vuelva a ejecutar ese paso (sudo ./serverb-setup.sh).
    Backup user:           %s	   Usuario de copias:           %s
    Blockchain kept (MB):  %s	   Blockchain conservada (MB):  %s
-   Compare these fingerprints with LND's own list (docs: "verifying the release") if you can.	   Si puede, compare estas huellas con la lista propia de LND (documentación: "verifying the release").
    Copy:   %s	   Copia:  %s
    Dashboard admin:       %s	   Administrador del panel:     %s
    Free space for /var/lib: %s GB	   Espacio libre para /var/lib: %s GB
    Good signatures from %s builders:	   Firmas válidas de %s compiladores:
+   Installing in the background (lnd-update-wait); its progress:	   Instalando en segundo plano (lnd-update-wait); su progreso:
    Is it the one Server A showed (lnd-manager /serverb send)? If not, stop here.	   ¿Es el que mostró el Servidor A (lnd-manager /serverb send)? Si no, deténgase aquí.
    It takes effect at your next login. Anything of your own that runs docker as %s	   El cambio rige desde su próximo inicio de sesión. Todo lo suyo que ejecute docker como %s
    It waits in the background (lnd-update-wait) and installs %s once it is safe, for up to	   Espera en segundo plano (lnd-update-wait) e instala %s en cuanto sea seguro, durante un máximo de
@@ -62,6 +63,7 @@
    Server B's backup gate is older than /serverb send. Step 1 on Server B updates it.	   La compuerta de copias del Servidor B es más antigua que /serverb send. El paso 1 en el Servidor B la actualiza.
    Skipped.	   Omitido.
    Source: %s	   Origen: %s
+   Still busy, or it became unsafe meanwhile: lnd-update-wait goes on by itself (journalctl -u lnd-update-wait).	   Sigue ocupado, o entretanto dejó de ser seguro: lnd-update-wait continúa por sí solo (journalctl -u lnd-update-wait).
    The backup service and lnd-wallet.sh need the gate: without it, copies to Server B fail.	   Sin la compuerta, el servicio de copias de seguridad y lnd-wallet.sh no pueden copiar al Servidor B.
    The backup service still reads %s/config: rerun %s/rsync_gpg_backup.sh,	   El servicio de copias todavía lee %s/config: vuelva a ejecutar %s/rsync_gpg_backup.sh;
    The backup service uses the installed copy: rerun %s/rsync_gpg_backup.sh to apply the changes.	   El servicio de copias usa la copia instalada: vuelva a ejecutar %s/rsync_gpg_backup.sh para aplicar los cambios.
@@ -225,6 +227,7 @@
 %s holds a wallet (%s). Not used. %s	%s contiene una billetera (%s). No se usa. %s
 %s holds something that is neither a file nor a folder (%s). Not used; it stays root-owned in %s.	%s contiene algo que no es ni archivo ni carpeta (%s). No se usa; queda en %s como propiedad de root.
 %s hours old	de hace %s horas
+%s is a system account, or its home %s isn't its own. Server A's key must reach an account of its own: set another SERVER_B_USER on Server A.	%s es una cuenta del sistema, o su carpeta personal %s no le pertenece. La clave del Servidor A debe llegar a una cuenta propia: defina otro SERVER_B_USER en el Servidor A.
 %s is a system folder	%s es una carpeta del sistema
 %s is empty. Make this script on Server A (lnd-manager: /serverb scripts) and copy it here.	%s está vacío. Cree este script en el Servidor A (lnd-manager: /serverb scripts) y cópielo aquí.
 %s is in the %s group. Server A's key must reach an account of its own, without sudo: set another SERVER_B_USER on Server A.	%s está en el grupo %s. La clave del Servidor A debe llegar a una cuenta propia, sin sudo: defina otro SERVER_B_USER en el Servidor A.
@@ -238,6 +241,7 @@
 %s is refused: %s	%s se rechaza: %s
 %s is root, MAIN_USER or the user running this setup	%s es root, MAIN_USER o el usuario que ejecuta esta configuración
 %s is the backup user (SERVER_A_USER)	%s es el usuario de copias (SERVER_A_USER)
+%s may run commands with sudo (sudo -l -U %s). Server A's key must reach an account of its own, without sudo: set another SERVER_B_USER on Server A.	%s puede ejecutar comandos con sudo (sudo -l -U %s). La clave del Servidor A debe llegar a una cuenta propia, sin sudo: defina otro SERVER_B_USER en el Servidor A.
 %s minutes old	de hace %s minutos
 %s on %s: %s	%s en el %s: %s
 %s on %s: could not be copied	%s en el %s: no se pudo copiar
@@ -246,6 +250,7 @@
 %s removed from docker group.	%s se quitó del grupo docker.
 %s stopped after the restart: journalctl -u %s	%s se detuvo después del reinicio: journalctl -u %s
 %s unused %s filesystem(s) for the attached volume; setup asks which	%s sistema(s) de archivos %s sin usar para el volumen adjunto; la configuración preguntará cuál
+%s was replaced by something that isn't a folder meanwhile: not used	%s fue reemplazado entretanto por algo que no es una carpeta: no se usa
 %s/%s is missing: the copy isn't complete. Run /chain copy on Server A again.	Falta %s/%s: la copia no está completa. Ejecute /chain copy de nuevo en el Servidor A.
 %s/serverb.conf is missing: set Server B up with serverb-setup.sh (or /serverb send) once, then this can update it	Falta %s/serverb.conf: configure el Servidor B una vez con serverb-setup.sh (o /serverb send) y luego esto podrá actualizarlo
 %s: retry pending for %s	%s: reintento pendiente desde hace %s
@@ -279,6 +284,7 @@
 === MANUAL STEP REQUIRED ===	=== SE REQUIERE UN PASO MANUAL ===
 === Setup complete on Server A ===	=== Configuración completa en el Servidor A ===
 A copy from Server A is still running. Wait until /chain copy on Server A has finished.	Todavía hay una copia del Servidor A en curso. Espere a que termine /chain copy en el Servidor A.
+A copy from Server A started meanwhile, so this one may be incomplete: not used. %s	Entretanto empezó una copia desde el Servidor A, así que esta puede estar incompleta: no se usa. %s
 A wallet operation is already running: wait for it, or /wallet attach	Ya hay una operación de billetera en curso: espere a que termine, o /wallet attach
 ACL and inotify-tools installation complete.	Instalación de ACL e inotify-tools completa.
 ACL for GPG key removed.	Se quitó la ACL de la clave GPG.
@@ -295,6 +301,7 @@ Admin account for the Server B dashboard: 	Cuenta de administrador del panel del
 After doing this, test the connection by running:	Después de hacerlo, pruebe la conexión ejecutando:
 Afterwards, on Server B: sudo bash serverb-import-chain.sh	Después, en el Servidor B: sudo bash serverb-import-chain.sh
 All dependencies are already installed.	Todas las dependencias ya están instaladas.
+An update is being installed right now: lnd-update check shows when it is done	Se está instalando una actualización en este momento: lnd-update check muestra cuándo termina
 Another chain-tower.sh is running. Let it finish first.	Ya hay otro chain-tower.sh en ejecución. Espere a que termine.
 Another update is running	Ya hay otra actualización en curso
 Asks bitcoincore.org and api.github.com for the latest releases and compares them with what is installed. It also does that by itself every 12 hours. Changes nothing.	Consulta a bitcoincore.org y api.github.com las últimas versiones y las compara con lo instalado. También lo hace por sí solo cada 12 horas. No cambia nada.
@@ -329,6 +336,7 @@ Backups	Copias
 Backups from Server A	Copias del Servidor A
 Bitcoin Core	Bitcoin Core
 Bitcoin Core %s -> %s	Bitcoin Core %s -> %s
+Bitcoin Core %s wasn't checked and staged: nothing was changed	Bitcoin Core %s no se verificó ni se preparó: no se cambió nada
 Bitcoin Core isn't installed here: run serverb-bitcoind-setup.sh first	Bitcoin Core no está instalado aquí: ejecute primero serverb-bitcoind-setup.sh
 Bitcoin Core isn't set up here yet: run serverb-bitcoind-setup.sh first	Bitcoin Core aún no está configurado aquí: ejecute primero serverb-bitcoind-setup.sh
 Bitcoin Core running (watchtower, optional)	Bitcoin Core en marcha (watchtower, opcional)
@@ -375,12 +383,14 @@ Could not install bitcoind and bitcoin-cli	No se pudieron instalar bitcoind y bi
 Could not install lnd and lncli	No se pudieron instalar lnd y lncli
 Could not install the %s package	No se pudo instalar el paquete %s
 Could not make %s	No se pudo crear %s
+Could not move %s to %s	No se pudo mover %s a %s
 Could not read %s	No se pudo leer %s
 Could not read the release key %s	No se pudo leer la clave de firma de versiones %s
 Could not run it: %s	No se pudo ejecutar: %s
+Could not start lnd-update-wait; the update is installed at the next boot	No se pudo iniciar lnd-update-wait; la actualización se instalará en el próximo arranque
 Could not start the background wait; %s is installed at the next boot	No se pudo iniciar la espera en segundo plano; %s se instalará en el próximo arranque
-Could not start the background wait; the update is applied at the next boot	No se pudo iniciar la espera en segundo plano; la actualización se aplicará en el próximo arranque
 Could not unpack %s	No se pudo desempaquetar %s
+Could not unpack the safety backup	No se pudo desempaquetar la copia de resguardo
 Could not unpack the safety backup into %s	No se pudo desempaquetar la copia de resguardo en %s
 Could not write %s	No se pudo escribir %s
 Couldn't read the current wallet: LND isn't answering (state: %s).	No se pudo leer la billetera actual: LND no responde (estado: %s).
@@ -429,6 +439,7 @@ It must show exactly the same fingerprint, character for character.	Debe mostrar
 It shows the settings, then goes through the steps, asking before each. Run it again after	Muestra los ajustes y luego recorre los pasos, preguntando antes de cada uno. Ejecútelo de nuevo después de
 Job: %s%s	Tarea: %s%s
 LND %s -> %s	LND %s -> %s
+LND %s wasn't checked and staged: nothing was changed	LND %s no se verificó ni se preparó: no se cambió nada
 LND (the watchtower)	LND (la watchtower)
 LND could not make a seed	LND no pudo crear una semilla
 LND could not make the tower's wallet	LND no pudo crear la billetera de la torre
@@ -543,13 +554,13 @@ SERVER_B_ADMIN_USER (%s) is not a usable user name	SERVER_B_ADMIN_USER (%s) no e
 SERVER_B_ADMIN_USER can't be %s: that account has another job	SERVER_B_ADMIN_USER no puede ser %s: esa cuenta tiene otra función
 SERVER_B_KNOWN_HOST_FINGERPRINT is not set in config.	SERVER_B_KNOWN_HOST_FINGERPRINT no está definido en config.
 SERVER_B_USER (%s) is not a usable user name	SERVER_B_USER (%s) no es un nombre de usuario válido
+SERVER_B_USER (%s) must be an account of its own, not root, bitcoin, lndtower or the dashboard's admin	SERVER_B_USER (%s) debe ser una cuenta propia, no root, bitcoin, lndtower ni el administrador del panel
 SERVER_B_USER is not set in config. It's the user on Server B that holds the backups; Server A's key	SERVER_B_USER no está definido en config. Es el usuario del Servidor B que guarda las copias; la clave
 SERVER_B_USER is not set in config: the user on Server B that holds the backups.	SERVER_B_USER no está definido en config: es el usuario del Servidor B que guarda las copias.
 SERVER_B_USER or REMOTE_SERVER is empty in config. Run setup first.	SERVER_B_USER o REMOTE_SERVER está vacío en config. Ejecute primero la configuración.
 SHA256SUMS has a BAD signature: the download may have been tampered with	SHA256SUMS tiene una firma INVÁLIDA: es posible que la descarga haya sido manipulada
 SHA256SUMS needs good signatures from at least %s builders (MIN_SIGNATURES)	SHA256SUMS necesita firmas válidas de al menos %s compiladores (MIN_SIGNATURES)
 STATUS_FILE is empty in config, so the service writes no status	STATUS_FILE está vacío en config, así que el servicio no escribe su estado
-STOP	STOP
 Safe folder: 	Carpeta segura: 
 Safe folders:	Carpetas seguras:
 Safe folders: the backup only deletes files inside these. Suggested: the backup folders from config.	Carpetas seguras: solo se eliminan archivos dentro de ellas. Sugeridas: las carpetas de copias de config.
@@ -569,6 +580,7 @@ Server A's address: 	Dirección del Servidor A:
 Server A's key must get into ~/.ssh/authorized_keys of %s on Server B. Either:	La clave del Servidor A debe quedar en ~/.ssh/authorized_keys de %s en el Servidor B. Elija:
 Server A's key:       %s ...%s	Clave del Servidor A:             %s ...%s
 Server A's last status is %s minutes old: Server A may be off, and then its channels need the tower	el último estado del Servidor A es de hace %s minutos: puede que el Servidor A esté apagado, y entonces sus canales necesitan la torre
+Server A's last status is dated in the future: check this server's clock	El último estado del Servidor A tiene una fecha en el futuro: revise el reloj de este servidor
 Server B	Servidor B
 Server B SSH port: 	Puerto SSH del Servidor B: 
 Server B address (hostname or IP): 	Dirección del Servidor B (nombre de host o IP): 
@@ -641,7 +653,7 @@ The backup service installer failed (details in %s). Run it by hand: sudo %s/rsy
 The current wallet:	La billetera actual:
 The hourly check hasn't run for %s	La revisión horaria no se ejecuta desde hace %s
 The manifest has a BAD signature (%s): the download may have been tampered with	El manifiesto tiene una firma INVÁLIDA (%s): es posible que la descarga haya sido manipulada
-The manifest needs good signatures from at least %s signers (MIN_SIGNATURES), it has %s	El manifiesto necesita firmas válidas de al menos %s firmantes (MIN_SIGNATURES); tiene %s
+The manifest needs good signatures from at least %s of LND's known signers, it has %s. If LND has new signers, a newer release of these scripts knows them.	El manifiesto necesita firmas válidas de al menos %s de los firmantes conocidos de LND; tiene %s. Si LND tiene firmantes nuevos, una versión más nueva de estos scripts los conoce.
 The new settings would also have changed other users' logins; taken out again	Los nuevos ajustes también habrían cambiado el inicio de sesión de otros usuarios; se quitaron de nuevo
 The password must have at least 8 characters.	La contraseña debe tener al menos 8 caracteres.
 The passwords don't match.	Las contraseñas no coinciden.
@@ -649,10 +661,12 @@ The programs setup needs are installed	Los programas que necesita la configuraci
 The release key %s is missing	Falta la clave de firma de versiones %s
 The safety backup could not be stored anywhere. Nothing has been deleted.	La copia de resguardo no se pudo guardar en ningún lugar. No se ha borrado nada.
 The safety backup failed its check: %s	La copia de resguardo no pasó la verificación: %s
+The safety backup holds links, special files or setuid/setgid files (%s), which a safety backup never has: not used	La copia de resguardo contiene enlaces, archivos especiales o archivos setuid/setgid (%s), que una copia de resguardo nunca tiene: no se usa
 The safety backup: made %s (signed), wallet %s	La copia de resguardo: hecha %s (fecha firmada), billetera %s
 The service isn't running, so there is no check to run	El servicio no está en marcha, así que no hay revisión que hacer
 The tag %s calls itself %s: refused	La etiqueta %s dice llamarse %s: se rechaza
 The temporary LND stopped during the scan	El LND temporal se detuvo durante la búsqueda
+The update to %s didn't finish: journalctl -u lnd-update-wait, and %s	La actualización a %s no terminó: journalctl -u lnd-update-wait, y %s
 The wallet operation runs in another terminal, not in tmux: nothing to attach to	La operación de billetera se ejecuta en otra terminal, no en tmux: no hay a qué conectarse
 The wallet running now:	La billetera en funcionamiento ahora:
 The watchtower client isn't on, LND isn't running, or LND is still catching up with the chain:	El cliente de watchtower está desactivado, LND no está en ejecución o aún se sincroniza con la blockchain:
@@ -669,6 +683,7 @@ These scripts: %s -> %s	Estos scripts: %s -> %s
 This backup has no seed (walletunlock.json without one), so type the seed yourself.	Esta copia de seguridad no tiene semilla (walletunlock.json sin ella), así que escriba la semilla usted mismo.
 This fingerprint was fetched over the network, so it proves nothing yet.	Esta huella se obtuvo por la red, así que todavía no prueba nada.
 This installs or updates the LND backup service (%s).	Esto instala o actualiza el servicio de copias de seguridad de LND (%s).
+This update is waiting already: it installs once Server A says it is safe	Esta actualización ya está en espera: se instalará en cuanto el Servidor A indique que es seguro
 Timed out waiting for the temporary LND after wallet creation	Se agotó el tiempo de espera del LND temporal después de crear la billetera
 To copy again: sudo rm -rf %s; sudo -u %s mkdir -m 700 %s; then /chain copy on Server A.	Para copiar de nuevo: sudo rm -rf %s; sudo -u %s mkdir -m 700 %s; luego /chain copy en el Servidor A.
 To paste it instead: on Server B, in a git clone of the project, run sudo ./serverb-setup.sh --paste	Para pegarlo en su lugar: en el Servidor B, en un git clone del proyecto, ejecute sudo ./serverb-setup.sh --paste
@@ -890,6 +905,7 @@ setup_script.sh not found in BACKUP_SCRIPTS_FOLDER (%s)	No se encontró setup_sc
 setup_script.sh: users, keys, attached volume, Server B	setup_script.sh: usuarios, claves, volumen adjunto, Servidor B
 sha256 of this file: %s	sha256 de este archivo: %s
 signal	señal
+skipped: files changed while being read	omitida: los archivos cambiaron mientras se leían
 skipped: no LND files found	omitida: no se encontraron archivos de LND
 sshd rejected the new settings; they were taken out again and sshd was not reloaded	sshd rechazó los nuevos ajustes; se quitaron de nuevo y sshd no se recargó
 start	inicio
@@ -931,7 +947,7 @@ unknown	desconocido
 unknown setting	ajuste desconocido
 use Server B's watchtower for this node	usar la watchtower del Servidor B para este nodo
 use a file name only (letters, digits, '.', _ or -), no folders	use solo un nombre de archivo (letras, dígitos, '.', _ o -), sin carpetas
-use a normal user on Server B, not root	use un usuario normal en el Servidor B, no root
+use an account of its own on Server B, not root, bitcoin or lndtower	use una cuenta propia en el Servidor B, no root, bitcoin ni lndtower
 use an account of its own, not root, bitcoin, lndtower or SERVER_B_USER	use una cuenta propia, no root, bitcoin, lndtower ni SERVER_B_USER
 use up to 32 lowercase letters, digits, _ or -, starting with a letter	use hasta 32 letras minúsculas, dígitos, _ o -, comenzando con una letra
 use up to 32 lowercase letters, digits, _ or -, starting with a letter or _	use hasta 32 letras minúsculas, dígitos, _ o -, comenzando con una letra o _
@@ -942,6 +958,7 @@ yesterday %H:%M	ayer %H:%M
 your LND seed	su semilla de LND
 ℹ️ %s exists already: left as it is (its password and groups too)	ℹ️ %s ya existe: se deja como está (también su contraseña y sus grupos)
 ℹ️ %s is up to date	ℹ️ %s está al día
+ℹ️ %s waited to be installed, but %s is installed already: dropped	ℹ️ %s esperaba para instalarse, pero %s ya está instalado: se descarta
 ℹ️ %s was left disabled by an earlier run that stopped partway; it is enabled again at the end	ℹ️ %s quedó desactivado por una ejecución anterior que se detuvo a medias; se vuelve a activar al final
 ℹ️ %s wasn't running, so it wasn't started (the dashboard: /%s start)	ℹ️ %s no estaba en marcha, así que no se inició (en el panel: /%s start)
 ℹ️ A chain/tower operation is already running in tmux session '%s'. Attaching to it...	ℹ️ Ya hay una operación de blockchain/torre en curso en la sesión de tmux '%s'. Conectándose a ella...
@@ -1058,6 +1075,7 @@ your LND seed	su semilla de LND
 ⚠️ Continuing anyway (confirmed by user)	⚠️ Se continúa de todos modos (confirmado por el usuario)
 ⚠️ Continuing with channels still opening or closing (confirmed by user)	⚠️ Se continúa con canales aún abriéndose o cerrándose (confirmado por el usuario)
 ⚠️ Continuing without channels: no channel.backup opens with this wallet	⚠️ Se continúa sin canales: ningún channel.backup se abre con esta billetera
+⚠️ Could not fingerprint LND's files this time (a file changed while being read?): next check in an hour	⚠️ Esta vez no se pudo calcular la huella de los archivos de LND (¿cambió un archivo mientras se leía?): próxima revisión en una hora
 ⚠️ Could not install tmux. Continuing without it: don't let the SSH connection drop.	⚠️ No se pudo instalar tmux. Se continúa sin él: no deje que se corte la conexión SSH.
 ⚠️ Could not move your working folder %s to %s. Do it yourself before you run install-scripts.sh there again: git fetch --tags && git checkout %s	⚠️ No se pudo llevar su carpeta de trabajo %s a %s. Hágalo usted mismo antes de volver a ejecutar install-scripts.sh allí: git fetch --tags && git checkout %s
 ⚠️ Could not reload sshd: the limits apply after its next restart	⚠️ No se pudo recargar sshd: los límites se aplican después de su próximo reinicio
@@ -1091,8 +1109,10 @@ your LND seed	su semilla de LND
 ⚠️ Run this script again: the same option to finish, or option 5 to put the safety backup back.	⚠️ Ejecute este script de nuevo: la misma opción para terminar, o la opción 5 para restablecer la copia de resguardo.
 ⚠️ Safety backup put back, but the backup service is NOT running. Rerun %s.	⚠️ Copia de resguardo restablecida, pero el servicio de copias de seguridad NO está en marcha. Vuelva a ejecutar %s.
 ⚠️ Scan for old funds skipped at %s	⚠️ Búsqueda de fondos anteriores omitida al %s
+⚠️ Server A's key isn't in ~/.ssh/authorized_keys: not added back by an update (run this step by hand to add it)	⚠️ La clave del Servidor A no está en ~/.ssh/authorized_keys: una actualización no la vuelve a agregar (ejecute este paso a mano para agregarla)
 ⚠️ Server B can't be reached, so only the attached volume is searched.	⚠️ No hay conexión con el Servidor B, así que solo se busca en el volumen adjunto.
 ⚠️ Server B's backup gate can't be reached, so the safety backup is not stored there	⚠️ No hay conexión con la compuerta de copias del Servidor B, así que la copia de resguardo no se guarda allí
+⚠️ Server B's backup gate is older and can't check uploads: update it there (step 1 of serverb-setup.sh, or /update scripts)	⚠️ La compuerta de copias del Servidor B es más antigua y no puede verificar lo que se sube: actualícela allí (paso 1 de serverb-setup.sh, o /update scripts)
 ⚠️ Server B's backup gate not installed: copies to Server B will fail until it is (server-b-install.sh)	⚠️ La compuerta de copias del Servidor B no está instalada: las copias al Servidor B fallarán hasta que lo esté (server-b-install.sh)
 ⚠️ Server B's gate didn't say which address it sees (older gate, or not reachable). The suggestion	⚠️ La compuerta del Servidor B no dijo qué dirección ve (versión antigua o sin acceso). La sugerencia
 ⚠️ Skipped %s	⚠️ Se omitió %s
@@ -1110,6 +1130,7 @@ your LND seed	su semilla de LND
 ⚠️ The attached volume is not mounted, so the safety backup is not stored there	⚠️ El volumen adjunto no está montado, así que la copia de resguardo no se guarda allí
 ⚠️ The backup service is still stopped. When LND is fine, rerun %s.	⚠️ El servicio de copias de seguridad sigue detenido. Cuando LND esté bien, vuelva a ejecutar %s.
 ⚠️ The backup's macaroons don't open with this password. Making new ones (apps need pairing again).	⚠️ Los macaroons de la copia de seguridad no se abren con esta contraseña. Se crean nuevos (hay que volver a vincular las apps).
+⚠️ The hourly check had stopped: starting it again	⚠️ La revisión horaria se había detenido: se vuelve a iniciar
 ⚠️ The install goes on; delete them by hand if you need them gone.	⚠️ La instalación continúa; elimínelos a mano si necesita que no estén.
 ⚠️ The old wallet is in the safety backup %s.	⚠️ La billetera anterior está en la copia de resguardo %s.
 ⚠️ The wallet is done, but the backup service is NOT running. Rerun %s.	⚠️ La billetera está lista, pero el servicio de copias de seguridad NO está en marcha. Vuelva a ejecutar %s.
@@ -1271,6 +1292,7 @@ your LND seed	su semilla de LND
 ❌ %s (PID %s) died unexpectedly	❌ %s (PID %s) terminó inesperadamente
 ❌ %s (from config) is not inside any safe folder	❌ %s (de config) no está dentro de ninguna carpeta segura
 ❌ %s can write %s or %s, which root uses. Fix their permissions first.	❌ %s puede escribir en %s o %s, que usa root. Corrija primero sus permisos.
+❌ %s can't hold ", $, `, \\ or control characters: %s	❌ %s no puede contener ", $, `, \\ ni caracteres de control: %s
 ❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume.	❌ %s no existe. Vuelva a ejecutar rsync_gpg_backup.sh: la crea en el volumen adjunto.
 ❌ %s doesn't look like an SSH public key.	❌ %s no parece una clave pública SSH.
 ❌ %s failed. Fix what it says, then run this again: steps already done can be skipped.	❌ %s falló. Corrija lo que indica y ejecute esto de nuevo: los pasos ya hechos se pueden omitir.
@@ -1281,6 +1303,7 @@ your LND seed	su semilla de LND
 ❌ %s is a symlink, not owned by root, or writable by others	❌ %s es un enlace simbólico, no es de root o lo pueden modificar otros
 ❌ %s is a symlink. Remove it; the mount point must be a real folder owned by root.	❌ %s es un enlace simbólico. Elimínelo; el punto de montaje debe ser una carpeta real propiedad de root.
 ❌ %s is a symlink. Stopping.	❌ %s es un enlace simbólico. Se detiene.
+❌ %s is a symlink. Stopping: changing it as root could change its target.	❌ %s es un enlace simbólico. Se detiene: cambiarlo como root podría cambiar su destino.
 ❌ %s is a symlink; set SERVER_B_SCRIPTS_DIR to a folder of yours	❌ %s es un enlace simbólico; defina SERVER_B_SCRIPTS_DIR como una carpeta suya
 ❌ %s is already mounted from %s, not %s (UUID %s). Unmount it or fix UUID in %s.	❌ %s ya está montado desde %s, no desde %s (UUID %s). Desmóntelo o corrija UUID en %s.
 ❌ %s is empty in config. Run setup_script.sh first.	❌ %s está vacío en la configuración. Ejecute primero setup_script.sh.
@@ -1291,6 +1314,7 @@ your LND seed	su semilla de LND
 ❌ %s problem(s) above: fix them, then run setup again. Nothing was changed.	❌ %s problema(s) arriba: corríjalos y vuelva a ejecutar la configuración. No se cambió nada.
 ❌ %s still can't read %s	❌ %s todavía no puede leer %s
 ❌ %s still cannot watch %s	❌ %s todavía no puede vigilar %s
+❌ %s, or a folder above it, is a symlink: no ACLs set there	❌ %s, o una carpeta por encima, es un enlace simbólico: no se definen ACL allí
 ❌ %s: exit code %d	❌ %s: código de salida %d
 ❌ /etc/fstab already mounts %s at %s, not UUID=%s. Fix /etc/fstab or UUID in %s.	❌ /etc/fstab ya monta %s en %s, no UUID=%s. Corrija /etc/fstab o UUID en %s.
 ❌ A GPG key is required. Exiting.	❌ Se requiere una clave GPG. Saliendo.
@@ -1503,6 +1527,7 @@ your LND seed	su semilla de LND
 ➡️ Copied: %s → %s	➡️ Copiado: %s → %s
 ➡️ Next on Server A, if it isn't set up yet: lnd-manager /setup installs the backup gate.	➡️ Ahora en el Servidor A, si aún no está configurado: lnd-manager /setup instala la compuerta de copias.
 ➡️ Next on Server A: lnd-manager /tower add, with the tower's pubkey@address:port shown above.	➡️ Ahora en el Servidor A: lnd-manager /tower add, con el pubkey@address:port de la torre que se muestra arriba.
+➡️ Using %s: it lists the most channels (%s)	➡️ Se usa %s: enumera la mayor cantidad de canales (%s)
 🌀 Detected change in: %s	🌀 Cambio detectado en: %s
 🌀 Relevant file change detected: %s (count=%s)	🌀 Cambio relevante detectado en un archivo: %s (count=%s)
 🎉 RSYNC STAGE CONFIRMED SUCCESS	🎉 ETAPA DE RSYNC CONFIRMADA CON ÉXITO
@@ -1545,9 +1570,10 @@ your LND seed	su semilla de LND
 📦 Installing %s...	📦 Instalando %s...
 📦 Installing the scripts and config root-owned into %s...	📦 Instalando los scripts y config, propiedad de root, en %s...
 📦 Latest in snapshot: %s	📦 Más reciente en la instantánea: %s
-📦 Moving the copy in (across disks this takes a while)...	📦 Moviendo la copia a su lugar (entre discos distintos esto tarda un rato)...
+📦 Moving the copy in...	📦 Moviendo la copia a su lugar...
 📦 Rsync encrypted backup to %s...	📦 Copiando con rsync la copia cifrada a %s...
 📦 Sending %s to Server B's backup gate...	📦 Enviando %s a la compuerta de copias del Servidor B...
+📦 Taking the copy into %s (across disks this takes a while)...	📦 Llevando la copia a %s (entre discos esto tarda un rato)...
 📦 Using LND image: %s	📦 Usando la imagen de LND: %s
 🔁 Backup attempt %s of %s	🔁 Intento de copia %s de %s
 🔁 Restarting backup due to inconsistent snapshot	🔁 Reiniciando la copia porque la instantánea es inconsistente
