@@ -201,7 +201,11 @@ Un watchtower vigila sus canales mientras su nodo está desconectado.
    antigua que `/serverb send` rechaza los ajustes: en ese caso use el camino 1 con `--paste`
    (muestra los ajustes para pegarlos), y el paso 1 actualiza la compuerta.
 2. Para ahorrarle al Servidor B días de sincronización, copie la blockchain desde el Servidor A:
-   `/chain copy` (antes `/chain prune`, si la blockchain de BTCPay aún no está podada). Los pasos
+   `/chain copy` (antes `/chain prune`, si la blockchain de BTCPay aún no está podada). Pregunta
+   dónde se poda la blockchain al tamaño del Servidor B: en el Servidor A, en una copia junto a la de
+   BTCPay (la blockchain de BTCPay no cambia y se envía más o menos la mitad: el chainstate, unos
+   12 GB, no se puede podar), o en el Servidor B después de la importación. Antes comprueba que los
+   dos servidores tengan espacio. Los pasos
    se detienen después de Bitcoin Core hasta que termine la copia; vuelva a ejecutar el mismo
    comando en el Servidor B para continuar.
 3. De vuelta en el Servidor A: `/tower add`, con la dirección de la torre que mostró el paso del

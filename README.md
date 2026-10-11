@@ -244,8 +244,11 @@ A watchtower keeps an eye on your channels while your node is offline.
    the settings: then use way 1 with `--paste` (it shows the settings to paste), and step 1
    updates the gate.
 2. To save Server B days of syncing, copy the blockchain over from Server A: `/chain copy`
-   (`/chain prune` first, if BTCPay's blockchain isn't pruned yet). The steps stop after
-   Bitcoin Core until the copy is done; run the same command on Server B again to go on.
+   (`/chain prune` first, if BTCPay's blockchain isn't pruned yet). It asks where the blockchain
+   is pruned to Server B's size: on Server A, in a copy beside BTCPay's (BTCPay's own blockchain
+   isn't changed, and about half as much is sent: the chainstate, some 12 GB, can't be pruned),
+   or on Server B after the import. It checks first that both servers have room. The steps stop
+   after Bitcoin Core until the copy is done; run the same command on Server B again to go on.
 3. Back on Server A: `/tower add`, with the tower's address the watchtower step showed.
 
 `/serverb scripts` still makes the scripts one by one, to copy to Server B yourself.

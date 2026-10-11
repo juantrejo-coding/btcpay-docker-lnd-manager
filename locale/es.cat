@@ -7,9 +7,12 @@
       signature yourself, so root there runs only code you checked (recommended).	      su firma usted mismo, así root allí solo ejecuta código que usted verificó (recomendado).
       without GitHub. As safe as copying them by hand: root there runs what this server made.	      sin GitHub. Tan seguro como copiarlos a mano: root allí ejecuta lo que creó este servidor.
      %s (no password, key login only), or sets up the existing one, with this key	     %s (sin contraseña, solo inicio de sesión con clave), o configura el existente, con esta clave
+     BTCPay's own blockchain isn't changed. Needs about %s GB free here meanwhile.	     La blockchain propia de BTCPay no cambia. Necesita unos %s GB libres aquí mientras tanto.
      If the connection drops, run /chain copy again: it goes on where it stopped.	     Si se corta la conexión, ejecute /chain copy de nuevo: continúa donde se quedó.
+     Then BTCPay starts again, the copy is pruned and sent to Server B, and deleted here.	     Luego BTCPay se inicia de nuevo, la copia se poda, se envía al Servidor B y se borra aquí.
      Then BTCPay starts again.	     Luego BTCPay se inicia de nuevo.
      This script never formats disks itself.	     Este script nunca formatea discos por su cuenta.
+     after the import. Nothing extra on this server; more to send, more room on Server B.	     tras la importación. Nada extra en este servidor; más que enviar y más espacio en el Servidor B.
      check its name in lsblk twice; never the disk that holds / or /var/lib/docker:	     revise su nombre en lsblk dos veces; nunca el disco que contiene / o /var/lib/docker:
      lists it, usually as /dev/sdb or /dev/vdb. A new disk shows no FSTYPE and no UUID yet.	     lo muestra, normalmente como /dev/sdb o /dev/vdb. Un disco nuevo aún no muestra FSTYPE ni UUID.
     %s, then enables and starts it.	    %s, y después lo habilita y lo inicia.
@@ -38,8 +41,10 @@
    A release that changes their own setup says so: then rerun that step (sudo ./serverb-setup.sh).	   Una versión que cambie su propia configuración lo indica: en ese caso, vuelva a ejecutar ese paso (sudo ./serverb-setup.sh).
    Backup user:           %s	   Usuario de copias:           %s
    Blockchain kept (MB):  %s	   Blockchain conservada (MB):  %s
+   Choose 1 (pruned on Server A) to send less, or free space on Server B.	   Elija 1 (podada en el Servidor A) para enviar menos, o libere espacio en el Servidor B.
    Copy:   %s	   Copia:  %s
    Dashboard admin:       %s	   Administrador del panel:     %s
+   Free some space, or choose 2 (pruned on Server B).	   Libere espacio o elija 2 (podada en el Servidor B).
    Free space for /var/lib: %s GB	   Espacio libre para /var/lib: %s GB
    Good signatures from %s builders:	   Firmas válidas de %s compiladores:
    Installing in the background (lnd-update-wait); its progress:	   Instalando en segundo plano (lnd-update-wait); su progreso:
@@ -67,6 +72,7 @@
    The backup service and lnd-wallet.sh need the gate: without it, copies to Server B fail.	   Sin la compuerta, el servicio de copias de seguridad y lnd-wallet.sh no pueden copiar al Servidor B.
    The backup service still reads %s/config: rerun %s/rsync_gpg_backup.sh,	   El servicio de copias todavía lee %s/config: vuelva a ejecutar %s/rsync_gpg_backup.sh;
    The backup service uses the installed copy: rerun %s/rsync_gpg_backup.sh to apply the changes.	   El servicio de copias usa la copia instalada: vuelva a ejecutar %s/rsync_gpg_backup.sh para aplicar los cambios.
+   The import moves it to /var/lib, another disk there: %s GB needed, %s GB free.	   La importación la mueve a /var/lib, que allí es otro disco: se necesitan %s GB, hay %s GB libres.
    The mount point should be %s (owned by root). If the disk is already	   El punto de montaje debería ser %s (propiedad de root). Si el disco ya está
    The old blocks are in %s; delete that folder once all is well: sudo rm -rf %s	   Los bloques anteriores están en %s; borre esa carpeta cuando todo esté bien: sudo rm -rf %s
    To go back: stop bitcoind, move %s/* back into %s, start it.	   Para volver atrás: detenga bitcoind, mueva %s/* de vuelta a %s e inícielo.
@@ -152,11 +158,14 @@
   1) New wallet	  1) Billetera nueva
   1) opt-save-storage       ~100 GB	  1) opt-save-storage       ~100 GB
   1. Attach it to this server (in the provider's panel, or plug it in). Then	  1. Conéctelo a este servidor (en el panel del proveedor, o enchufándolo). Luego
+  1. On Server A: a pruned copy is made beside BTCPay's, and only that is sent (about %s GB).	  1. En el Servidor A: se crea una copia podada junto a la de BTCPay y solo se envía esa (unos %s GB).
   1. while BTCPay runs: almost everything (%s GB). This can take hours; BTCPay keeps working.	  1. con BTCPay en marcha: casi todo (%s GB). Puede tardar horas; BTCPay sigue funcionando.
+  1. while BTCPay runs: the pruned copy is made here (the chainstate copied, about %s GB).	  1. con BTCPay en marcha: se crea aquí la copia podada (se copia el chainstate, unos %s GB).
   2) Restore the wallet (on-chain funds) from its seed	  2) Restaurar la billetera (fondos on-chain) desde su semilla
   2) opt-save-storage-s     ~50 GB	  2) opt-save-storage-s     ~50 GB
   2) setup makes serverb-user-setup.sh for you to run on Server B with sudo. It creates	  2) la configuración crea serverb-user-setup.sh para que lo ejecute en el Servidor B con sudo. Crea
   2. BTCPay stopped (you type STOP BTCPAY): only what changed meanwhile, usually minutes.	  2. con BTCPay detenido (usted escribe STOP BTCPAY): solo lo que cambió entretanto, unos minutos.
+  2. On Server B: BTCPay's whole pruned blockchain is sent (%s GB), and Server B prunes it	  2. En el Servidor B: se envía toda la blockchain podada de BTCPay (%s GB) y el Servidor B la poda
   2. Only if it is new and empty: make a %s filesystem on it. This ERASES that disk, so	  2. Solo si es nuevo y está vacío: cree en él un sistema de archivos %s. Esto BORRA ese disco, así que
   3) Restore the wallet and the channels (seed + channel.backup)	  3) Restaurar la billetera y los canales (semilla + channel.backup)
   3) opt-save-storage-xs    ~25 GB   recommended: keeps about 3 months of blocks	  3) opt-save-storage-xs    ~25 GB   recomendado: conserva unos 3 meses de bloques
@@ -322,7 +331,7 @@ BTCPay's LND has its watchtower client off. BTCPay's opt-lnd-wtclient fragment t
 BTCPay's LND has no wallet folder yet (%s/data/chain/bitcoin/mainnet). It appears once	El LND de BTCPay aún no tiene carpeta de billetera (%s/data/chain/bitcoin/mainnet). Aparece cuando
 BTCPay's LND has node ID '%s', not this wallet's %s. The backup service stays off.	El LND de BTCPay tiene el ID del nodo '%s', no el de esta billetera, %s. El servicio de copias de seguridad sigue apagado.
 BTCPay's LND isn't running with an unlocked wallet. Start BTCPay first.	El LND de BTCPay no está funcionando con una billetera desbloqueada. Inicie BTCPay primero.
-BTCPay's blockchain: %s GB (prune=%s), to %s:~/chain-incoming	Blockchain de BTCPay: %s GB (prune=%s), hacia %s:~/chain-incoming
+BTCPay's blockchain: %s GB (prune=%s), of which the chainstate (which can't be pruned) is %s GB.	Blockchain de BTCPay: %s GB (prune=%s), de los cuales el chainstate (que no se puede podar) ocupa %s GB.
 BTCPay's blockchain: %s of blocks, prune=%s	Blockchain de BTCPay: %s de bloques, prune=%s
 BTCPay's pruning presets keep this much of the blockchain:	Los ajustes de poda predefinidos de BTCPay conservan esta parte de la blockchain:
 Back from the log	De vuelta del registro
@@ -358,7 +367,7 @@ Choose 1-4 (Enter for 3, q to stop): 	Elija 1-4 (Enter = 3, q = salir):
 Choose 1-5: 	Elija 1-5: 
 Choose the wallet password.	Elija la contraseña de la billetera.
 Choose: 1) type the seed again  2) continue anyway  3) stop: 	Elija: 1) escribir la semilla de nuevo  2) continuar de todos modos  3) detener: 
-Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. Two passes: the first while BTCPay runs (can take hours), the second Stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B.	Copia la blockchain podada de BTCPay al bitcoind del Servidor B (a la carpeta que creó serverb-bitcoind-setup.sh), para que no pase días sincronizándose. Dos pasadas: la primera con BTCPay en marcha (puede tardar horas), la segunda detiene BTCPay unos minutos (usted escribe STOP BTCPAY). Se ejecuta en tmux; /chain attach vuelve a ella. Después ejecute serverb-import-chain.sh en el Servidor B.
+Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. It asks where it is pruned to Server B's size: here, in a copy beside BTCPay's (BTCPay's own blockchain isn't changed; less to send), or on Server B after the import. It checks there is room on both servers first. Two passes: the first while BTCPay runs, the second stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B.	Copia la blockchain podada de BTCPay al bitcoind del Servidor B (en la carpeta que creó serverb-bitcoind-setup.sh), para que no tarde días en sincronizarse. Pregunta dónde se poda al tamaño del Servidor B: aquí, en una copia junto a la de BTCPay (la blockchain propia de BTCPay no cambia; hay menos que enviar), o en el Servidor B tras la importación. Primero comprueba que haya espacio en ambos servidores. Dos pasadas: la primera con BTCPay en marcha, la segunda detiene BTCPay unos minutos (usted escribe STOP BTCPAY). Se ejecuta en tmux; /chain attach vuelve a la sesión. Luego ejecute serverb-import-chain.sh en el Servidor B.
 Copy from Server A: %s in %s	Copia del Servidor A: %s en %s
 Copy the public key file:	Copie el archivo de la clave pública:
 Copy them to Server B yourself, from a computer you trust (not with Server A's backup key):	Cópielos usted al Servidor B desde un equipo de confianza (no con la clave de copias del Servidor A):
@@ -374,6 +383,7 @@ Could not download SHA256SUMS.asc	No se pudo descargar SHA256SUMS.asc
 Could not download the %s package	No se pudo descargar el paquete %s
 Could not download the manifest	No se pudo descargar el manifiesto
 Could not find BTCPay's LND image (container '%s' or its compose file). Is BTCPay installed with LND?	No se encontró la imagen de LND de BTCPay (contenedor '%s' o su archivo compose). ¿BTCPay está instalado con LND?
+Could not find BTCPay's bitcoind container (%s)	No se encontró el contenedor de bitcoind de BTCPay (%s)
 Could not find a Bitcoin Core release on bitcoincore.org/bin/	No se encontró ninguna versión de Bitcoin Core en bitcoincore.org/bin/
 Could not find the latest LND release on api.github.com	No se encontró la última versión de LND en api.github.com
 Could not find this script's file	No se encontró el archivo de este script
@@ -389,6 +399,7 @@ Could not read the release key %s	No se pudo leer la clave de firma de versiones
 Could not run it: %s	No se pudo ejecutar: %s
 Could not start lnd-update-wait; the update is installed at the next boot	No se pudo iniciar lnd-update-wait; la actualización se instalará en el próximo arranque
 Could not start the background wait; %s is installed at the next boot	No se pudo iniciar la espera en segundo plano; %s se instalará en el próximo arranque
+Could not start the bitcoind that prunes the copy	No se pudo iniciar el bitcoind que poda la copia
 Could not unpack %s	No se pudo desempaquetar %s
 Could not unpack the safety backup	No se pudo desempaquetar la copia de resguardo
 Could not unpack the safety backup into %s	No se pudo desempaquetar la copia de resguardo en %s
@@ -473,6 +484,8 @@ MAIN_USER is not set in config. It's your own account on this server, usually th
 Made %s owner of %s (%s itself stays root's)	%s es ahora dueño de %s (%s sigue siendo de root)
 Main user: 	Usuario principal: 
 Makes a new LND wallet in place of the current one. Stops BTCPay for a few minutes. The current wallet is kept in a safety backup, but its funds stay reachable only through its old seed. Asks you to type confirmations before anything changes.	Crea una nueva billetera de LND en lugar de la actual. Detiene BTCPay unos minutos. La billetera actual se guarda en una copia de resguardo, pero solo se puede acceder a sus fondos con su semilla anterior. Le pide escribir confirmaciones antes de cambiar nada.
+Making the copy failed, so BTCPay was not stopped. Free space in %s, then run /chain copy again.	La creación de la copia falló, así que BTCPay no se detuvo. Libere espacio en %s y ejecute /chain copy de nuevo.
+Making the copy failed. BTCPay is started again; run /chain copy again later.	La creación de la copia falló. BTCPay se inicia de nuevo; ejecute /chain copy de nuevo más tarde.
 Milestones, local	Hitos, local
 Missing dependency: %s (package: %s). Installing...	Falta una dependencia: %s (paquete: %s). Instalando...
 Missing programs: %s. Install them: sudo apt-get install %s	Programas faltantes: %s. Instálelos: sudo apt-get install %s
@@ -526,6 +539,7 @@ Problems:	Problemas:
 Prune size on Server B in MB [2000 recommended]: 	Tamaño de poda en el Servidor B en MB [se recomienda 2000]: 
 Prunes BTCPay's blockchain with one of BTCPay's opt-save-storage presets: ~100, ~50, ~25 (recommended) or ~5 GB. Old blocks are deleted: BTCPay can then no longer rescan for old transactions. Stops BTCPay's bitcoind and LND for a few minutes while btcpay-setup.sh applies it; you type STOP BTCPAY first.	Poda la blockchain de BTCPay con uno de sus ajustes predefinidos opt-save-storage: ~100, ~50, ~25 (recomendado) o ~5 GB. Se borran los bloques antiguos: después BTCPay ya no puede volver a buscar transacciones antiguas. Detiene el bitcoind y el LND de BTCPay unos minutos mientras btcpay-setup.sh lo aplica; antes usted escribe STOP BTCPAY.
 Pruning deletes old blocks: BTCPay can then no longer rescan for transactions older than what it	La poda borra bloques antiguos: luego BTCPay ya no puede volver a buscar transacciones anteriores a
+Pruning the copy failed	La poda de la copia falló
 Puts a safety backup back as the whole LND volume, channel state included. Only safe if no LND has run with those channels since. Stops BTCPay. Saves the current wallet first, and asks you to type confirmations.	Vuelve a poner una copia de resguardo como todo el volumen de LND, incluido el estado de los canales. Solo es seguro si ningún LND ha funcionado con esos canales desde entonces. Detiene BTCPay. Primero guarda la billetera actual y le pide escribir confirmaciones.
 REMOTE_SERVER is not set in config.	REMOTE_SERVER no está definido en config.
 REMOTE_SSH_PORT is not set in config.	REMOTE_SSH_PORT no está definido en config.
@@ -571,6 +585,7 @@ Scripts from this clone: %s (Server A runs %s)	Scripts de este clon: %s (el Serv
 Scripts installed root-owned	Scripts instalados como propiedad de root
 Seed (24 words, separated by spaces, hidden while typed): 	Semilla (24 palabras, separadas por espacios, ocultas al escribir): 
 Seed passphrase, only if you set one when the seed was made (Enter for none): 	Frase de contraseña de la semilla, solo si puso una al crear la semilla (Enter si no tiene): 
+Sending the copy failed. Run /chain copy again later (BTCPay keeps running).	El envío de la copia falló. Ejecute /chain copy de nuevo más tarde (BTCPay sigue en marcha).
 Server A can copy its pruned blockchain here instead: hours, rather than days of	En cambio, el Servidor A puede copiar aquí su blockchain podada: horas, en lugar de días
 Server A couldn't count its payments in flight and pending channels	el Servidor A no pudo contar sus pagos en curso ni sus canales pendientes
 Server A reaches %s through the updated gate.	El Servidor A llega a %s a través de la compuerta actualizada.
@@ -587,11 +602,13 @@ Server B address (hostname or IP): 	Dirección del Servidor B (nombre de host o 
 Server B answers at %s, port %s	El Servidor B responde en %s, puerto %s
 Server B backup user: %s	Usuario de copias del Servidor B: %s
 Server B doesn't answer at %s, port %s: check REMOTE_SERVER and REMOTE_SSH_PORT in config, that Server B runs, and its firewall	El Servidor B no responde en %s, puerto %s: revise REMOTE_SERVER y REMOTE_SSH_PORT en config, que el Servidor B esté encendido y su cortafuegos
+Server B has no ~%s/chain-incoming: serverb-bitcoind-setup.sh makes it when you choose to copy the blockchain there	El Servidor B no tiene ~%s/chain-incoming: serverb-bitcoind-setup.sh lo crea cuando usted elige copiar allí la blockchain
 Server B is behind: its last copy is older than the attached volume's	El Servidor B está atrasado: su última copia es más antigua que la del volumen adjunto
 Server B scripts from Server A (version %s)	Scripts del Servidor B creados en el Servidor A (versión %s)
 Server B sees Server A connect from %s.	El Servidor B ve que el Servidor A se conecta desde %s.
 Server B setup checklist	Lista de pasos de configuración del Servidor B
 Server B's backup gate doesn't answer. Run setup first (lnd-manager: /setup).	La compuerta de copias del Servidor B no responde. Ejecute primero la configuración (lnd-manager: /setup).
+Server B's backup gate is older and can't say how much space it has: update it there first (step 1 of serverb-setup.sh, or /update scripts)	La compuerta de copias del Servidor B es más antigua y no puede indicar cuánto espacio tiene: actualícela allí primero (paso 1 de serverb-setup.sh, o /update scripts)
 Server B's gate takes it only into ~%s/chain-incoming (serverb-bitcoind-setup.sh makes it).	La compuerta del Servidor B solo la acepta en ~%s/chain-incoming (la crea serverb-bitcoind-setup.sh).
 Server B: setup asks for its address	Servidor B: la configuración pedirá su dirección
 Service is %s	Estado del servicio: %s
@@ -650,6 +667,7 @@ The address Server A's node uses to reach the watchtower on Server B (usually Se
 The attached volume (UUID %s) is attached	El volumen adjunto (UUID %s) está conectado
 The backup holds the wallet's seed and password (walletunlock.json).	La copia de seguridad contiene la semilla y la contraseña de la billetera (walletunlock.json).
 The backup service installer failed (details in %s). Run it by hand: sudo %s/rsync_gpg_backup.sh	Falló el instalador del servicio de copias de seguridad (detalles en %s). Ejecútelo a mano: sudo %s/rsync_gpg_backup.sh
+The bitcoind that prunes the copy didn't answer	El bitcoind que poda la copia no respondió
 The current wallet:	La billetera actual:
 The hourly check hasn't run for %s	La revisión horaria no se ejecuta desde hace %s
 The manifest has a BAD signature (%s): the download may have been tampered with	El manifiesto tiene una firma INVÁLIDA (%s): es posible que la descarga haya sido manipulada
@@ -748,6 +766,7 @@ What do you want to do?	¿Qué desea hacer?
 What the installer sets up	Qué configura el instalador
 What the service does	Qué hace el servicio
 What to send to Server B (into %s's ~/serverb-setup; nothing is run there):	Qué enviar al Servidor B (a ~/serverb-setup de %s; allí no se ejecuta nada):
+Where should the blockchain be pruned to Server B's size (%s MB) for the watchtower?	¿Dónde se debe podar la blockchain al tamaño del Servidor B (%s MB) para la watchtower?
 Which one (Enter for 1): 	¿Cuál? (Enter para 1): 
 Without the finished scan, old funds may not show up in the wallet.	Si la búsqueda no termina, puede que los fondos anteriores no aparezcan en la billetera.
 Would you like to export and view the private key (for backup)? (y/n): 	¿Desea exportar y ver la clave privada (como copia de seguridad)? (y/n): 
@@ -1148,6 +1167,7 @@ your LND seed	su semilla de LND
 ⛓️ %s is mounted without %s: remounting with %s	⛓️ %s está montado sin %s: volviendo a montar con %s
 ⛓️ Mounting %s to %s...	⛓️ Montando %s en %s...
 ⛔ Clearing attached volume and temporary backup directory...	⛔ Vaciando el volumen adjunto y la carpeta temporal de copias...
+✂️ Pruning the copy: blocks up to %s go, the newest %s stay (of %s)...	✂️ Podando la copia: se eliminan los bloques hasta el %s y se quedan los %s más recientes (de %s)...
 ✅ %s (prune=%s)	✅ %s (prune=%s)
 ✅ %s belongs to this wallet: %s channels	✅ %s pertenece a esta billetera: %s canales
 ✅ %s can watch the LND folders	✅ %s puede vigilar las carpetas de LND
@@ -1234,6 +1254,7 @@ your LND seed	su semilla de LND
 ✅ Reconciliation backup completed	✅ Copia de conciliación completada
 ✅ Remote copy caught up, remote_pending cleared	✅ Copia remota al día, se borró remote_pending
 ✅ Removed %s from group %s (replaced by read-only ACLs)	✅ Se quitó a %s del grupo %s (reemplazado por ACL de solo lectura)
+✅ Room enough: Server B has %s GB free for %s GB.	✅ Espacio suficiente: el Servidor B tiene %s GB libres para %s GB.
 ✅ Rotation runs every hour (crontab -l shows it)	✅ La rotación se ejecuta cada hora (crontab -l la muestra)
 ✅ Rsync completed successfully to second backup directory.	✅ Copia con rsync completada correctamente en la segunda carpeta de copias.
 ✅ SHA256 checksum created: %s	✅ Suma de verificación SHA256 creada: %s
@@ -1452,6 +1473,8 @@ your LND seed	su semilla de LND
 ❌ No safe folders in this script. Rerun rsync_gpg_backup.sh.	❌ Este script no tiene carpetas seguras. Vuelva a ejecutar rsync_gpg_backup.sh.
 ❌ No terminal to confirm the safe folders, and no installed list to reuse. Run the installer in a terminal.	❌ Sin terminal para confirmar las carpetas seguras y sin lista instalada. Ejecute el instalador en una terminal.
 ❌ Not allowed: %s	❌ No permitido: %s
+❌ Not enough space on Server A for the pruned copy: %s GB needed in %s, %s GB free.	❌ No hay espacio suficiente en el Servidor A para la copia podada: se necesitan %s GB en %s, hay %s GB libres.
+❌ Not enough space on Server B: the copy needs %s GB in ~%s (with 5 GB kept free), %s GB free there.	❌ No hay espacio suficiente en el Servidor B: la copia necesita %s GB en ~%s (dejando 5 GB libres), allí hay %s GB libres.
 ❌ Refusing delete: the attached volume (UUID %s) is not mounted at %s	❌ Se rechaza eliminar: el volumen adjunto (UUID %s) no está montado en %s
 ❌ Refusing delete: the attached volume is not mounted at %s	❌ No se borra: el volumen adjunto no está montado en %s
 ❌ Refusing to delete %s: only half-copied safety backups (pre-recovery_*.gpg.tmp) in %s	❌ No se borra %s: solo se borran copias de resguardo copiadas a medias (pre-recovery_*.gpg.tmp) en %s
@@ -1557,6 +1580,7 @@ your LND seed	su semilla de LND
 📤 Copying SSH public key to remote server...	📤 Copiando la clave pública SSH al servidor remoto...
 📤 Pass 1 of 2: copying while BTCPay runs...	📤 Pasada 1 de 2: copiando con BTCPay en marcha...
 📤 Pass 2 of 2: copying the rest with BTCPay stopped...	📤 Pasada 2 de 2: copiando el resto con BTCPay detenido...
+📤 Sending the pruned copy (%s GB) to Server B...	📤 Enviando la copia podada (%s GB) al Servidor B...
 📥 Bitcoin Core %s (%s)	📥 Bitcoin Core %s (%s)
 📥 Getting %s from %s...	📥 Obteniendo %s desde %s...
 📥 Getting the new %s package (apt checks its signature)...	📥 Obteniendo el nuevo paquete %s (apt verifica su firma)...
@@ -1571,6 +1595,8 @@ your LND seed	su semilla de LND
 📦 Installing the scripts and config root-owned into %s...	📦 Instalando los scripts y config, propiedad de root, en %s...
 📦 Latest in snapshot: %s	📦 Más reciente en la instantánea: %s
 📦 Moving the copy in...	📦 Moviendo la copia a su lugar...
+📦 Pass 1 of 2: making the pruned copy in %s while BTCPay runs...	📦 Pasada 1 de 2: creando la copia podada en %s con BTCPay en marcha...
+📦 Pass 2 of 2: the rest, with BTCPay stopped...	📦 Pasada 2 de 2: el resto, con BTCPay detenido...
 📦 Rsync encrypted backup to %s...	📦 Copiando con rsync la copia cifrada a %s...
 📦 Sending %s to Server B's backup gate...	📦 Enviando %s a la compuerta de copias del Servidor B...
 📦 Taking the copy into %s (across disks this takes a while)...	📦 Llevando la copia a %s (entre discos esto tarda un rato)...

@@ -209,7 +209,10 @@ Une watchtower surveille vos canaux pendant que votre nœud est hors ligne.
    les réglages à coller), et l'étape 1 met la passerelle à jour.
 2. Pour épargner au serveur B des jours de synchronisation, copiez-y la blockchain depuis le
    serveur A : `/chain copy` (d'abord `/chain prune`, si la blockchain de BTCPay n'est pas encore
-   élaguée). Les étapes s'arrêtent après Bitcoin Core tant que la copie n'est pas terminée ;
+   élaguée). Elle demande où la blockchain est élaguée à la taille du serveur B : sur le serveur A,
+   dans une copie à côté de celle de BTCPay (la blockchain de BTCPay ne change pas, et environ moitié
+   moins est envoyé : le chainstate, quelque 12 Go, ne peut pas être élagué), ou sur le serveur B
+   après l'import. Elle vérifie d'abord que les deux serveurs ont la place. Les étapes s'arrêtent après Bitcoin Core tant que la copie n'est pas terminée ;
    relancez ensuite la même commande sur le serveur B pour continuer.
 3. De retour sur le serveur A : `/tower add`, avec l'adresse de la watchtower affichée par
    l'étape de la watchtower.

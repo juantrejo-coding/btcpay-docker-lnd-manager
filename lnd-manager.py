@@ -159,8 +159,10 @@ COMMANDS = [
      "applies it; you type STOP BTCPAY first.")),
     ("/chain copy", N_("copy BTCPay's pruned blockchain to Server B"), "chain copy",
      N_("Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder "
-     "serverb-bitcoind-setup.sh made), so it doesn't sync for days. Two passes: the first while "
-     "BTCPay runs (can take hours), the second Stops BTCPay for a few minutes (you type STOP "
+     "serverb-bitcoind-setup.sh made), so it doesn't sync for days. It asks where it is pruned to "
+     "Server B's size: here, in a copy beside BTCPay's (BTCPay's own blockchain isn't changed; less "
+     "to send), or on Server B after the import. It checks there is room on both servers first. Two "
+     "passes: the first while BTCPay runs, the second stops BTCPay for a few minutes (you type STOP "
      "BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on "
      "Server B.")),
     ("/chain attach", N_("back to a chain or tower operation that is still running"), "chain attach",

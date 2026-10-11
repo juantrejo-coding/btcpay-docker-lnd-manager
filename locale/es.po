@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: btcpay-docker-lnd-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 15:53-0400\n"
+"POT-Creation-Date: 2026-10-10 22:47-0400\n"
 "PO-Revision-Date: 2026-10-06 20:18-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -17,309 +17,417 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: chain-tower.sh
-msgid "❌ btcpay-up.sh failed: run %s/btcpay-up.sh by hand"
-msgstr "❌ btcpay-up.sh falló: ejecute %s/btcpay-up.sh a mano"
-
-#: chain-tower.sh
-msgid "🚀 Starting BTCPay again..."
-msgstr "🚀 Iniciando BTCPay de nuevo..."
-
-#: chain-tower.sh:67 lnd-wallet.sh:93
+#: chain-tower.sh:70 lnd-wallet.sh:93
 msgid "❌ Unknown option: %s"
 msgstr "❌ Opción desconocida: %s"
 
-#: chain-tower.sh:72
+#: chain-tower.sh:75
 msgid "❌ chain-tower.sh needs a terminal for its confirmations."
 msgstr "❌ chain-tower.sh necesita una terminal para sus confirmaciones."
 
-#: chain-tower.sh:119
+#: chain-tower.sh:122
 msgid "ℹ️ A chain/tower operation is already running in tmux session '%s'. Attaching to it..."
 msgstr "ℹ️ Ya hay una operación de blockchain/torre en curso en la sesión de tmux '%s'. Conectándose a ella..."
 
-#: chain-tower.sh:121
+#: chain-tower.sh:124
 msgid "ℹ️ That was the earlier operation; this one (%s) was not started."
 msgstr "ℹ️ Esa era la operación anterior; esta (%s) no se inició."
 
-#: chain-tower.sh:133
+#: chain-tower.sh:136
 msgid "ℹ️ It is still running in tmux. Back to it: run the same command again."
 msgstr "ℹ️ Sigue en curso en tmux. Para volver a ella, ejecute de nuevo el mismo comando."
 
-#: chain-tower.sh:136 lnd-wallet.sh:168
+#: chain-tower.sh:139 lnd-wallet.sh:168
 msgid "⚠️ tmux could not start a session. Continuing without it: don't let the SSH connection drop."
 msgstr "⚠️ tmux no pudo iniciar una sesión. Se continúa sin él: no deje que se corte la conexión SSH."
 
-#: chain-tower.sh:143 lnd-wallet.sh:179
+#: chain-tower.sh:146 lnd-wallet.sh:179
 msgid "Finished (exit code %s). Press Enter to close this tmux session. "
 msgstr "Terminado (código de salida %s). Presione Enter para cerrar esta sesión de tmux. "
 
-#: chain-tower.sh:146 lnd-wallet.sh:182
+#: chain-tower.sh:149 lnd-wallet.sh:182
 msgid "Finished (exit code %s). Press Enter to go back. "
 msgstr "Terminado (código de salida %s). Presione Enter para volver. "
 
-#: chain-tower.sh:152
+#: chain-tower.sh:155
 msgid "Another chain-tower.sh is running. Let it finish first."
 msgstr "Ya hay otro chain-tower.sh en ejecución. Espere a que termine."
 
-#: chain-tower.sh:156
+#: chain-tower.sh:159
 msgid "lnd-wallet.sh is running. Let it finish first."
 msgstr "lnd-wallet.sh está en ejecución. Espere a que termine."
 
-#: chain-tower.sh:160
+#: chain-tower.sh:163
 msgid "BTCPay isn't installed the usual way (%s, %s)"
 msgstr "BTCPay no está instalado de la forma habitual (%s, %s)"
 
-#: chain-tower.sh:169
+#: chain-tower.sh:172
 msgid "⚙️ btcpay-setup.sh with BTCPAYGEN_ADDITIONAL_FRAGMENTS=\"%s\" (BTCPay restarts)..."
 msgstr "⚙️ btcpay-setup.sh con BTCPAYGEN_ADDITIONAL_FRAGMENTS=\"%s\" (BTCPay se reinicia)..."
 
-#: chain-tower.sh:176
+#: chain-tower.sh:179
 msgid "btcpay-setup.sh failed (exit code %s); see the lines above. Check BTCPay: %s/btcpay-up.sh"
 msgstr "btcpay-setup.sh falló (código de salida %s); vea las líneas de arriba. Revise BTCPay: %s/btcpay-up.sh"
 
-#: chain-tower.sh:177
+#: chain-tower.sh:180
 msgid "btcpay-setup.sh didn't take the new fragments; see the lines above"
 msgstr "btcpay-setup.sh no aplicó los nuevos fragmentos; vea las líneas de arriba"
 
-#: chain-tower.sh:178
+#: chain-tower.sh:181
 msgid "✅ BTCPay runs with: %s"
 msgstr "✅ BTCPay funciona con: %s"
 
-#: chain-tower.sh:196
+#: chain-tower.sh:199
 msgid "⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline for %s."
 msgstr "⚠️  Se detendrá BTCPay: la tienda no podrá recibir pagos y Lightning estará fuera de línea durante %s."
 
-#: chain-tower.sh:197 lnd-wallet.sh:901
+#: chain-tower.sh:200 lnd-wallet.sh:901
 msgid "Type 'STOP BTCPAY' to stop it: "
 msgstr "Escriba 'STOP BTCPAY' para detenerlo: "
 
-#: chain-tower.sh:198
+#: chain-tower.sh:201
 msgid "Aborted: BTCPay was not stopped and nothing was changed."
 msgstr "Cancelado: BTCPay no se detuvo y no se cambió nada."
 
-#: chain-tower.sh:220
+#: chain-tower.sh:223
 msgid "BTCPay's blockchain: %s of blocks, prune=%s"
 msgstr "Blockchain de BTCPay: %s de bloques, prune=%s"
 
-#: chain-tower.sh:221
+#: chain-tower.sh:224
 msgid "Fragments now: %s"
 msgstr "Fragmentos actuales: %s"
 
-#: chain-tower.sh:223
+#: chain-tower.sh:226
 msgid "BTCPay's pruning presets keep this much of the blockchain:"
 msgstr "Los ajustes de poda predefinidos de BTCPay conservan esta parte de la blockchain:"
 
-#: chain-tower.sh:224
+#: chain-tower.sh:227
 msgid "  1) opt-save-storage       ~100 GB"
 msgstr "  1) opt-save-storage       ~100 GB"
 
-#: chain-tower.sh:225
+#: chain-tower.sh:228
 msgid "  2) opt-save-storage-s     ~50 GB"
 msgstr "  2) opt-save-storage-s     ~50 GB"
 
-#: chain-tower.sh:226
+#: chain-tower.sh:229
 msgid "  3) opt-save-storage-xs    ~25 GB   recommended: keeps about 3 months of blocks"
 msgstr "  3) opt-save-storage-xs    ~25 GB   recomendado: conserva unos 3 meses de bloques"
 
-#: chain-tower.sh:227
+#: chain-tower.sh:230
 msgid "  4) opt-save-storage-xxs   ~5 GB    BTCPay warns that Lightning can have trouble with this little"
 msgstr "  4) opt-save-storage-xxs   ~5 GB    BTCPay advierte que Lightning puede tener problemas con tan poco"
 
-#: chain-tower.sh:228
+#: chain-tower.sh:231
 msgid "Pruning deletes old blocks: BTCPay can then no longer rescan for transactions older than what it"
 msgstr "La poda borra bloques antiguos: luego BTCPay ya no puede volver a buscar transacciones anteriores a"
 
-#: chain-tower.sh:229
+#: chain-tower.sh:232
 msgid "keeps (for example when importing an old wallet). Do it only if you have no old transactions to"
 msgstr "lo que conserva (por ejemplo, al importar una billetera antigua). Hágalo solo si no tiene transacciones"
 
-#: chain-tower.sh:230
+#: chain-tower.sh:233
 msgid "find. Lightning needs blocks back to its oldest channel's opening."
 msgstr "antiguas que buscar. Lightning necesita los bloques desde la apertura de su canal más antiguo."
 
-#: chain-tower.sh:232
+#: chain-tower.sh:235
 msgid "Choose 1-4 (Enter for 3, q to stop): "
 msgstr "Elija 1-4 (Enter = 3, q = salir): "
 
-#: chain-tower.sh:238 serverb/serverb-dashboard-setup.sh:52
+#: chain-tower.sh:241 serverb/serverb-dashboard-setup.sh:52
 #: serverb/serverb-import-chain.sh:41 serverb/serverb-user-setup.sh:85
 #: serverb/serverb-user-setup.sh:91
 msgid "Stopped: nothing was changed."
 msgstr "Detenido: no se cambió nada."
 
-#: chain-tower.sh:244
+#: chain-tower.sh:247
 msgid "ℹ️ BTCPay already uses %s"
 msgstr "ℹ️ BTCPay ya usa %s"
 
-#: chain-tower.sh:245
+#: chain-tower.sh:248
 msgid "a few minutes, while btcpay-setup.sh applies %s"
 msgstr "unos minutos, mientras btcpay-setup.sh aplica %s"
 
-#: chain-tower.sh:247
+#: chain-tower.sh:250
 msgid "✅ BTCPay's blockchain is pruned to %s; bitcoind deletes old blocks as it starts."
 msgstr "✅ La blockchain de BTCPay queda podada con %s; bitcoind borra los bloques antiguos al iniciar."
 
-#: chain-tower.sh:253
+#: chain-tower.sh:308
+msgid "Could not find BTCPay's bitcoind container (%s)"
+msgstr "No se encontró el contenedor de bitcoind de BTCPay (%s)"
+
+#: chain-tower.sh:313
+msgid "Could not start the bitcoind that prunes the copy"
+msgstr "No se pudo iniciar el bitcoind que poda la copia"
+
+#: chain-tower.sh:320
+msgid "The bitcoind that prunes the copy didn't answer"
+msgstr "El bitcoind que poda la copia no respondió"
+
+#: chain-tower.sh:326
+msgid "✂️ Pruning the copy: blocks up to %s go, the newest %s stay (of %s)..."
+msgstr "✂️ Podando la copia: se eliminan los bloques hasta el %s y se quedan los %s más recientes (de %s)..."
+
+#: chain-tower.sh:328
+msgid "Pruning the copy failed"
+msgstr "La poda de la copia falló"
+
+#: chain-tower.sh:344
 msgid "SERVER_B_USER or REMOTE_SERVER is empty in config. Run setup first."
 msgstr "SERVER_B_USER o REMOTE_SERVER está vacío en config. Ejecute primero la configuración."
 
-#: chain-tower.sh:254
+#: chain-tower.sh:345
 msgid "No blockchain in %s (BITCOIND_DIR in config)"
 msgstr "No hay blockchain en %s (BITCOIND_DIR en config)"
 
-#: chain-tower.sh:261
+#: chain-tower.sh:352
 msgid "There is no user %s (SERVER_A_USER in config)"
 msgstr "No existe el usuario %s (SERVER_A_USER en config)"
 
-#: chain-tower.sh:264
+#: chain-tower.sh:355
 msgid "Server B's backup gate doesn't answer. Run setup first (lnd-manager: /setup)."
 msgstr "La compuerta de copias del Servidor B no responde. Ejecute primero la configuración (lnd-manager: /setup)."
 
-#: chain-tower.sh:267
-msgid "BTCPay's blockchain: %s GB (prune=%s), to %s:~/chain-incoming"
-msgstr "Blockchain de BTCPay: %s GB (prune=%s), hacia %s:~/chain-incoming"
+#: chain-tower.sh:358
+msgid "Server B's backup gate is older and can't say how much space it has: update it there first (step 1 of serverb-setup.sh, or /update scripts)"
+msgstr "La compuerta de copias del Servidor B es más antigua y no puede indicar cuánto espacio tiene: actualícela allí primero (paso 1 de serverb-setup.sh, o /update scripts)"
 
-#: chain-tower.sh:269
+#: chain-tower.sh:361
+msgid "Server B has no ~%s/chain-incoming: serverb-bitcoind-setup.sh makes it when you choose to copy the blockchain there"
+msgstr "El Servidor B no tiene ~%s/chain-incoming: serverb-bitcoind-setup.sh lo crea cuando usted elige copiar allí la blockchain"
+
+#: chain-tower.sh:374
+msgid "BTCPay's blockchain: %s GB (prune=%s), of which the chainstate (which can't be pruned) is %s GB."
+msgstr "Blockchain de BTCPay: %s GB (prune=%s), de los cuales el chainstate (que no se puede podar) ocupa %s GB."
+
+#: chain-tower.sh:377
 msgid "⚠️  It isn't pruned: all of it would be copied (hundreds of GB). Prune it first: /chain prune."
 msgstr "⚠️  No está podada: se copiaría completa (cientos de GB). Pódela primero: /chain prune."
 
-#: chain-tower.sh:270 chain-tower.sh:280
+#: chain-tower.sh:378 chain-tower.sh:387 chain-tower.sh:443
 msgid "Stopped: nothing was copied."
 msgstr "Detenido: no se copió nada."
 
-#: chain-tower.sh:270
+#: chain-tower.sh:378
 msgid "Type 'COPY ALL' to copy it unpruned anyway: "
 msgstr "Escriba 'COPY ALL' para copiarla sin podar de todos modos: "
 
-#: chain-tower.sh:273
+#: chain-tower.sh:381
+msgid "Where should the blockchain be pruned to Server B's size (%s MB) for the watchtower?"
+msgstr "¿Dónde se debe podar la blockchain al tamaño del Servidor B (%s MB) para la watchtower?"
+
+#: chain-tower.sh:382
+msgid "  1. On Server A: a pruned copy is made beside BTCPay's, and only that is sent (about %s GB)."
+msgstr "  1. En el Servidor A: se crea una copia podada junto a la de BTCPay y solo se envía esa (unos %s GB)."
+
+#: chain-tower.sh:383
+msgid "     BTCPay's own blockchain isn't changed. Needs about %s GB free here meanwhile."
+msgstr "     La blockchain propia de BTCPay no cambia. Necesita unos %s GB libres aquí mientras tanto."
+
+#: chain-tower.sh:384
+msgid "  2. On Server B: BTCPay's whole pruned blockchain is sent (%s GB), and Server B prunes it"
+msgstr "  2. En el Servidor B: se envía toda la blockchain podada de BTCPay (%s GB) y el Servidor B la poda"
+
+#: chain-tower.sh:385
+msgid "     after the import. Nothing extra on this server; more to send, more room on Server B."
+msgstr "     tras la importación. Nada extra en este servidor; más que enviar y más espacio en el Servidor B."
+
+#: chain-tower.sh:387 serverb-scripts.sh:209 setup_script.sh:778
+msgid "Choose 1 or 2: "
+msgstr "Elija 1 o 2: "
+
+#: chain-tower.sh:405
+msgid "❌ Not enough space on Server A for the pruned copy: %s GB needed in %s, %s GB free."
+msgstr "❌ No hay espacio suficiente en el Servidor A para la copia podada: se necesitan %s GB en %s, hay %s GB libres."
+
+#: chain-tower.sh:407
+msgid "   Free some space, or choose 2 (pruned on Server B)."
+msgstr "   Libere espacio o elija 2 (podada en el Servidor B)."
+
+#: chain-tower.sh:419
+msgid "❌ Not enough space on Server B: the copy needs %s GB in ~%s (with 5 GB kept free), %s GB free there."
+msgstr "❌ No hay espacio suficiente en el Servidor B: la copia necesita %s GB en ~%s (dejando 5 GB libres), allí hay %s GB libres."
+
+#: chain-tower.sh:421
+msgid "   The import moves it to /var/lib, another disk there: %s GB needed, %s GB free."
+msgstr "   La importación la mueve a /var/lib, que allí es otro disco: se necesitan %s GB, hay %s GB libres."
+
+#: chain-tower.sh:423
+msgid "   Choose 1 (pruned on Server A) to send less, or free space on Server B."
+msgstr "   Elija 1 (podada en el Servidor A) para enviar menos, o libere espacio en el Servidor B."
+
+#: chain-tower.sh:427
+msgid "✅ Room enough: Server B has %s GB free for %s GB."
+msgstr "✅ Espacio suficiente: el Servidor B tiene %s GB libres para %s GB."
+
+#: chain-tower.sh:430 chain-tower.sh:435
 msgid "Two passes, so BTCPay is down only for the second:"
 msgstr "Dos pasadas, para que BTCPay esté detenido solo durante la segunda:"
 
-#: chain-tower.sh:274
-msgid "  1. while BTCPay runs: almost everything (%s GB). This can take hours; BTCPay keeps working."
-msgstr "  1. con BTCPay en marcha: casi todo (%s GB). Puede tardar horas; BTCPay sigue funcionando."
+#: chain-tower.sh:431
+msgid "  1. while BTCPay runs: the pruned copy is made here (the chainstate copied, about %s GB)."
+msgstr "  1. con BTCPay en marcha: se crea aquí la copia podada (se copia el chainstate, unos %s GB)."
 
-#: chain-tower.sh:275
-msgid "     If the connection drops, run /chain copy again: it goes on where it stopped."
-msgstr "     Si se corta la conexión, ejecute /chain copy de nuevo: continúa donde se quedó."
-
-#: chain-tower.sh:276
+#: chain-tower.sh:432 chain-tower.sh:438
 msgid "  2. BTCPay stopped (you type STOP BTCPAY): only what changed meanwhile, usually minutes."
 msgstr "  2. con BTCPay detenido (usted escribe STOP BTCPAY): solo lo que cambió entretanto, unos minutos."
 
-#: chain-tower.sh:277
+#: chain-tower.sh:433
+msgid "     Then BTCPay starts again, the copy is pruned and sent to Server B, and deleted here."
+msgstr "     Luego BTCPay se inicia de nuevo, la copia se poda, se envía al Servidor B y se borra aquí."
+
+#: chain-tower.sh:436
+msgid "  1. while BTCPay runs: almost everything (%s GB). This can take hours; BTCPay keeps working."
+msgstr "  1. con BTCPay en marcha: casi todo (%s GB). Puede tardar horas; BTCPay sigue funcionando."
+
+#: chain-tower.sh:437
+msgid "     If the connection drops, run /chain copy again: it goes on where it stopped."
+msgstr "     Si se corta la conexión, ejecute /chain copy de nuevo: continúa donde se quedó."
+
+#: chain-tower.sh:439
 msgid "     Then BTCPay starts again."
 msgstr "     Luego BTCPay se inicia de nuevo."
 
-#: chain-tower.sh:278
+#: chain-tower.sh:441
 msgid "Server B's gate takes it only into ~%s/chain-incoming (serverb-bitcoind-setup.sh makes it)."
 msgstr "La compuerta del Servidor B solo la acepta en ~%s/chain-incoming (la crea serverb-bitcoind-setup.sh)."
 
-#: chain-tower.sh:279
+#: chain-tower.sh:442
 msgid "Afterwards, on Server B: sudo bash serverb-import-chain.sh"
 msgstr "Después, en el Servidor B: sudo bash serverb-import-chain.sh"
 
-#: chain-tower.sh:280
+#: chain-tower.sh:443
 msgid "Start the copy? Type yes: "
 msgstr "¿Iniciar la copia? Escriba yes: "
 
-#: chain-tower.sh:286
+#: chain-tower.sh:453
+msgid "📦 Pass 1 of 2: making the pruned copy in %s while BTCPay runs..."
+msgstr "📦 Pasada 1 de 2: creando la copia podada en %s con BTCPay en marcha..."
+
+#: chain-tower.sh:456
+msgid "Making the copy failed, so BTCPay was not stopped. Free space in %s, then run /chain copy again."
+msgstr "La creación de la copia falló, así que BTCPay no se detuvo. Libere espacio en %s y ejecute /chain copy de nuevo."
+
+#: chain-tower.sh:459
 msgid "📤 Pass 1 of 2: copying while BTCPay runs..."
 msgstr "📤 Pasada 1 de 2: copiando con BTCPay en marcha..."
 
-#: chain-tower.sh:293
+#: chain-tower.sh:465
 msgid "⚠️ Pass 1 ended with code %s (files changing while BTCPay runs, expected). Going on to pass 2, which copies the rest."
 msgstr "⚠️ La pasada 1 terminó con código %s (archivos que cambian con BTCPay en marcha, es lo esperado). Se sigue con la pasada 2, que copia el resto."
 
-#: chain-tower.sh:294
+#: chain-tower.sh:466
 msgid "Pass 1 failed (rsync exit code %s), so BTCPay was not stopped. Fix what the lines above say, then run /chain copy again."
 msgstr "La pasada 1 falló (código de salida de rsync %s), así que BTCPay no se detuvo. Corrija lo que indican las líneas de arriba y ejecute /chain copy de nuevo."
 
-#: chain-tower.sh:296
+#: chain-tower.sh:469
 msgid "a few minutes, while the rest of the blockchain is copied"
 msgstr "unos minutos, mientras se copia el resto de la blockchain"
 
-#: chain-tower.sh:299
+#: chain-tower.sh:472
 msgid "🛑 Stopping BTCPay (btcpay-down.sh)..."
 msgstr "🛑 Deteniendo BTCPay (btcpay-down.sh)..."
 
-#: chain-tower.sh:300
+#: chain-tower.sh:473
 msgid "btcpay-down.sh failed"
 msgstr "btcpay-down.sh falló"
 
-#: chain-tower.sh:301
+#: chain-tower.sh:475
+msgid "📦 Pass 2 of 2: the rest, with BTCPay stopped..."
+msgstr "📦 Pasada 2 de 2: el resto, con BTCPay detenido..."
+
+#: chain-tower.sh:476
+msgid "Making the copy failed. BTCPay is started again; run /chain copy again later."
+msgstr "La creación de la copia falló. BTCPay se inicia de nuevo; ejecute /chain copy de nuevo más tarde."
+
+#: chain-tower.sh:477
+msgid "🚀 Starting BTCPay again..."
+msgstr "🚀 Iniciando BTCPay de nuevo..."
+
+#: chain-tower.sh:478
+msgid "❌ btcpay-up.sh failed: run %s/btcpay-up.sh by hand"
+msgstr "❌ btcpay-up.sh falló: ejecute %s/btcpay-up.sh a mano"
+
+#: chain-tower.sh:482
+msgid "📤 Sending the pruned copy (%s GB) to Server B..."
+msgstr "📤 Enviando la copia podada (%s GB) al Servidor B..."
+
+#: chain-tower.sh:483
+msgid "Sending the copy failed. Run /chain copy again later (BTCPay keeps running)."
+msgstr "El envío de la copia falló. Ejecute /chain copy de nuevo más tarde (BTCPay sigue en marcha)."
+
+#: chain-tower.sh:485
 msgid "📤 Pass 2 of 2: copying the rest with BTCPay stopped..."
 msgstr "📤 Pasada 2 de 2: copiando el resto con BTCPay detenido..."
 
-#: chain-tower.sh:302
+#: chain-tower.sh:486
 msgid "Pass 2 failed. BTCPay is started again; run /chain copy again later."
 msgstr "La pasada 2 falló. BTCPay se inicia de nuevo; ejecute /chain copy otra vez más tarde."
 
-#: chain-tower.sh:303
+#: chain-tower.sh:488
 msgid "✅ Blockchain copied to Server B. Next, on Server B: sudo bash serverb-import-chain.sh"
 msgstr "✅ Blockchain copiada al Servidor B. Ahora, en el Servidor B: sudo bash serverb-import-chain.sh"
 
-#: chain-tower.sh:309
+#: chain-tower.sh:493
 msgid "WATCHTOWER_PUBKEY in config isn't a public key (66 hex characters)"
 msgstr "WATCHTOWER_PUBKEY en config no es una clave pública (66 caracteres hexadecimales)"
 
-#: chain-tower.sh:310
+#: chain-tower.sh:494
 msgid "WATCHTOWER_IP in config isn't set"
 msgstr "WATCHTOWER_IP no está definido en config"
 
-#: chain-tower.sh:311
+#: chain-tower.sh:495
 msgid "WATCHTOWER_PORT in config isn't a port"
 msgstr "WATCHTOWER_PORT en config no es un puerto"
 
-#: chain-tower.sh:315
+#: chain-tower.sh:499
 msgid "BTCPay's LND has its watchtower client off. BTCPay's opt-lnd-wtclient fragment turns it on"
 msgstr "El LND de BTCPay tiene el cliente de watchtower desactivado. El fragmento opt-lnd-wtclient de BTCPay"
 
-#: chain-tower.sh:316
+#: chain-tower.sh:500
 msgid "(wtclient.active=1); btcpay-setup.sh applies it and restarts LND."
 msgstr "lo activa (wtclient.active=1); btcpay-setup.sh lo aplica y reinicia LND."
 
-#: chain-tower.sh:317
+#: chain-tower.sh:501
 msgid "a few minutes, while btcpay-setup.sh turns on the watchtower client"
 msgstr "unos minutos, mientras btcpay-setup.sh activa el cliente de watchtower"
 
-#: chain-tower.sh:321
+#: chain-tower.sh:505
 msgid "⏳ Waiting for LND..."
 msgstr "⏳ Esperando a LND..."
 
-#: chain-tower.sh:322
+#: chain-tower.sh:506
 msgid "LND doesn't answer (docker logs %s)"
 msgstr "LND no responde (docker logs %s)"
 
-#: chain-tower.sh:325
+#: chain-tower.sh:509
 msgid "⏳ LND is still catching up with the chain; the watchtower client waits for that (up to 10 minutes here)..."
 msgstr "⏳ LND aún se sincroniza con la blockchain; el cliente de watchtower lo espera (aquí hasta 10 minutos)..."
 
-#: chain-tower.sh:327
+#: chain-tower.sh:511
 msgid "➕ Adding the watchtower %s..."
 msgstr "➕ Agregando la watchtower %s..."
 
-#: chain-tower.sh:335
+#: chain-tower.sh:519
 msgid "LND's watchtower client didn't answer within 10 minutes (LND not synced to the chain yet?). The client is on; run /tower add again later."
 msgstr "El cliente de watchtower de LND no respondió en 10 minutos (¿LND aún no está sincronizado con la blockchain?). El cliente está activado; ejecute /tower add de nuevo más tarde."
 
-#: chain-tower.sh:336
+#: chain-tower.sh:520
 msgid "lncli wtclient add failed"
 msgstr "lncli wtclient add falló"
 
-#: chain-tower.sh:338
+#: chain-tower.sh:522
 msgid "✅ The watchtower is added. LND sends it encrypted channel updates from now on."
 msgstr "✅ La watchtower está agregada. Desde ahora LND le envía actualizaciones cifradas de los canales."
 
-#: chain-tower.sh:346
+#: chain-tower.sh:530
 msgid "The watchtower client isn't on, LND isn't running, or LND is still catching up with the chain:"
 msgstr "El cliente de watchtower está desactivado, LND no está en ejecución o aún se sincroniza con la blockchain:"
 
-#: chain-tower.sh:350
+#: chain-tower.sh:534
 msgid "Towers:"
 msgstr "Torres:"
 
-#: chain-tower.sh:352
+#: chain-tower.sh:536
 msgid "Statistics:"
 msgstr "Estadísticas:"
 
@@ -732,454 +840,454 @@ msgstr "copiar la blockchain podada de BTCPay al Servidor B"
 
 #: lnd-manager.py:161
 #, python-format
-msgid "Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. Two passes: the first while BTCPay runs (can take hours), the second Stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B."
-msgstr "Copia la blockchain podada de BTCPay al bitcoind del Servidor B (a la carpeta que creó serverb-bitcoind-setup.sh), para que no pase días sincronizándose. Dos pasadas: la primera con BTCPay en marcha (puede tardar horas), la segunda detiene BTCPay unos minutos (usted escribe STOP BTCPAY). Se ejecuta en tmux; /chain attach vuelve a ella. Después ejecute serverb-import-chain.sh en el Servidor B."
+msgid "Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. It asks where it is pruned to Server B's size: here, in a copy beside BTCPay's (BTCPay's own blockchain isn't changed; less to send), or on Server B after the import. It checks there is room on both servers first. Two passes: the first while BTCPay runs, the second stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B."
+msgstr "Copia la blockchain podada de BTCPay al bitcoind del Servidor B (en la carpeta que creó serverb-bitcoind-setup.sh), para que no tarde días en sincronizarse. Pregunta dónde se poda al tamaño del Servidor B: aquí, en una copia junto a la de BTCPay (la blockchain propia de BTCPay no cambia; hay menos que enviar), o en el Servidor B tras la importación. Primero comprueba que haya espacio en ambos servidores. Dos pasadas: la primera con BTCPay en marcha, la segunda detiene BTCPay unos minutos (usted escribe STOP BTCPAY). Se ejecuta en tmux; /chain attach vuelve a la sesión. Luego ejecute serverb-import-chain.sh en el Servidor B."
 
-#: lnd-manager.py:166
+#: lnd-manager.py:168
 #, python-format
 msgid "back to a chain or tower operation that is still running"
 msgstr "volver a una operación de blockchain o torre aún en curso"
 
-#: lnd-manager.py:167
+#: lnd-manager.py:169
 #, python-format
 msgid "Goes back to /chain prune, /chain copy or /tower add still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here."
 msgstr "Vuelve a /chain prune, /chain copy o /tower add aún en curso en tmux, por ejemplo después de que se cortó la conexión SSH. Ctrl-b d la deja en curso y vuelve aquí."
 
-#: lnd-manager.py:169
+#: lnd-manager.py:171
 #, python-format
 msgid "use Server B's watchtower for this node"
 msgstr "usar la watchtower del Servidor B para este nodo"
 
-#: lnd-manager.py:170
+#: lnd-manager.py:172
 #, python-format
 msgid "Asks for the watchtower's public key and address if config lacks them, then turns on BTCPay's watchtower client (opt-lnd-wtclient: Stops BTCPay's LND for a few minutes, you type STOP BTCPAY) and adds the tower. LND then sends it encrypted channel updates."
 msgstr "Pide la clave pública y la dirección de la watchtower si config no las tiene, luego activa el cliente de watchtower de BTCPay (opt-lnd-wtclient: detiene el LND de BTCPay unos minutos, usted escribe STOP BTCPAY) y agrega la torre. Después LND le envía actualizaciones cifradas de los canales."
 
-#: lnd-manager.py:173
+#: lnd-manager.py:175
 #, python-format
 msgid "the watchtower client's towers"
 msgstr "las torres del cliente de watchtower"
 
-#: lnd-manager.py:174
+#: lnd-manager.py:176
 #, python-format
 msgid "Shows the towers BTCPay's LND uses and its statistics (lncli wtclient towers, stats). Read only."
 msgstr "Muestra las torres que usa el LND de BTCPay y sus estadísticas (lncli wtclient towers, stats). Solo lectura."
 
-#: lnd-manager.py:176 serverb/serverb-dashboard.py:117
+#: lnd-manager.py:178 serverb/serverb-dashboard.py:117
 #, python-format
 msgid "install the newest release of these scripts"
 msgstr "instalar la versión más nueva de estos scripts"
 
-#: lnd-manager.py:177
+#: lnd-manager.py:179
 #, python-format
 msgid "Runs sudo lnd-update: gets the newest release from GitHub, checks its signature against the release key installed with the scripts, and asks you to type UPDATE. It installs it when no backup, wallet operation or /chain or /tower operation runs (else it waits up to 24 hours, then at the next boot), and reinstalls the backup service. LND and BTCPay keep running."
 msgstr "Ejecuta sudo lnd-update: obtiene la versión más nueva desde GitHub, verifica su firma con la clave de firma de versiones instalada con los scripts y le pide que escriba UPDATE. La instala cuando no hay en curso ninguna copia, operación de billetera ni operación de /chain o /tower (si no, espera hasta 24 horas y luego la instala en el próximo arranque), y reinstala el servicio de copias de seguridad. LND y BTCPay siguen funcionando."
 
-#: lnd-manager.py:181
+#: lnd-manager.py:183
 #, python-format
 msgid "rsync_gpg_backup.sh: install or update the backup service"
 msgstr "rsync_gpg_backup.sh: instalar o actualizar el servicio de copias de seguridad"
 
-#: lnd-manager.py:182
+#: lnd-manager.py:184
 #, python-format
 msgid "Installs or updates the backup service: encrypted, signed backups of LND's files to the attached volume and Server B, run as the backup user. Also its read-only root helper and sudo rule. It explains everything first, and deletes existing backups only if you type DELETE ALL BACKUPS. BTCPay and LND aren't touched."
 msgstr "Instala o actualiza el servicio de copias de seguridad: copias cifradas y firmadas de los archivos de LND en el volumen adjunto y en el Servidor B, que se ejecuta como el usuario de copias. También su ayudante de root de solo lectura y su regla de sudo. Primero lo explica todo, y borra las copias existentes solo si usted escribe DELETE ALL BACKUPS. No toca BTCPay ni LND."
 
-#: lnd-manager.py:186
+#: lnd-manager.py:188
 #, python-format
 msgid "replace the wallet with a new one"
 msgstr "reemplazar la billetera por una nueva"
 
-#: lnd-manager.py:187
+#: lnd-manager.py:189
 #, python-format
 msgid "Makes a new LND wallet in place of the current one. Stops BTCPay for a few minutes. The current wallet is kept in a safety backup, but its funds stay reachable only through its old seed. Asks you to type confirmations before anything changes."
 msgstr "Crea una nueva billetera de LND en lugar de la actual. Detiene BTCPay unos minutos. La billetera actual se guarda en una copia de resguardo, pero solo se puede acceder a sus fondos con su semilla anterior. Le pide escribir confirmaciones antes de cambiar nada."
 
-#: lnd-manager.py:190
+#: lnd-manager.py:192
 #, python-format
 msgid "restore the wallet from its seed"
 msgstr "restaurar la billetera desde su semilla"
 
-#: lnd-manager.py:191
+#: lnd-manager.py:193
 #, python-format
 msgid "Restores the wallet's on-chain funds from its seed: from the latest backup, or typed. Stops BTCPay; the scan for old funds can take minutes to hours. Channels are not restored (/wallet channels). Safety backup and typed confirmations first."
 msgstr "Restaura los fondos on-chain de la billetera desde su semilla: de la última copia, o escrita por usted. Detiene BTCPay; la búsqueda de fondos antiguos puede tardar de minutos a horas. Los canales no se restauran (/wallet channels). Antes: copia de resguardo y confirmaciones escritas."
 
-#: lnd-manager.py:194
+#: lnd-manager.py:196
 #, python-format
 msgid "restore the wallet and the channels"
 msgstr "restaurar la billetera y los canales"
 
-#: lnd-manager.py:195
+#: lnd-manager.py:197
 #, python-format
 msgid "Restores the wallet from its seed and the channels from channel.backup: each peer closes its channel and your share comes back on-chain. Stops BTCPay. Never while another LND with this seed runs. Safety backup and typed confirmations first."
 msgstr "Restaura la billetera desde su semilla y los canales desde channel.backup: cada par cierra su canal y su parte vuelve on-chain. Detiene BTCPay. Nunca mientras funcione otro LND con esta semilla. Antes: copia de resguardo y confirmaciones escritas."
 
-#: lnd-manager.py:198
+#: lnd-manager.py:200
 #, python-format
 msgid "restore the channels into the running wallet"
 msgstr "restaurar los canales en la billetera en uso"
 
-#: lnd-manager.py:199
+#: lnd-manager.py:201
 #, python-format
 msgid "Restores the channels from channel.backup into the wallet that runs now, for example after /wallet restore. Stops BTCPay for a few minutes for a safety backup. Never while another LND with this seed runs. Typed confirmations first."
 msgstr "Restaura los canales desde channel.backup en la billetera que funciona ahora, por ejemplo después de /wallet restore. Detiene BTCPay unos minutos para hacer una copia de resguardo. Nunca mientras funcione otro LND con esta semilla. Antes: confirmaciones escritas."
 
-#: lnd-manager.py:202
+#: lnd-manager.py:204
 #, python-format
 msgid "put a safety backup back"
 msgstr "volver a poner una copia de resguardo"
 
-#: lnd-manager.py:203
+#: lnd-manager.py:205
 #, python-format
 msgid "Puts a safety backup back as the whole LND volume, channel state included. Only safe if no LND has run with those channels since. Stops BTCPay. Saves the current wallet first, and asks you to type confirmations."
 msgstr "Vuelve a poner una copia de resguardo como todo el volumen de LND, incluido el estado de los canales. Solo es seguro si ningún LND ha funcionado con esos canales desde entonces. Detiene BTCPay. Primero guarda la billetera actual y le pide escribir confirmaciones."
 
-#: lnd-manager.py:206
+#: lnd-manager.py:208
 #, python-format
 msgid "back to a wallet operation that is still running"
 msgstr "volver a una operación de billetera aún en curso"
 
-#: lnd-manager.py:207
+#: lnd-manager.py:209
 #, python-format
 msgid "Goes back to a wallet operation still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here."
 msgstr "Vuelve a una operación de billetera aún en curso en tmux, por ejemplo después de que se cortó la conexión SSH. Ctrl-b d la deja en curso y vuelve aquí."
 
-#: lnd-manager.py:209 serverb/serverb-dashboard.py:125
+#: lnd-manager.py:211 serverb/serverb-dashboard.py:125
 #, python-format
 msgid "support the project, license"
 msgstr "apoyar el proyecto, licencia"
 
-#: lnd-manager.py:210 serverb/serverb-dashboard.py:126
+#: lnd-manager.py:212 serverb/serverb-dashboard.py:126
 #, python-format
 msgid "Shows the project's donation address, its page and a summary of the license. Text only: nothing is fetched or sent."
 msgstr "Muestra la dirección de donación del proyecto, su página y un resumen de la licencia. Solo texto: no se descarga ni se envía nada."
 
-#: lnd-manager.py:212 serverb/serverb-dashboard.py:128
+#: lnd-manager.py:214 serverb/serverb-dashboard.py:128
 #, python-format
 msgid "leave the dashboard"
 msgstr "salir del panel"
 
-#: lnd-manager.py:213
+#: lnd-manager.py:215
 #, python-format
 msgid "Leaves the dashboard. The backup service keeps running."
 msgstr "Sale del panel. El servicio de copias de seguridad sigue funcionando."
 
-#: lnd-manager.py:320
+#: lnd-manager.py:322
 #, python-format
 msgid "Can't read the log (%s) or the journal"
 msgstr "No se puede leer el registro (%s) ni el journal de systemd"
 
-#: lnd-manager.py:357
+#: lnd-manager.py:359
 #, python-format
 msgid "never"
 msgstr "nunca"
 
-#: lnd-manager.py:363
+#: lnd-manager.py:365
 msgid "yesterday %H:%M"
 msgstr "ayer %H:%M"
 
-#: lnd-manager.py:366
+#: lnd-manager.py:368
 #, python-format
 msgid "%s (%s ago)"
 msgstr "%s (hace %s)"
 
-#: lnd-manager.py:435
+#: lnd-manager.py:437
 #, python-format
 msgid "Settings in config"
 msgstr "Ajustes en config"
 
-#: lnd-manager.py:436
+#: lnd-manager.py:438
 #, python-format
 msgid "/setup asks for them: "
 msgstr "/setup los pide: "
 
-#: lnd-manager.py:444
+#: lnd-manager.py:446
 #, python-format
 msgid "/setup installs them (or sudo ./install-scripts.sh in your working folder)"
 msgstr "/setup los instala (o sudo ./install-scripts.sh en su carpeta de trabajo)"
 
-#: lnd-manager.py:446
+#: lnd-manager.py:448
 #, python-format
 msgid "config in your working folder changed since it was installed: sudo ./install-scripts.sh there (setup does it too)"
 msgstr "config en su carpeta de trabajo cambió desde la instalación: sudo ./install-scripts.sh allí (la configuración también lo hace)"
 
-#: lnd-manager.py:448
+#: lnd-manager.py:450
 #, python-format
 msgid "Scripts installed root-owned"
 msgstr "Scripts instalados como propiedad de root"
 
-#: lnd-manager.py:458
+#: lnd-manager.py:460
 #, python-format
 msgid "Attached volume mounted at %s"
 msgstr "Volumen adjunto montado en %s"
 
-#: lnd-manager.py:459
+#: lnd-manager.py:461
 #, python-format
 msgid "/setup mounts it (attach the disk first)"
 msgstr "/setup lo monta (primero conecte el disco)"
 
-#: lnd-manager.py:462
+#: lnd-manager.py:464
 #, python-format
 msgid "your LND seed"
 msgstr "su semilla de LND"
 
-#: lnd-manager.py:463
+#: lnd-manager.py:465
 #, python-format
 msgid "the GPG backup key"
 msgstr "la clave GPG de las copias"
 
-#: lnd-manager.py:465
+#: lnd-manager.py:467
 #, python-format
 msgid "LND seed and GPG key stored safely, away from this server"
 msgstr "Semilla de LND y clave GPG guardadas de forma segura, fuera de este servidor"
 
-#: lnd-manager.py:466
+#: lnd-manager.py:468
 #, python-format
 msgid "not confirmed yet: %s. /setup asks (for the GPG key: answer y to view it, then confirm)"
 msgstr "aún sin confirmar: %s. /setup pregunta (para la clave GPG: responda y para verla y luego confirme)"
 
-#: lnd-manager.py:467
+#: lnd-manager.py:469
 #, python-format
 msgid " and "
 msgstr " y "
 
-#: lnd-manager.py:470
+#: lnd-manager.py:472
 #, python-format
 msgid "/install installs it"
 msgstr "/install lo instala"
 
-#: lnd-manager.py:472
+#: lnd-manager.py:474
 #, python-format
 msgid "it is %s: /start, and /log if it stops again"
 msgstr "su estado es %s: /start, y /log si se detiene de nuevo"
 
-#: lnd-manager.py:473
+#: lnd-manager.py:475
 #, python-format
 msgid "Backup service running"
 msgstr "Servicio de copias de seguridad en marcha"
 
-#: lnd-manager.py:475
+#: lnd-manager.py:477
 #, python-format
 msgid "First backup on the attached volume"
 msgstr "Primera copia en el volumen adjunto"
 
-#: lnd-manager.py:476
+#: lnd-manager.py:478
 #, python-format
 msgid "made at the next change of LND's channel backup; /check looks now. /log says why it fails"
 msgstr "se hace con el próximo cambio de la copia de canales de LND; /check revisa ahora. /log dice por qué falla"
 
-#: lnd-manager.py:477
+#: lnd-manager.py:479
 #, python-format
 msgid "First backup on Server B"
 msgstr "Primera copia en el Servidor B"
 
-#: lnd-manager.py:478
+#: lnd-manager.py:480
 #, python-format
 msgid "made with the next backup. If it fails, /log says why (Server B's gate: /setup installs it)"
 msgstr "se hace con la próxima copia. Si falla, /log dice por qué (la compuerta del Servidor B: /setup la instala)"
 
-#: lnd-manager.py:482
+#: lnd-manager.py:484
 #, python-format
 msgid "Watchtower on Server B (optional)"
 msgstr "Watchtower en el Servidor B (opcional)"
 
-#: lnd-manager.py:483
+#: lnd-manager.py:485
 #, python-format
 msgid "/serverb send gives Server B its settings and says what to run there; then /tower add"
 msgstr "/serverb send da al Servidor B sus ajustes e indica qué ejecutar allí; después /tower add"
 
-#: lnd-manager.py:490
+#: lnd-manager.py:492
 #, python-format
 msgid "Setup checklist"
 msgstr "Lista de pasos de configuración"
 
-#: lnd-manager.py:498
+#: lnd-manager.py:500
 #, python-format
 msgid "Everything above is read from config, the status file and the system; only the"
 msgstr "Todo lo anterior se lee de config, del archivo de estado y del sistema; solo el paso de"
 
-#: lnd-manager.py:499
+#: lnd-manager.py:501
 #, python-format
 msgid "seed and GPG key step comes from your answers in setup."
 msgstr "la semilla y la clave GPG viene de sus respuestas en la configuración."
 
-#: lnd-manager.py:568
+#: lnd-manager.py:570
 #, python-format
 msgid "Update waiting: %s is installed at the next boot (not safe for 24 hours)"
 msgstr "Actualización en espera: %s se instalará en el próximo arranque (no hubo un momento seguro en 24 horas)"
 
-#: lnd-manager.py:570
+#: lnd-manager.py:572
 #, python-format
 msgid "Update waiting: %s, installed once it is safe (no backup or wallet operation running)"
 msgstr "Actualización en espera: %s, se instalará cuando sea seguro (sin copias ni operaciones de billetera en curso)"
 
-#: lnd-manager.py:573
+#: lnd-manager.py:575
 #, python-format
 msgid "Update: these scripts %s are out (installed: %s). /update"
 msgstr "Actualización: salió la versión %s de estos scripts (instalada: %s). /update"
 
-#: lnd-manager.py:588
+#: lnd-manager.py:590
 #, python-format
 msgid "Service is %s (%s)"
 msgstr "Estado del servicio: %s (%s)"
 
-#: lnd-manager.py:590
+#: lnd-manager.py:592
 #, python-format
 msgid "Service is %s"
 msgstr "Estado del servicio: %s"
 
-#: lnd-manager.py:596
+#: lnd-manager.py:598
 #, python-format
 msgid "Service restarted %d time(s) since it was started"
 msgstr "Reinicios del servicio desde que se inició: %d"
 
-#: lnd-manager.py:600
+#: lnd-manager.py:602
 #, python-format
 msgid "No status file at %s (rerun rsync_gpg_backup.sh, then wait for the service to start)"
 msgstr "No hay archivo de estado en %s (ejecute de nuevo rsync_gpg_backup.sh y espere a que el servicio inicie)"
 
-#: lnd-manager.py:603
+#: lnd-manager.py:605
 #, python-format
 msgid "STATUS_FILE is empty in config, so the service writes no status"
 msgstr "STATUS_FILE está vacío en config, así que el servicio no escribe su estado"
 
-#: lnd-manager.py:620
+#: lnd-manager.py:622
 #, python-format
 msgid "%s: retry pending for %s"
 msgstr "%s: reintento pendiente desde hace %s"
 
-#: lnd-manager.py:625
+#: lnd-manager.py:627
 #, python-format
 msgid "Last backup failed %s%s"
 msgstr "La última copia falló %s%s"
 
-#: lnd-manager.py:632
+#: lnd-manager.py:634
 #, python-format
 msgid "Files changed %s ago and no backup has succeeded since"
 msgstr "Los archivos cambiaron hace %s y desde entonces ninguna copia ha tenido éxito"
 
-#: lnd-manager.py:637
+#: lnd-manager.py:639
 #, python-format
 msgid "Server B is behind: its last copy is older than the attached volume's"
 msgstr "El Servidor B está atrasado: su última copia es más antigua que la del volumen adjunto"
 
-#: lnd-manager.py:643
+#: lnd-manager.py:645
 #, python-format
 msgid "The hourly check hasn't run for %s"
 msgstr "La revisión horaria no se ejecuta desde hace %s"
 
-#: lnd-manager.py:671
+#: lnd-manager.py:673
 #, python-format
 msgid " for %s"
 msgstr " desde hace %s"
 
-#: lnd-manager.py:672
+#: lnd-manager.py:674
 #, python-format
 msgid ", restarts: %s"
 msgstr ", reinicios: %s"
 
-#: lnd-manager.py:684 serverb/serverb-dashboard.py:344
+#: lnd-manager.py:686 serverb/serverb-dashboard.py:344
 #, python-format
 msgid "Setup: %d of %d steps done. Next: %s (/checklist)"
 msgstr "Configuración: %d de %d pasos hechos. Siguiente: %s (/checklist)"
 
-#: lnd-manager.py:687
+#: lnd-manager.py:689
 #, python-format
 msgid "Service: "
 msgstr "Servicio: "
 
-#: lnd-manager.py:690
+#: lnd-manager.py:692
 #, python-format
 msgid "/wallet attach to go back to it"
 msgstr "/wallet attach para volver a ella"
 
-#: lnd-manager.py:690
+#: lnd-manager.py:692
 #, python-format
 msgid "in another terminal (not in tmux)"
 msgstr "en otra terminal (no en tmux)"
 
-#: lnd-manager.py:691
+#: lnd-manager.py:693
 #, python-format
 msgid "Wallet operation running: %s, since %s, %s"
 msgstr "Operación de billetera en curso: %s, desde %s, %s"
 
-#: lnd-manager.py:697
+#: lnd-manager.py:699
 #, python-format
 msgid ", since "
 msgstr ", desde "
 
-#: lnd-manager.py:697
+#: lnd-manager.py:699
 #, python-format
 msgid "Job: %s%s"
 msgstr "Tarea: %s%s"
 
-#: lnd-manager.py:701
+#: lnd-manager.py:703
 #, python-format
 msgid "Last file change: %s  %s"
 msgstr "Último cambio de archivo: %s  %s"
 
-#: lnd-manager.py:704
+#: lnd-manager.py:706
 #, python-format
 msgid "Last file change: none since the status file was created"
 msgstr "Último cambio de archivo: ninguno desde que se creó el archivo de estado"
 
-#: lnd-manager.py:710
+#: lnd-manager.py:712
 #, python-format
 msgid "Backups"
 msgstr "Copias"
 
-#: lnd-manager.py:710
+#: lnd-manager.py:712
 #, python-format
 msgid "Last failure"
 msgstr "Último fallo"
 
-#: lnd-manager.py:710
+#: lnd-manager.py:712
 #, python-format
 msgid "Last success"
 msgstr "Último éxito"
 
-#: lnd-manager.py:717
+#: lnd-manager.py:719
 #, python-format
 msgid "Hourly check"
 msgstr "Revisión horaria"
 
-#: lnd-manager.py:724
+#: lnd-manager.py:726
 #, python-format
 msgid "   retry pending since %s"
 msgstr "   reintento pendiente desde %s"
 
-#: lnd-manager.py:728 serverb/serverb-dashboard.py:620
+#: lnd-manager.py:730 serverb/serverb-dashboard.py:620
 #, python-format
 msgid "Problems"
 msgstr "Problemas"
 
-#: lnd-manager.py:732
+#: lnd-manager.py:734
 #, python-format
 msgid "  none"
 msgstr "  ninguno"
 
-#: lnd-manager.py:733
+#: lnd-manager.py:735
 #, python-format
 msgid "Errors in the last 24h: %d"
 msgstr "Errores en las últimas 24h: %d"
 
-#: lnd-manager.py:742
+#: lnd-manager.py:744
 #, python-format
 msgid "Log:"
 msgstr "Registro:"
 
-#: lnd-manager.py:750
+#: lnd-manager.py:752
 #, python-format
 msgid " / commands  s start/stop  r restart  c check now  l log  w wallet  q quit"
 msgstr " / comandos  s inic/det  r reiniciar  c revisar  l reg.  w billetera  q salir"
 
-#: lnd-manager.py:764 serverb/serverb-dashboard.py:546
+#: lnd-manager.py:766 serverb/serverb-dashboard.py:546
 #, python-format
 msgid "Could not run it: %s"
 msgstr "No se pudo ejecutar: %s"
 
-#: lnd-manager.py:767 serverb/serverb-dashboard.py:548
+#: lnd-manager.py:769 serverb/serverb-dashboard.py:548
 #, python-format
 msgid ""
 "\n"
@@ -1188,158 +1296,158 @@ msgstr ""
 "\n"
 "Código de salida %d. Presione Enter para volver al panel."
 
-#: lnd-manager.py:808
+#: lnd-manager.py:810
 #, python-format
 msgid "The service isn't running, so there is no check to run"
 msgstr "El servicio no está en marcha, así que no hay revisión que hacer"
 
-#: lnd-manager.py:821
+#: lnd-manager.py:823
 #, python-format
 msgid "Back from the log"
 msgstr "De vuelta del registro"
 
-#: lnd-manager.py:827 lnd-manager.py:832 lnd-manager.py:837 lnd-manager.py:855
+#: lnd-manager.py:829 lnd-manager.py:834 lnd-manager.py:839 lnd-manager.py:857
 #, python-format
 msgid "not set"
 msgstr "sin definir"
 
-#: lnd-manager.py:827
+#: lnd-manager.py:829
 #, python-format
 msgid "setup_script.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr "No se encontró setup_script.sh en BACKUP_SCRIPTS_FOLDER (%s)"
 
-#: lnd-manager.py:832 lnd-manager.py:837 lnd-manager.py:855
+#: lnd-manager.py:834 lnd-manager.py:839 lnd-manager.py:857
 #, python-format
 msgid "serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr "No se encontró serverb-scripts.sh en BACKUP_SCRIPTS_FOLDER (%s)"
 
-#: lnd-manager.py:844 serverb/serverb-dashboard.py:491
+#: lnd-manager.py:846 serverb/serverb-dashboard.py:491
 #: serverb/serverb-dashboard.py:584
 #, python-format
 msgid "Support"
 msgstr "Apoyo"
 
-#: lnd-manager.py:847 serverb/serverb-dashboard.py:581
+#: lnd-manager.py:849 serverb/serverb-dashboard.py:581
 #, python-format
 msgid "Checklist"
 msgstr "Lista de pasos"
 
-#: lnd-manager.py:861
+#: lnd-manager.py:863
 #, python-format
 msgid "No wallet operation is running"
 msgstr "No hay ninguna operación de billetera en curso"
 
-#: lnd-manager.py:863
+#: lnd-manager.py:865
 #, python-format
 msgid "The wallet operation runs in another terminal, not in tmux: nothing to attach to"
 msgstr "La operación de billetera se ejecuta en otra terminal, no en tmux: no hay a qué conectarse"
 
-#: lnd-manager.py:868
+#: lnd-manager.py:870
 #, python-format
 msgid "A wallet operation is already running: wait for it, or /wallet attach"
 msgstr "Ya hay una operación de billetera en curso: espere a que termine, o /wallet attach"
 
-#: lnd-manager.py:874
+#: lnd-manager.py:876
 #, python-format
 msgid "Run: "
 msgstr "¿Ejecutar: "
 
-#: lnd-manager.py:887
+#: lnd-manager.py:889
 #, python-format
 msgid "✅ %s: done"
 msgstr "✅ %s: hecho"
 
-#: lnd-manager.py:889
+#: lnd-manager.py:891
 #, python-format
 msgid "⚠️ %s: still running in tmux. /%s attach to go back to it"
 msgstr "⚠️ %s: sigue en curso en tmux. /%s attach para volver a ella"
 
-#: lnd-manager.py:892
+#: lnd-manager.py:894
 #, python-format
 msgid "⚠️ %s: not started, an earlier wallet operation was still open"
 msgstr "⚠️ %s: no se inició, una operación de billetera anterior seguía abierta"
 
-#: lnd-manager.py:893
+#: lnd-manager.py:895
 #, python-format
 msgid "❌ %s: exit code %d"
 msgstr "❌ %s: código de salida %d"
 
-#: lnd-manager.py:898
+#: lnd-manager.py:900
 #, python-format
 msgid "(placeholder: SUPPORT_BTC_ADDRESS in config)"
 msgstr "(valor provisional: SUPPORT_BTC_ADDRESS en config)"
 
-#: lnd-manager.py:899
+#: lnd-manager.py:901
 #, python-format
 msgid "(placeholder: SUPPORT_URL in config)"
 msgstr "(valor provisional: SUPPORT_URL en config)"
 
-#: lnd-manager.py:903 serverb/serverb-dashboard.py:405
+#: lnd-manager.py:905 serverb/serverb-dashboard.py:405
 #, python-format
 msgid "If it keeps your node safe, please support its development:"
 msgstr "Si mantiene su nodo seguro, por favor apoye su desarrollo:"
 
-#: lnd-manager.py:904 serverb/serverb-dashboard.py:406
+#: lnd-manager.py:906 serverb/serverb-dashboard.py:406
 #, python-format
 msgid "  Bitcoin:  "
 msgstr "  Bitcoin:  "
 
-#: lnd-manager.py:905 serverb/serverb-dashboard.py:407
+#: lnd-manager.py:907 serverb/serverb-dashboard.py:407
 #, python-format
 msgid "  Project:  "
 msgstr "  Proyecto:  "
 
-#: lnd-manager.py:907
+#: lnd-manager.py:909
 #, python-format
 msgid "License (the full text is in LICENSE, next to the scripts)"
 msgstr "Licencia (el texto completo está en LICENSE, junto a los scripts)"
 
-#: lnd-manager.py:908 serverb/serverb-dashboard.py:410
+#: lnd-manager.py:910 serverb/serverb-dashboard.py:410
 #, python-format
 msgid "  Free for personal and business use up to USD 1,000,000 annual sales income."
 msgstr "  Gratis para uso personal y comercial hasta USD 1,000,000 de ingresos anuales por ventas."
 
-#: lnd-manager.py:909 serverb/serverb-dashboard.py:411
+#: lnd-manager.py:911 serverb/serverb-dashboard.py:411
 #, python-format
 msgid "  Above that: a one-time USD 50 payment in bitcoin to the donation address."
 msgstr "  Por encima de eso: un pago único de USD 50 en bitcoin a la dirección de donación."
 
-#: lnd-manager.py:910 serverb/serverb-dashboard.py:412
+#: lnd-manager.py:912 serverb/serverb-dashboard.py:412
 #, python-format
 msgid "  Used in another commercial node service or tool: a one-time USD 500 payment."
 msgstr "  Si se usa en otro servicio o herramienta comercial de nodos: un pago único de USD 500."
 
-#: lnd-manager.py:911 serverb/serverb-dashboard.py:413
+#: lnd-manager.py:913 serverb/serverb-dashboard.py:413
 #, python-format
 msgid "  A commercial user that doesn't pay agrees to pay 10 percent of those sales instead."
 msgstr "  Un usuario comercial que no paga acepta pagar en su lugar el 10 por ciento de esas ventas."
 
-#: lnd-manager.py:912 serverb/serverb-dashboard.py:414
+#: lnd-manager.py:914 serverb/serverb-dashboard.py:414
 #, python-format
 msgid "  Keep your bitcoin payment receipt (transaction ID) as proof."
 msgstr "  Guarde el comprobante de su pago en bitcoin (ID de la transacción) como prueba."
 
-#: lnd-manager.py:914 serverb/serverb-dashboard.py:416
+#: lnd-manager.py:916 serverb/serverb-dashboard.py:416
 #, python-format
 msgid "No warranty: use it at your own risk."
 msgstr "Sin garantía: úselo bajo su propio riesgo."
 
-#: lnd-manager.py:931
+#: lnd-manager.py:933
 #, python-format
 msgid " q back   Up/Down scroll"
 msgstr " q volver   ↑/↓ desplazar"
 
-#: lnd-manager.py:1089
+#: lnd-manager.py:1091
 #, python-format
 msgid "Log"
 msgstr "Registro"
 
-#: lnd-manager.py:1153 serverb/serverb-dashboard.py:660
+#: lnd-manager.py:1155 serverb/serverb-dashboard.py:660
 #, python-format
 msgid " no matching command"
 msgstr " ningún comando coincide"
 
-#: lnd-manager.py:1171 serverb/serverb-dashboard.py:752
+#: lnd-manager.py:1173 serverb/serverb-dashboard.py:752
 #, python-format
 msgid "Not a terminal. Use --once for a text status."
 msgstr "No es una terminal. Use --once para ver el estado en texto."
@@ -1464,15 +1572,15 @@ msgstr "   24 horas. Pasado ese plazo, se instala en el próximo arranque. lnd-u
 msgid "   Installing in the background (lnd-update-wait); its progress:"
 msgstr "   Instalando en segundo plano (lnd-update-wait); su progreso:"
 
-#: lnd-update.sh:260
+#: lnd-update.sh:261
 msgid "   Still busy, or it became unsafe meanwhile: lnd-update-wait goes on by itself (journalctl -u lnd-update-wait)."
 msgstr "   Sigue ocupado, o entretanto dejó de ser seguro: lnd-update-wait continúa por sí solo (journalctl -u lnd-update-wait)."
 
-#: lnd-update.sh:263
+#: lnd-update.sh:264
 msgid "The update to %s didn't finish: journalctl -u lnd-update-wait, and %s"
 msgstr "La actualización a %s no terminó: journalctl -u lnd-update-wait, y %s"
 
-#: lnd-update.sh:281 serverb/serverb-update:281
+#: lnd-update.sh:282 serverb/serverb-update:281
 msgid "⏸️ Still not safe after 24 hours: %s is installed at the next boot"
 msgstr "⏸️ Sigue sin ser seguro después de 24 horas: %s se instalará en el próximo arranque"
 
@@ -3982,31 +4090,31 @@ msgstr "❌ Ejecute esto como el usuario de copias del Servidor B, no como root.
 msgid "❌ %s doesn't look like an SSH public key."
 msgstr "❌ %s no parece una clave pública SSH."
 
-#: server-b-install.sh:363
+#: server-b-install.sh:377
 msgid "✅ Installed %s/lnd-backup-gate and %s/lnd-backup-rotate"
 msgstr "✅ Instalados %s/lnd-backup-gate y %s/lnd-backup-rotate"
 
-#: server-b-install.sh:370
+#: server-b-install.sh:384
 msgid "✅ Rotation runs every hour (crontab -l shows it)"
 msgstr "✅ La rotación se ejecuta cada hora (crontab -l la muestra)"
 
-#: server-b-install.sh:385
+#: server-b-install.sh:399
 msgid "✅ Server A's key may now only run the gate (old file: %s.before-gate)"
 msgstr "✅ La clave del Servidor A ahora solo puede ejecutar la compuerta (archivo anterior: %s.before-gate)"
 
-#: server-b-install.sh:387
+#: server-b-install.sh:401
 msgid "Check from Server A, as the backup user:"
 msgstr "Compruébelo desde el Servidor A, como el usuario de copias:"
 
-#: server-b-install.sh:388
+#: server-b-install.sh:402
 msgid "  ssh -i <its key> %s@<this server> ping      -> ok"
 msgstr "  ssh -i <su clave> %s@<este servidor> ping      -> ok"
 
-#: server-b-install.sh:389
+#: server-b-install.sh:403
 msgid "  ssh -i <its key> %s@<this server> 'rm -rf ~' -> refused"
 msgstr "  ssh -i <su clave> %s@<este servidor> 'rm -rf ~' -> rechazado"
 
-#: server-b-install.sh:390
+#: server-b-install.sh:404
 msgid "To undo: mv %s.before-gate %s, and remove the line from crontab -e."
 msgstr "Para deshacerlo: mv %s.before-gate %s, y quite la línea con crontab -e."
 
@@ -4233,10 +4341,6 @@ msgstr "   2. serverb.conf y serverb-install.sh, todos los scripts creados aquí
 #: serverb-scripts.sh:207
 msgid "      without GitHub. As safe as copying them by hand: root there runs what this server made."
 msgstr "      sin GitHub. Tan seguro como copiarlos a mano: root allí ejecuta lo que creó este servidor."
-
-#: serverb-scripts.sh:209 setup_script.sh:778
-msgid "Choose 1 or 2: "
-msgstr "Elija 1 o 2: "
 
 #: serverb-scripts.sh:227
 msgid "❌ Sending %s failed: %s"
@@ -7067,6 +7171,13 @@ msgstr "⏳ Aún no es seguro: %s"
 #, python-format
 #~ msgid "/serverb scripts makes Server B's scripts and lists the steps; then /tower add"
 #~ msgstr "/serverb scripts crea los scripts del Servidor B y lista los pasos; luego /tower add"
+
+#~ msgid "BTCPay's blockchain: %s GB (prune=%s), to %s:~/chain-incoming"
+#~ msgstr "Blockchain de BTCPay: %s GB (prune=%s), hacia %s:~/chain-incoming"
+
+#, python-format
+#~ msgid "Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. Two passes: the first while BTCPay runs (can take hours), the second Stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B."
+#~ msgstr "Copia la blockchain podada de BTCPay al bitcoind del Servidor B (a la carpeta que creó serverb-bitcoind-setup.sh), para que no pase días sincronizándose. Dos pasadas: la primera con BTCPay en marcha (puede tardar horas), la segunda detiene BTCPay unos minutos (usted escribe STOP BTCPAY). Se ejecuta en tmux; /chain attach vuelve a ella. Después ejecute serverb-import-chain.sh en el Servidor B."
 
 #~ msgid "Could not start the background wait; the update is applied at the next boot"
 #~ msgstr "No se pudo iniciar la espera en segundo plano; la actualización se aplicará en el próximo arranque"

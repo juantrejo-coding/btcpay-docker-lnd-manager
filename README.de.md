@@ -210,6 +210,10 @@ Ein Watchtower behält Ihre Kanäle im Auge, während Ihr Node offline ist.
    Gate.
 2. Um Server B tagelanges Synchronisieren zu ersparen, kopieren Sie die Blockchain von Server A:
    `/chain copy` (vorher `/chain prune`, falls die Blockchain von BTCPay noch nicht gepruned ist).
+   Es fragt, wo die Blockchain auf die Größe von Server B gepruned wird: auf Server A, in einer Kopie
+   neben der von BTCPay (die Blockchain von BTCPay bleibt unverändert, und es wird etwa halb so viel
+   gesendet: der Chainstate, rund 12 GB, lässt sich nicht prunen), oder auf Server B nach dem Import.
+   Vorher prüft es, ob beide Server genug Platz haben.
    Die Schritte halten nach Bitcoin Core an, bis die Kopie fertig ist; führen Sie danach denselben
    Befehl auf Server B erneut aus, um fortzufahren.
 3. Wieder auf Server A: `/tower add`, mit der Adresse des Towers, die der Watchtower-Schritt

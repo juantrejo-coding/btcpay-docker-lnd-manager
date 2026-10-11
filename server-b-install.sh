@@ -79,6 +79,10 @@ cat > "$BIN/lnd-backup-gate.new" <<'GATE'
 #                              ~/serverb-setup, prints the sha256: serverb.conf or
 #                              serverb-install.sh only, replacing the one there. Never run here:
 #                              you run them yourself, with sudo (lnd-manager: /serverb send).
+#   chain-space                free space for a blockchain copy, in KiB: "home=<n> import=<n>
+#                              same=<1|0> incoming=<1|0>" (this home's disk, /var/lib's disk
+#                              where serverb-import-chain.sh takes it, whether that is the same
+#                              disk, whether ~/chain-incoming exists). Read only.
 #   put-status                 Server A's LND state, every 5 minutes (server-a-status.sh), into
 #                              ~/.local/state/server-a-status: serverb-update reads it before it
 #                              restarts the watchtower. A few lines of data, checked here too.
@@ -162,6 +166,16 @@ case "$VERB" in
     ping)
         (( ${#WORDS[@]} == 1 )) || refuse "usage: ping"
         echo ok
+        ;;
+    chain-space)
+        (( ${#WORDS[@]} == 1 )) || refuse "usage: chain-space"
+        home_kb=$(df --output=avail -k "$HOME" | tail -n 1 | tr -d ' ')
+        import_kb=$(df --output=avail -k /var/lib | tail -n 1 | tr -d ' ')
+        same=0
+        [[ "$(stat -c %d "$HOME")" == "$(stat -c %d /var/lib)" ]] && same=1
+        incoming=0
+        [[ -d "$HOME/chain-incoming" && ! -L "$HOME/chain-incoming" ]] && incoming=1
+        echo "home=$home_kb import=$import_kb same=$same incoming=$incoming"
         ;;
     client-address)
         (( ${#WORDS[@]} == 1 )) || refuse "usage: client-address"
