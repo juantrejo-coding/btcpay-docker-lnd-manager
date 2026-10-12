@@ -133,6 +133,18 @@ WATCHTOWER_PUBKEY=""
 WATCHTOWER_IP=""
 @@ WATCHTOWER_PORT
 WATCHTOWER_PORT="9911"
+@@ BACKUP_TO_VOLUME
+# Where the backups go (lnd-manager: /destinations): yes or no each, at least one yes
+BACKUP_TO_VOLUME="yes"
+@@ BACKUP_TO_SERVER_B
+BACKUP_TO_SERVER_B="yes"
+@@ BACKUP_TO_GITHUB
+# A private GitHub repository of yours, written with a deploy key (GITHUB_REPO: owner/name)
+BACKUP_TO_GITHUB="no"
+@@ GITHUB_REPO
+GITHUB_REPO=""
+@@ GITHUB_KEY_FILENAME
+GITHUB_KEY_FILENAME="lnd_backup_github_key"
 @@ UI_LANGUAGE
 # Language of the scripts, the dashboards and the backup log: en (English), or any language
 # with a translation in locale/ (es: Español). Left empty, setup asks.

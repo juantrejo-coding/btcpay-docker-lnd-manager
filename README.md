@@ -25,9 +25,9 @@ back. It runs next to a BTCPay Server installed the usual way (btcpayserver-dock
   channel opens or closes), it makes a new backup. Once an hour it also checks for a change it
   may have missed. Nothing changed, no backup: the files LND rewrites by itself all the time don't
   count, so quiet days don't push your last good backups out.
-- **Encrypted, signed, in two places.** Every backup is encrypted and signed with your GPG key,
-  then stored on an extra disk on the server and on a second server. The copy on the second
-  server is checked after it arrives.
+- **Encrypted, signed, where you choose.** Every backup is encrypted and signed with your GPG
+  key, then stored on an extra disk on the server, on a second server, on a private GitHub
+  repository, or any of them: each one is on or off. Every copy is checked after it arrives.
 - **The second server is protected from the first.** The first server's key can only store,
   list and fetch backups there: no shell, no deleting, no overwriting. A break-in on your BTCPay
   server can't wipe the backups somewhere else.
@@ -146,6 +146,8 @@ Setup asks for the language first. Then everything is in that language, the log 
    It asks for the language first, runs the same check, then asks one thing at a time and saves
    your answers in `config`. It covers:
    - **The backup user**, a separate account that does the backup work. Setup makes it.
+   - **Where the backups go**: the attached volume, Server B and GitHub, each on or off (see
+     [Where the backups go](#where-the-backups-go)). The steps below are only for those that are on.
    - **The attached volume**. Choose the disk from the list; setup mounts it safely.
    - **Server B**: its address, SSH port and the user that will hold the backups. Setup then
      shows Server B's fingerprint. **Check it on Server B itself** (setup shows the command),
@@ -186,6 +188,37 @@ problems. Type `/` for the list of commands. Each one explains what it does befo
 
 Backups are only made when LND's channel backup changes (a channel opens or closes, for example).
 Days without a new backup are normal on a quiet node.
+
+## Where the backups go
+
+Each backup goes to every destination that is on. Turn them on and off in the dashboard:
+`/destinations` shows them, `/destination volume`, `/destination serverb` and `/destination github`
+turn one on or off. At least one stays on, and the dashboard warns while no copy leaves Server A.
+
+| Destination | What it is | Can a broken-into Server A delete the copies there? |
+|---|---|---|
+| **The attached volume** | An extra disk on Server A. The quickest to restore from. | Yes: it is on Server A. |
+| **Server B** | Your second server, through its backup gate. | No: the gate never deletes or overwrites. |
+| **GitHub** | A private repository of yours. Free. | Yes: GitHub can't stop it on a free private repository. |
+
+Each keeps the 10 newest backups, the first of each day for 30 days and of each month for 12
+months, and the safety backups `lnd-wallet` makes. Turning one off keeps the copies already there,
+and restoring still looks everywhere. A destination that fails is tried again every hour.
+
+**GitHub**, step by step:
+1. On github.com, make a new repository just for the backups, for example `lnd-backups`. It must
+   be **private**, and empty. Not this project's repository.
+2. Turn GitHub on (`/destination github`, or answer yes in setup), and type the repository as
+   `owner/name`. Setup checks it isn't public.
+3. Setup makes a **deploy key** for the backup user and shows it: an SSH key that reaches only that
+   one repository. On GitHub, open the repository's **Settings → Deploy keys → Add deploy key**,
+   paste it, and tick **Allow write access**. No GitHub password or account token goes on the
+   server.
+4. Setup checks the key can write, then the backup service sends each backup there.
+
+The repository keeps only the current backups: each upload replaces its history, so old backups
+are really gone and the repository stays small (GitHub asks that repositories stay under 1 GB).
+The backups are encrypted with your GPG key, so GitHub can't read them; keep that key off GitHub.
 
 ## If you lose the wallet
 

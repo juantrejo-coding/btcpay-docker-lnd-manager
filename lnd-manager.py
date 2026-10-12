@@ -95,28 +95,45 @@ SHOWN_WORDS = (
     N_("idle"), N_("starting"), N_("stopped"), N_("hourly check"),
     N_("backup: checking files"), N_("backup: compressing"), N_("backup: copying LND files"),
     N_("backup: copying to Server B"), N_("backup: copying to the attached volume"),
+    N_("backup: copying to GitHub"),
     N_("backup: encrypting"), N_("backup: milestones"), N_("backup: removing old backups"),
     N_("backup: verifying the copy"), N_("backup: waiting for files to settle"),
 )
 
 # The settings setup asks for: the checklist's first step is done when none is empty
 SETUP_VARS = ["MAIN_USER", "SERVER_A_USER", "SERVER_B_USER", "REMOTE_SERVER", "REMOTE_SSH_PORT",
-              "SERVER_B_KNOWN_HOST_FINGERPRINT", "UUID", "GPG_FINGERPRINT"]
+              "SERVER_B_KNOWN_HOST_FINGERPRINT", "UUID", "GPG_FINGERPRINT", "GITHUB_REPO"]
+# Which setting each of them needs: only asked for while that destination is on
+SETUP_VAR_DESTINATION = {"SERVER_B_USER": "BACKUP_TO_SERVER_B", "REMOTE_SERVER": "BACKUP_TO_SERVER_B",
+                         "REMOTE_SSH_PORT": "BACKUP_TO_SERVER_B",
+                         "SERVER_B_KNOWN_HOST_FINGERPRINT": "BACKUP_TO_SERVER_B",
+                         "UUID": "BACKUP_TO_VOLUME", "GITHUB_REPO": "BACKUP_TO_GITHUB"}
+DESTINATIONS = [("volume", "BACKUP_TO_VOLUME", "yes"), ("serverb", "BACKUP_TO_SERVER_B", "yes"),
+                ("github", "BACKUP_TO_GITHUB", "no")]
 CONFIG_VARS = ["STATUS_FILE", "RSYNC_BACKUP_SERVICE_NAME", "LIGHTNING_BACKUP_LOG_FILE",
                "BACKUP_SCRIPTS_FOLDER", "BACKUP_INSTALL_DIR", "ATTACHED_VOLUME", "WATCHTOWER_PUBKEY",
-               "SUPPORT_BTC_ADDRESS", "SUPPORT_URL", "UI_LANGUAGE"] + SETUP_VARS
+               "SUPPORT_BTC_ADDRESS", "SUPPORT_URL", "UI_LANGUAGE", "BACKUP_TO_VOLUME",
+               "BACKUP_TO_SERVER_B", "BACKUP_TO_GITHUB", "SECOND_BACKUP_DIR"] + SETUP_VARS
 # BTCPay's settings, readable by everyone: which fragments (opt-lnd-wtclient) it runs with
 BTCPAY_ENV = "/etc/profile.d/btcpay-env.sh"
 
-# (label, ok key, fail key, pending key)
+# (label, ok key, fail key, pending key, the destination it belongs to)
 BACKUP_ROWS = [
-    (N_("Backup"), "backup_last_ok", "backup_last_fail", None),
-    (N_("Attached volume"), "local_last_ok", "local_last_fail", None),
-    (N_("Server B"), "remote_last_ok", "remote_last_fail", "remote_pending_since"),
+    (N_("Backup"), "backup_last_ok", "backup_last_fail", None, None),
+    (N_("Attached volume"), "local_last_ok", "local_last_fail", None, "BACKUP_TO_VOLUME"),
+    (N_("Server B"), "remote_last_ok", "remote_last_fail", "remote_pending_since", "BACKUP_TO_SERVER_B"),
+    (N_("GitHub"), "github_last_ok", "github_last_fail", "github_pending_since", "BACKUP_TO_GITHUB"),
     (N_("Milestones, local"), "milestone_local_last_ok", "milestone_local_last_fail",
-     "milestones_pending_since"),
-    # Server B makes its own milestones (server-b-install.sh), so there is no row for them
+     "milestones_pending_since", "BACKUP_TO_VOLUME"),
+    # Server B and GitHub keep their own milestones, so there is no row for them
 ]
+
+
+def destination_on(config, setting):
+    """True if the backups go to that destination (config: BACKUP_TO_*; older configs: the
+    attached volume and Server B on, GitHub off)."""
+    default = "no" if setting == "BACKUP_TO_GITHUB" else "yes"
+    return (config.get(setting) or default) == "yes"
 
 # The commands the / list offers: (name, description, action, details). Typed text only ever
 # selects one of these; it is never passed to a shell. The details show under the list for the
@@ -147,6 +164,22 @@ COMMANDS = [
      "a pruned bitcoind, the blockchain import, the watchtower, the Server B dashboard), with your "
      "settings filled in. Asks for settings config doesn't have yet. Shows each script's sha256 "
      "and how to copy them to Server B. Changes nothing on either server.")),
+    ("/destinations", N_("where the backups go: each destination on or off"), "destinations",
+     N_("Shows the attached volume, Server B and GitHub, each on or off, with its last copy. "
+     "/destination volume, /destination serverb and /destination github turn one on or off. Read only.")),
+    ("/destination volume", N_("turn the attached volume on or off"), "destination volume",
+     N_("Runs destinations.sh volume. Off: new backups no longer go to the attached volume (type TURN "
+     "OFF); the copies there stay, and restoring still looks there. On: runs setup, which mounts the "
+     "disk, then reinstalls the backup service. At least one destination stays on.")),
+    ("/destination serverb", N_("turn Server B on or off"), "destination serverb",
+     N_("Runs destinations.sh serverb. Off: new backups no longer go to Server B (type TURN OFF); "
+     "its copies stay. On: runs setup, which sets up Server B's key and gate, then reinstalls the "
+     "backup service. At least one destination stays on.")),
+    ("/destination github", N_("turn GitHub on or off"), "destination github",
+     N_("Runs destinations.sh github. On: runs setup, which asks for your private repository "
+     "(owner/name), makes a deploy key and shows it to add on GitHub with write access, then "
+     "reinstalls the backup service. Off: new backups no longer go there (type TURN OFF); its "
+     "copies stay. A broken-into server could delete the copies on GitHub: Server B's can't.")),
     ("/serverb send", N_("send Server B its settings (and the scripts, if you choose)"), "serverb send",
      N_("Runs serverb-scripts.sh send: asks for settings config doesn't have yet, then sends Server B "
      "serverb.conf through the backup gate, and, if you choose, serverb-install.sh with all the "
@@ -433,7 +466,8 @@ def checklist(config, status, service):
         steps.append(("done" if done else "optional" if optional else "todo", title, todo, optional))
 
     missing = [v for v in SETUP_VARS
-               if not config.get(v) or (v == "SERVER_B_KNOWN_HOST_FINGERPRINT" and config[v] == "SHA256:")]
+               if (v not in SETUP_VAR_DESTINATION or destination_on(config, SETUP_VAR_DESTINATION[v]))
+               and (not config.get(v) or (v == "SERVER_B_KNOWN_HOST_FINGERPRINT" and config[v] == "SHA256:"))]
     step(not missing, _("Settings in config"),
          _("/setup asks for them: ") + ", ".join(missing))
 
@@ -457,8 +491,9 @@ def checklist(config, status, service):
                                      capture_output=True, text=True, timeout=5).stdout.strip()
         except (OSError, subprocess.TimeoutExpired):
             pass
-    step(bool(uuid) and mounted == uuid, _("Attached volume mounted at %s") % (volume or "?"),
-         _("/setup mounts it (attach the disk first)"))
+    if destination_on(config, "BACKUP_TO_VOLUME"):
+        step(bool(uuid) and mounted == uuid, _("Attached volume mounted at %s") % (volume or "?"),
+             _("/setup mounts it (attach the disk first)"))
 
     remembered = read_setup_state(working)
     unconfirmed = [what for key, what in (("lnd_seed_stored", _("your LND seed")),
@@ -474,10 +509,15 @@ def checklist(config, status, service):
         todo = _("it is %s: /start, and /log if it stops again") % _(service.get("ActiveState", "?"))
     step(service.get("ActiveState") == "active", _("Backup service running"), todo)
 
-    step(num(status, "local_last_ok") is not None, _("First backup on the attached volume"),
-         _("made at the next change of LND's channel backup; /check looks now. /log says why it fails"))
-    step(num(status, "remote_last_ok") is not None, _("First backup on Server B"),
-         _("made with the next backup. If it fails, /log says why (Server B's gate: /setup installs it)"))
+    if destination_on(config, "BACKUP_TO_VOLUME"):
+        step(num(status, "local_last_ok") is not None, _("First backup on the attached volume"),
+             _("made at the next change of LND's channel backup; /check looks now. /log says why it fails"))
+    if destination_on(config, "BACKUP_TO_SERVER_B"):
+        step(num(status, "remote_last_ok") is not None, _("First backup on Server B"),
+             _("made with the next backup. If it fails, /log says why (Server B's gate: /setup installs it)"))
+    if destination_on(config, "BACKUP_TO_GITHUB"):
+        step(num(status, "github_last_ok") is not None, _("First backup on GitHub"),
+             _("made with the next backup. If it fails, /log says why (the deploy key: /setup shows it)"))
 
     tower = (config.get("WATCHTOWER_PUBKEY", "") not in ("", "your-watchtower-public-key")
              and "opt-lnd-wtclient" in btcpay_fragments())
@@ -606,7 +646,10 @@ def collect(config):
         status = {}
 
     rows = []
-    for label, ok_key, fail_key, pending_key in BACKUP_ROWS:
+    for label, ok_key, fail_key, pending_key, setting in BACKUP_ROWS:
+        # A destination that is off has no row
+        if setting and not destination_on(config, setting):
+            continue
         ok, fail = num(status, ok_key), num(status, fail_key)
         pending = num(status, pending_key) if pending_key else None
         if fail is not None and (ok is None or fail > ok):
@@ -635,8 +678,11 @@ def collect(config):
                         % fmt_age(now - event))
 
     local_ok, remote_ok = num(status, "local_last_ok"), num(status, "remote_last_ok")
-    if local_ok is not None and (remote_ok is None or local_ok - remote_ok > REMOTE_BEHIND_SECONDS):
+    if (destination_on(config, "BACKUP_TO_VOLUME") and destination_on(config, "BACKUP_TO_SERVER_B")
+            and local_ok is not None and (remote_ok is None or local_ok - remote_ok > REMOTE_BEHIND_SECONDS)):
         problems.append(_("Server B is behind: its last copy is older than the attached volume's"))
+    if not destination_on(config, "BACKUP_TO_SERVER_B") and not destination_on(config, "BACKUP_TO_GITHUB"):
+        problems.append(_("No copy leaves this server (only the attached volume is on): /destinations"))
 
     started = num(status, "service_started")
     check = num(status, "check_last_run")
@@ -833,6 +879,13 @@ def do_action(stdscr, action, config, info, styles):
         if not working or not os.path.isfile(os.path.join(working, "serverb-scripts.sh")):
             return _("serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)") % (working or _("not set"))
         command = [os.path.join(working, "serverb-scripts.sh")]
+    elif action == "destinations" or action.startswith("destination "):
+        working = config.get("BACKUP_SCRIPTS_FOLDER", "")
+        if not working or not os.path.isfile(os.path.join(working, "destinations.sh")):
+            return _("destinations.sh not found in BACKUP_SCRIPTS_FOLDER (%s)") % (working or _("not set"))
+        command = [os.path.join(working, "destinations.sh")]
+        if action != "destinations":
+            command.append(action.split(" ", 1)[1])
     elif action == "serverb send":
         working = config.get("BACKUP_SCRIPTS_FOLDER", "")
         if not working or not os.path.isfile(os.path.join(working, "serverb-scripts.sh")):
@@ -875,7 +928,8 @@ def do_action(stdscr, action, config, info, styles):
 
     if not ask(stdscr, _("Run: ") + shown(command) + " ?", styles):
         return _("Cancelled")
-    is_script = action in ("setup", "install", "serverb scripts", "serverb send", "update")
+    is_script = (action in ("setup", "install", "serverb scripts", "serverb send", "update", "destinations")
+                 or action.startswith("destination "))
     # chain-tower.sh, like lnd-wallet.sh, waits for Enter itself and uses the same exit codes
     is_wallet = action.startswith("wallet ") or action in ("chain prune", "chain copy", "tower add",
                                                            "tower status", "chain attach")

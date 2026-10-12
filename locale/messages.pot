@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: btcpay-docker-lnd-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-10 22:51-0400\n"
+"POT-Creation-Date: 2026-10-12 04:54-0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,7 +81,7 @@ msgstr ""
 msgid "⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline for %s."
 msgstr ""
 
-#: chain-tower.sh:200 lnd-wallet.sh:901
+#: chain-tower.sh:200 lnd-wallet.sh:975
 msgid "Type 'STOP BTCPAY' to stop it: "
 msgstr ""
 
@@ -231,7 +231,7 @@ msgstr ""
 msgid "     after the import. Nothing extra on this server; more to send, more room on Server B."
 msgstr ""
 
-#: chain-tower.sh:387 serverb-scripts.sh:209 setup_script.sh:778
+#: chain-tower.sh:387 serverb-scripts.sh:209 setup_script.sh:820
 msgid "Choose 1 or 2: "
 msgstr ""
 
@@ -451,7 +451,7 @@ msgstr ""
 msgid "✅ Saved %s=\"%s\" in %s"
 msgstr ""
 
-#: config-lib.sh:65 rsync_gpg_backup.sh:302
+#: config-lib.sh:65 rsync_gpg_backup.sh:321
 msgid "❌ Not allowed: %s"
 msgstr ""
 
@@ -475,16 +475,124 @@ msgstr ""
 msgid "enter a port number from 1 to 65535"
 msgstr ""
 
-#: config-lib.sh:183
+#: config-lib.sh:195
 msgid "❌ Could not add the new settings to %s"
 msgstr ""
 
-#: config-lib.sh:189
+#: config-lib.sh:201
 msgid "❌ Failed to reload %s after adding new settings"
 msgstr ""
 
-#: config-lib.sh:192
+#: config-lib.sh:204
 msgid "✅ Updated %s: %s"
+msgstr ""
+
+#: destinations.sh:45 rsync_gpg_backup.sh:75
+msgid "the attached volume (%s)"
+msgstr ""
+
+#: destinations.sh:46 rsync_gpg_backup.sh:76
+msgid "Server B (%s)"
+msgstr ""
+
+#: destinations.sh:47 rsync_gpg_backup.sh:77
+msgid "GitHub (%s)"
+msgstr ""
+
+#: destinations.sh:69
+msgid "never"
+msgstr ""
+
+#: destinations.sh:75
+msgid "Where the backups go:"
+msgstr ""
+
+#: destinations.sh:79
+msgid "  ✅ on   %s, last copy: %s"
+msgstr ""
+
+#: destinations.sh:81
+msgid "  ➖ off  %s"
+msgstr ""
+
+#: destinations.sh:85
+msgid "⚠️  No copy leaves this server: if it is lost, the backups are lost with it."
+msgstr ""
+
+#: destinations.sh:93
+msgid "❌ Unknown destination: %s (volume, serverb or github)"
+msgstr ""
+
+#: destinations.sh:96
+msgid "❌ destinations.sh needs a terminal: it asks before it changes anything."
+msgstr ""
+
+#: destinations.sh:110
+msgid "❌ %s is the only destination that is on: turn another one on first."
+msgstr ""
+
+#: destinations.sh:113
+msgid "Turning off %s: new backups no longer go there. The copies already there stay there,"
+msgstr ""
+
+#: destinations.sh:114
+msgid "and restoring still looks there. The backup service is reinstalled (a few seconds without it)."
+msgstr ""
+
+#: destinations.sh:116
+msgid "⚠️  After this, no copy leaves this server."
+msgstr ""
+
+#: destinations.sh:118
+msgid "Type TURN OFF to turn it off: "
+msgstr ""
+
+#: destinations.sh:124
+msgid "✅ %s is off. The backup service runs without it."
+msgstr ""
+
+#: destinations.sh:126
+msgid "❌ The backup service installer failed: lnd-manager /install shows why."
+msgstr ""
+
+#: destinations.sh:131
+msgid "Turning on %s. Setup sets up what it needs, asking before each step, then the backup"
+msgstr ""
+
+#: destinations.sh:132
+msgid "service is reinstalled with it (setup's last question: answer y)."
+msgstr ""
+
+#: destinations.sh:133
+msgid "Type yes to go on: "
+msgstr ""
+
+#: github-lib.sh:32
+msgid "enter the repository as owner/name, for example juan/lnd-backups"
+msgstr ""
+
+#: github-lib.sh:114
+msgid "❌ %s is %s MB: GitHub takes files up to 100 MB, so it isn't stored there"
+msgstr ""
+
+#: github-lib.sh:117
+msgid "❌ Could not reach the GitHub repository %s with its deploy key"
+msgstr ""
+
+#: github-lib.sh:122
+msgid "❌ The GitHub repository holds %s safety backups already: delete old ones there first"
+msgstr ""
+
+#: github-lib.sh:160
+msgid "❌ Pushing to the GitHub repository %s failed (is the deploy key allowed to write?)"
+msgstr ""
+
+#: github-lib.sh:166
+msgid "❌ GitHub doesn't show the backup just pushed: not counted as stored"
+msgstr ""
+
+#: github-lib.sh:174
+msgid "✅ Stored on GitHub (%s) and checked: GitHub shows commit %s"
 msgstr ""
 
 #: install-scripts.sh:57
@@ -747,2413 +855,2473 @@ msgstr ""
 msgid "❌ Refusing delete: the attached volume is not mounted at %s"
 msgstr ""
 
-#: lnd-wallet.sh:386
+#: lnd-wallet.sh:389
 msgid "⚠️ Stopped before the wallet was touched. Starting BTCPay and the backup service again..."
 msgstr ""
 
-#: lnd-wallet.sh:389
+#: lnd-wallet.sh:392
 msgid "❌ btcpay-up.sh failed. Run %s/btcpay-up.sh by hand."
 msgstr ""
 
-#: lnd-wallet.sh:392
+#: lnd-wallet.sh:395
 msgid "❌ Could not start %s. Start it by hand."
 msgstr ""
 
-#: lnd-wallet.sh:396
+#: lnd-wallet.sh:399
 msgid "⚠️ Stopped after the old wallet was deleted. BTCPay is down and stays down."
 msgstr ""
 
-#: lnd-wallet.sh:397
+#: lnd-wallet.sh:400
 msgid "⚠️ %s is disabled, so a reboot won't start BTCPay on the unfinished volume."
 msgstr ""
 
-#: lnd-wallet.sh:399
+#: lnd-wallet.sh:402
 msgid "⚠️ The old wallet is in the safety backup %s."
 msgstr ""
 
-#: lnd-wallet.sh:401
+#: lnd-wallet.sh:404
 msgid "⚠️ Run this script again: the same option to finish, or option 5 to put the safety backup back."
 msgstr ""
 
-#: lnd-wallet.sh:404
+#: lnd-wallet.sh:407
 msgid "⚠️ Stopped after the wallet was handed to BTCPay. Check BTCPay's LND before relying on it:"
 msgstr ""
 
-#: lnd-wallet.sh:405
+#: lnd-wallet.sh:408
 msgid "⚠️   docker logs --tail 50 %s"
 msgstr ""
 
-#: lnd-wallet.sh:406
+#: lnd-wallet.sh:409
 msgid "⚠️ The backup service is still stopped. When LND is fine, rerun %s."
 msgstr ""
 
-#: lnd-wallet.sh:469
+#: lnd-wallet.sh:478
+msgid "⚠️ The GitHub repository %s can't be reached, so it isn't searched."
+msgstr ""
+
+#: lnd-wallet.sh:507
 msgid "GPG could not decrypt it (%s)"
 msgstr ""
 
-#: lnd-wallet.sh:476
+#: lnd-wallet.sh:514
 msgid "it is not signed with the backup key %s"
 msgstr ""
 
-#: lnd-wallet.sh:480
+#: lnd-wallet.sh:518
 msgid "it does not hold backup_compressed.tar.gz and its checksum"
 msgstr ""
 
-#: lnd-wallet.sh:487
+#: lnd-wallet.sh:525
 msgid "its checksum does not match (the file is damaged)"
 msgstr ""
 
-#: lnd-wallet.sh:499
+#: lnd-wallet.sh:537
 msgid "its archive could not be unpacked"
 msgstr ""
 
-#: lnd-wallet.sh:506
+#: lnd-wallet.sh:544
 msgid "it holds links or special files, which the service never backs up"
 msgstr ""
 
-#: lnd-wallet.sh:535
+#: lnd-wallet.sh:573
 msgid "its signed manifest says it is a '%s' backup, not '%s'"
 msgstr ""
 
-#: lnd-wallet.sh:539
+#: lnd-wallet.sh:577
 msgid "its signed manifest has no valid time"
 msgstr ""
 
-#: lnd-wallet.sh:552
+#: lnd-wallet.sh:590
 msgid "its name doesn't match the time in its signed manifest (%s): it was renamed"
 msgstr ""
 
-#: lnd-wallet.sh:654
-msgid "Server B"
+#: lnd-wallet.sh:707
+msgid "on the attached volume"
 msgstr ""
 
-#: lnd-wallet.sh:654
-msgid "attached volume"
-msgstr ""
-
-#: lnd-wallet.sh:674
-msgid "🔎 Looking for the latest backup on the attached volume and Server B..."
-msgstr ""
-
-#: lnd-wallet.sh:675
-msgid "⚠️ The attached volume is not mounted, so only Server B is searched."
-msgstr ""
-
-#: lnd-wallet.sh:676
-msgid "⚠️ Server B can't be reached, so only the attached volume is searched."
-msgstr ""
-
-#: lnd-wallet.sh:687
-msgid "%s on %s: could not be copied"
-msgstr ""
-
-#: lnd-wallet.sh:694
-msgid "%s on %s: %s"
-msgstr ""
-
-#: lnd-wallet.sh:704
-msgid "%s on the %s (%s)"
-msgstr ""
-
-#: lnd-wallet.sh:706
-msgid ", a milestone: no regular backup could be used"
+#: lnd-wallet.sh:708
+msgid "on GitHub"
 msgstr ""
 
 #: lnd-wallet.sh:709
+msgid "on Server B"
+msgstr ""
+
+#: lnd-wallet.sh:730
+msgid "🔎 Looking for the latest backup on the attached volume, Server B and GitHub..."
+msgstr ""
+
+#: lnd-wallet.sh:731
+msgid "⚠️ The attached volume is not mounted, so it isn't searched."
+msgstr ""
+
+#: lnd-wallet.sh:732
+msgid "⚠️ Server B can't be reached, so it isn't searched."
+msgstr ""
+
+#: lnd-wallet.sh:743
+msgid "%s %s: could not be copied"
+msgstr ""
+
+#: lnd-wallet.sh:750
+msgid "%s %s: %s"
+msgstr ""
+
+#: lnd-wallet.sh:760
+msgid "%s %s (%s)"
+msgstr ""
+
+#: lnd-wallet.sh:762
+msgid ", a milestone: no regular backup could be used"
+msgstr ""
+
+#: lnd-wallet.sh:765
 msgid "; ⚠️ made before backups carried a signed date, so its date is not verified"
 msgstr ""
 
-#: lnd-wallet.sh:717
+#: lnd-wallet.sh:773
 msgid "⚠️ Skipped %s"
 msgstr ""
 
-#: lnd-wallet.sh:769
+#: lnd-wallet.sh:825
 msgid "There is no wallet in %s, so nothing to check."
 msgstr ""
 
-#: lnd-wallet.sh:774
+#: lnd-wallet.sh:830
 msgid "⚠️ LND container '%s' is stopped. Starting BTCPay to read the current wallet..."
 msgstr ""
 
-#: lnd-wallet.sh:775
+#: lnd-wallet.sh:831
 msgid "⚠️ btcpay-up.sh failed"
 msgstr ""
 
-#: lnd-wallet.sh:778
+#: lnd-wallet.sh:834
 msgid "⏳ Waiting for the current LND to answer (up to 3 minutes)..."
 msgstr ""
 
-#: lnd-wallet.sh:784
+#: lnd-wallet.sh:840
 msgid "Couldn't read the current wallet: LND isn't answering (state: %s)."
 msgstr ""
 
-#: lnd-wallet.sh:800
+#: lnd-wallet.sh:856
 msgid "Node ID:           %s"
 msgstr ""
 
-#: lnd-wallet.sh:801
+#: lnd-wallet.sh:857
 msgid "On-chain:          %s sat confirmed, %s sat unconfirmed"
 msgstr ""
 
-#: lnd-wallet.sh:802
+#: lnd-wallet.sh:858
 msgid "Open channels:     %s (your share: %s sat)"
 msgstr ""
 
-#: lnd-wallet.sh:803
+#: lnd-wallet.sh:859
 msgid "Opening/closing:   %s channels, %s sat waiting in closes (limbo)"
 msgstr ""
 
-#: lnd-wallet.sh:805
+#: lnd-wallet.sh:861
 msgid "⚠️ LND is not synced to the chain, so these numbers may be out of date."
 msgstr ""
 
-#: lnd-wallet.sh:820
+#: lnd-wallet.sh:876
 msgid "ℹ️ The LND volume is missing or empty, so there is nothing to save in a safety backup."
 msgstr ""
 
-#: lnd-wallet.sh:828
+#: lnd-wallet.sh:884
 msgid "Not enough free space in /var/tmp for the safety backup (LND volume: %s bytes)"
 msgstr ""
 
-#: lnd-wallet.sh:830
+#: lnd-wallet.sh:886
 msgid "💾 Making the safety backup of the current LND volume (%s)..."
 msgstr ""
 
-#: lnd-wallet.sh:832
+#: lnd-wallet.sh:888
 msgid "Could not archive %s for the safety backup"
 msgstr ""
 
-#: lnd-wallet.sh:841
+#: lnd-wallet.sh:897
 msgid "GPG could not encrypt the safety backup"
 msgstr ""
 
-#: lnd-wallet.sh:845
+#: lnd-wallet.sh:901
 msgid "The safety backup failed its check: %s"
 msgstr ""
 
-#: lnd-wallet.sh:857
+#: lnd-wallet.sh:915
 msgid "✅ Safety backup stored and checked: %s/%s"
 msgstr ""
 
-#: lnd-wallet.sh:861
+#: lnd-wallet.sh:919
 msgid "⚠️ Could not store the safety backup on the attached volume"
 msgstr ""
 
-#: lnd-wallet.sh:864
+#: lnd-wallet.sh:922
 msgid "⚠️ The attached volume is not mounted, so the safety backup is not stored there"
 msgstr ""
 
-#: lnd-wallet.sh:873
+#: lnd-wallet.sh:933
 msgid "✅ Safety backup stored and checked on Server B: pre-recovery/%s"
 msgstr ""
 
-#: lnd-wallet.sh:876
+#: lnd-wallet.sh:936
 msgid "⚠️ Could not store the safety backup on Server B"
 msgstr ""
 
-#: lnd-wallet.sh:879
+#: lnd-wallet.sh:939
 msgid "⚠️ Server B's backup gate can't be reached, so the safety backup is not stored there"
 msgstr ""
 
-#: lnd-wallet.sh:883
+#: lnd-wallet.sh:948
+msgid "✅ Safety backup stored and checked on GitHub: pre-recovery/%s"
+msgstr ""
+
+#: lnd-wallet.sh:951
+msgid "⚠️ Could not store the safety backup on GitHub"
+msgstr ""
+
+#: lnd-wallet.sh:957
 msgid "The safety backup could not be stored anywhere. Nothing has been deleted."
 msgstr ""
 
-#: lnd-wallet.sh:892
+#: lnd-wallet.sh:966
 msgid "a few minutes, plus the scan for old funds, which can take minutes to hours"
 msgstr ""
 
-#: lnd-wallet.sh:893
+#: lnd-wallet.sh:967
 msgid "a few minutes, for the safety backup"
 msgstr ""
 
-#: lnd-wallet.sh:894
+#: lnd-wallet.sh:968
 msgid "a few minutes"
 msgstr ""
 
-#: lnd-wallet.sh:897
+#: lnd-wallet.sh:971
 msgid "⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline until"
 msgstr ""
 
-#: lnd-wallet.sh:898
+#: lnd-wallet.sh:972
 msgid "   this finishes (%s)."
 msgstr ""
 
-#: lnd-wallet.sh:899
+#: lnd-wallet.sh:973
 msgid "   %s is disabled meanwhile, so a reboot can't start BTCPay too early;"
 msgstr ""
 
-#: lnd-wallet.sh:900
+#: lnd-wallet.sh:974
 msgid "   the script starts BTCPay again at the end. The backup service pauses too."
 msgstr ""
 
-#: lnd-wallet.sh:902
+#: lnd-wallet.sh:976
 msgid "Aborted by user: BTCPay was not stopped and nothing was changed."
 msgstr ""
 
-#: lnd-wallet.sh:914
+#: lnd-wallet.sh:988
 msgid "🛑 Stopping the backup service (it would otherwise back up the new wallet and rotate the old one's backups out)..."
 msgstr ""
 
-#: lnd-wallet.sh:924
+#: lnd-wallet.sh:998
 msgid "🔒 %s disabled until the script finishes"
 msgstr ""
 
-#: lnd-wallet.sh:927
+#: lnd-wallet.sh:1001
 msgid "ℹ️ %s was left disabled by an earlier run that stopped partway; it is enabled again at the end"
 msgstr ""
 
-#: lnd-wallet.sh:930
+#: lnd-wallet.sh:1004
 msgid "🛑 Stopping all BTCPay Server containers using btcpay-down.sh..."
 msgstr ""
 
-#: lnd-wallet.sh:932
+#: lnd-wallet.sh:1006
 msgid "✅ BTCPay stack stopped successfully."
 msgstr ""
 
-#: lnd-wallet.sh:934
+#: lnd-wallet.sh:1008
 msgid "Failed to stop BTCPay stack via btcpay-down.sh"
 msgstr ""
 
-#: lnd-wallet.sh:962
+#: lnd-wallet.sh:1036
 msgid "🧹 Deleting the old LND volume '%s'..."
 msgstr ""
 
-#: lnd-wallet.sh:968
+#: lnd-wallet.sh:1042
 msgid "⚠️ Containers using the volume still exist. Stopping and removing them..."
 msgstr ""
 
-#: lnd-wallet.sh:974
+#: lnd-wallet.sh:1048
 msgid "Still unable to remove volume '%s'."
 msgstr ""
 
-#: lnd-wallet.sh:978
+#: lnd-wallet.sh:1052
 msgid "Could not create volume '%s'"
 msgstr ""
 
-#: lnd-wallet.sh:984
+#: lnd-wallet.sh:1058
 msgid "LND_DIR in config (%s) is not the volume's folder (%s)"
 msgstr ""
 
-#: lnd-wallet.sh:985
+#: lnd-wallet.sh:1059
 msgid "✅ Empty volume '%s' created"
 msgstr ""
 
-#: lnd-wallet.sh:990
+#: lnd-wallet.sh:1064
 msgid "Refusing to empty %s outside a wallet setup"
 msgstr ""
 
-#: lnd-wallet.sh:1011
+#: lnd-wallet.sh:1085
 msgid "ℹ️ Using fee estimates flag: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1016
+#: lnd-wallet.sh:1090
 msgid "🚀 Starting temporary LND container..."
 msgstr ""
 
-#: lnd-wallet.sh:1034
+#: lnd-wallet.sh:1108
 msgid "⏳ Waiting for LND to be ready for wallet creation (up to 180s)..."
 msgstr ""
 
-#: lnd-wallet.sh:1037
+#: lnd-wallet.sh:1111
 msgid "Temporary LND did not get ready for wallet creation"
 msgstr ""
 
-#: lnd-wallet.sh:1040
+#: lnd-wallet.sh:1114
 msgid "The LND image %s has no curl, which the wallet setup needs"
 msgstr ""
 
-#: lnd-wallet.sh:1041
+#: lnd-wallet.sh:1115
 msgid "✅ LND is ready for wallet creation"
 msgstr ""
 
-#: lnd-wallet.sh:1079
+#: lnd-wallet.sh:1153
 msgid "   LND says: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1080
+#: lnd-wallet.sh:1154
 msgid "❌ LND refused the wallet (a seed word, the seed passphrase or the password; LND's reason is shown above, not logged)"
 msgstr ""
 
-#: lnd-wallet.sh:1084
+#: lnd-wallet.sh:1158
 msgid "⏳ Waiting for LND RPC to be available after wallet creation (up to 180s)..."
 msgstr ""
 
-#: lnd-wallet.sh:1087
+#: lnd-wallet.sh:1161
 msgid "✅ Wallet created in the temporary LND"
 msgstr ""
 
-#: lnd-wallet.sh:1096
+#: lnd-wallet.sh:1170
 msgid "Temporary LND stopped after wallet creation"
 msgstr ""
 
-#: lnd-wallet.sh:1101
+#: lnd-wallet.sh:1175
 msgid "Timed out waiting for the temporary LND after wallet creation"
 msgstr ""
 
-#: lnd-wallet.sh:1108
+#: lnd-wallet.sh:1182
 msgid "Wallet password (at least 8 characters): "
 msgstr ""
 
-#: lnd-wallet.sh:1110
+#: lnd-wallet.sh:1184
 msgid "The password must have at least 8 characters."
 msgstr ""
 
-#: lnd-wallet.sh:1113
+#: lnd-wallet.sh:1187
 msgid "Same password again: "
 msgstr ""
 
-#: lnd-wallet.sh:1115
+#: lnd-wallet.sh:1189
 msgid "The passwords don't match."
 msgstr ""
 
-#: lnd-wallet.sh:1128
+#: lnd-wallet.sh:1202
 msgid "Seed (24 words, separated by spaces, hidden while typed): "
 msgstr ""
 
-#: lnd-wallet.sh:1135
+#: lnd-wallet.sh:1209
 msgid "That's %s words, not 24."
 msgstr ""
 
-#: lnd-wallet.sh:1141 lnd-wallet.sh:1574
+#: lnd-wallet.sh:1215 lnd-wallet.sh:1648
 msgid "Seed passphrase, only if you set one when the seed was made (Enter for none): "
 msgstr ""
 
-#: lnd-wallet.sh:1143 lnd-wallet.sh:1575
+#: lnd-wallet.sh:1217 lnd-wallet.sh:1649
 msgid "Addresses to look ahead when scanning for old funds (Enter for %s): "
 msgstr ""
 
-#: lnd-wallet.sh:1149
+#: lnd-wallet.sh:1223
 msgid "Not a number, using %s."
 msgstr ""
 
-#: lnd-wallet.sh:1172
+#: lnd-wallet.sh:1246
 msgid "⚠️ %s goes through a symlink, so it is left alone"
 msgstr ""
 
-#: lnd-wallet.sh:1202
+#: lnd-wallet.sh:1276
 msgid "⚠️ This server's channel.backup is not a plain file (a symlink?), so it is not used"
 msgstr ""
 
-#: lnd-wallet.sh:1207
+#: lnd-wallet.sh:1281
 msgid "channel.backup from the backup (the same as on this server)"
 msgstr ""
 
-#: lnd-wallet.sh:1209
+#: lnd-wallet.sh:1283
 msgid "ℹ️ This server's channel.backup is newer than the backup's: a channel opened or closed after the last backup."
 msgstr ""
 
-#: lnd-wallet.sh:1211 lnd-wallet.sh:1218
+#: lnd-wallet.sh:1285 lnd-wallet.sh:1292
 msgid "channel.backup from the backup"
 msgstr ""
 
-#: lnd-wallet.sh:1211
+#: lnd-wallet.sh:1285
 msgid "channel.backup from this server (newer than the backup)"
 msgstr ""
 
-#: lnd-wallet.sh:1214
+#: lnd-wallet.sh:1288
 msgid "channel.backup from the backup (newer than this server's)"
 msgstr ""
 
-#: lnd-wallet.sh:1214 lnd-wallet.sh:1221
+#: lnd-wallet.sh:1288 lnd-wallet.sh:1295
 msgid "channel.backup from this server"
 msgstr ""
 
-#: lnd-wallet.sh:1242
+#: lnd-wallet.sh:1316
 msgid "✅ %s belongs to this wallet: %s channels"
 msgstr ""
 
-#: lnd-wallet.sh:1250
+#: lnd-wallet.sh:1324
 msgid "⚠️ %s doesn't open with this wallet: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1256
+#: lnd-wallet.sh:1330
 msgid "➡️ Using %s: it lists the most channels (%s)"
 msgstr ""
 
-#: lnd-wallet.sh:1265
+#: lnd-wallet.sh:1339
 msgid "🔎 Scanning for old funds. This can take minutes to hours, depending on the seed's age."
 msgstr ""
 
-#: lnd-wallet.sh:1266
+#: lnd-wallet.sh:1340
 msgid "   Progress is shown every 30 seconds. Type skip and Enter to stop waiting."
 msgstr ""
 
-#: lnd-wallet.sh:1272
+#: lnd-wallet.sh:1346
 msgid "✅ Scan for old funds finished"
 msgstr ""
 
-#: lnd-wallet.sh:1276
+#: lnd-wallet.sh:1350
 msgid "The temporary LND stopped during the scan"
 msgstr ""
 
-#: lnd-wallet.sh:1277
+#: lnd-wallet.sh:1351
 msgid "   Scan progress: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1279
+#: lnd-wallet.sh:1353
 msgid "Without the finished scan, old funds may not show up in the wallet."
 msgstr ""
 
-#: lnd-wallet.sh:1280
+#: lnd-wallet.sh:1354
 msgid "To scan again later, run this script again and choose the same restore."
 msgstr ""
 
-#: lnd-wallet.sh:1281
+#: lnd-wallet.sh:1355
 msgid "Type 'SKIP THE SCAN' to hand over to BTCPay now: "
 msgstr ""
 
-#: lnd-wallet.sh:1282
+#: lnd-wallet.sh:1356
 msgid "⚠️ Scan for old funds skipped at %s"
 msgstr ""
 
-#: lnd-wallet.sh:1296
+#: lnd-wallet.sh:1370
 msgid "✅ walletunlock.json written (BTCPay unlocks the wallet with it)"
 msgstr ""
 
-#: lnd-wallet.sh:1304
+#: lnd-wallet.sh:1378
 msgid "🚀 Starting BTCPay with btcpay-up.sh..."
 msgstr ""
 
-#: lnd-wallet.sh:1305 lnd-wallet.sh:1509 lnd-wallet.sh:1539
+#: lnd-wallet.sh:1379 lnd-wallet.sh:1583 lnd-wallet.sh:1613
 msgid "btcpay-up.sh failed"
 msgstr ""
 
-#: lnd-wallet.sh:1307
+#: lnd-wallet.sh:1381
 msgid "⏳ Waiting for BTCPay's LND to unlock the wallet (up to 10 minutes)..."
 msgstr ""
 
-#: lnd-wallet.sh:1310
+#: lnd-wallet.sh:1384
 msgid "BTCPay's LND did not unlock the wallet"
 msgstr ""
 
-#: lnd-wallet.sh:1313
+#: lnd-wallet.sh:1387
 msgid "BTCPay made a wallet of its own instead of using this one. Its seed is in %s/%s."
 msgstr ""
 
-#: lnd-wallet.sh:1317
+#: lnd-wallet.sh:1391
 msgid "BTCPay's LND has node ID '%s', not this wallet's %s. The backup service stays off."
 msgstr ""
 
-#: lnd-wallet.sh:1319
+#: lnd-wallet.sh:1393
 msgid "✅ BTCPay's LND unlocked the wallet (node ID %s)"
 msgstr ""
 
-#: lnd-wallet.sh:1324
+#: lnd-wallet.sh:1398
 msgid "🔧 Reinstalling the backup service for the new volume..."
 msgstr ""
 
-#: lnd-wallet.sh:1327
+#: lnd-wallet.sh:1401
 msgid "❌ The backup installer failed. Rerun %s by hand."
 msgstr ""
 
-#: lnd-wallet.sh:1333
+#: lnd-wallet.sh:1407
 msgid "✅ Backup service running, and asked to back up the new wallet now"
 msgstr ""
 
-#: lnd-wallet.sh:1335
+#: lnd-wallet.sh:1409
 msgid "⚠️ Backup service installed, but 'check now' failed. It backs up on its next hourly check."
 msgstr ""
 
-#: lnd-wallet.sh:1344
+#: lnd-wallet.sh:1418
 msgid "⚠️  Restoring channels asks every channel peer to close its channel. Your share comes back"
 msgstr ""
 
-#: lnd-wallet.sh:1345
+#: lnd-wallet.sh:1419
 msgid "   on-chain once the peer's close confirms. A peer that stays offline keeps that channel's"
 msgstr ""
 
-#: lnd-wallet.sh:1346
+#: lnd-wallet.sh:1420
 msgid "   funds stuck until it comes back. Payments in flight when LND failed can be lost."
 msgstr ""
 
-#: lnd-wallet.sh:1347
+#: lnd-wallet.sh:1421
 msgid "⚠️  Make sure no other LND with this seed is running anywhere (an old server, a copy)."
 msgstr ""
 
-#: lnd-wallet.sh:1348
+#: lnd-wallet.sh:1422
 msgid "   Two nodes with the same channels can lose all the funds in them."
 msgstr ""
 
-#: lnd-wallet.sh:1349
+#: lnd-wallet.sh:1423
 msgid "Type 'NO OTHER NODE IS RUNNING' to restore the channels: "
 msgstr ""
 
-#: lnd-wallet.sh:1359
+#: lnd-wallet.sh:1433
 msgid "⚠️ Channels not restored. Run this script with option 4 to restore them later."
 msgstr ""
 
-#: lnd-wallet.sh:1364
+#: lnd-wallet.sh:1438
 msgid "❌ No channel.backup opens with this wallet, so no channels can be restored."
 msgstr ""
 
-#: lnd-wallet.sh:1371
+#: lnd-wallet.sh:1445
 msgid "⏳ Waiting for BTCPay's LND to finish starting (it syncs to the chain first)..."
 msgstr ""
 
-#: lnd-wallet.sh:1372
+#: lnd-wallet.sh:1446
 msgid "   Type later and Enter to stop waiting; option 4 restores the channels another time."
 msgstr ""
 
-#: lnd-wallet.sh:1375
+#: lnd-wallet.sh:1449
 msgid "⚠️ Channels not restored yet. Run this script with option 4 once LND has synced."
 msgstr ""
 
-#: lnd-wallet.sh:1378
+#: lnd-wallet.sh:1452
 msgid "   LND state: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1385
+#: lnd-wallet.sh:1459
 msgid "❌ Channel restore failed: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1390
+#: lnd-wallet.sh:1464
 msgid "✅ %s channels restored. LND now asks each peer to close its channel."
 msgstr ""
 
-#: lnd-wallet.sh:1399
+#: lnd-wallet.sh:1473
 msgid "What do you want to do?"
 msgstr ""
 
-#: lnd-wallet.sh:1400
+#: lnd-wallet.sh:1474
 msgid "  1) New wallet"
 msgstr ""
 
-#: lnd-wallet.sh:1401
+#: lnd-wallet.sh:1475
 msgid "  2) Restore the wallet (on-chain funds) from its seed"
 msgstr ""
 
-#: lnd-wallet.sh:1402
+#: lnd-wallet.sh:1476
 msgid "  3) Restore the wallet and the channels (seed + channel.backup)"
 msgstr ""
 
-#: lnd-wallet.sh:1403
+#: lnd-wallet.sh:1477
 msgid "  4) Restore the channels into the running wallet (channel.backup only)"
 msgstr ""
 
-#: lnd-wallet.sh:1404
+#: lnd-wallet.sh:1478
 msgid "  5) Undo: put a safety backup back"
 msgstr ""
 
-#: lnd-wallet.sh:1406
+#: lnd-wallet.sh:1480
 msgid "Choose 1-5: "
 msgstr ""
 
-#: lnd-wallet.sh:1410
+#: lnd-wallet.sh:1484
 msgid "🚀 Starting LND wallet script, option %s..."
 msgstr ""
 
-#: lnd-wallet.sh:1422
+#: lnd-wallet.sh:1496
 msgid "Could not find BTCPay's LND image (container '%s' or its compose file). Is BTCPay installed with LND?"
 msgstr ""
 
-#: lnd-wallet.sh:1423
+#: lnd-wallet.sh:1497
 msgid "📦 Using LND image: %s"
 msgstr ""
 
-#: lnd-wallet.sh:1434
+#: lnd-wallet.sh:1508
 msgid "🔎 Looking for safety backups..."
 msgstr ""
 
-#: lnd-wallet.sh:1443
-msgid " (also on Server B)"
+#: lnd-wallet.sh:1517
+msgid " (also %s)"
 msgstr ""
 
-#: lnd-wallet.sh:1449
-msgid "No safety backups found in %s or on Server B."
+#: lnd-wallet.sh:1523
+msgid "No safety backups found in %s, on Server B or on GitHub."
 msgstr ""
 
-#: lnd-wallet.sh:1450
+#: lnd-wallet.sh:1524
 msgid "Safety backups, newest first:"
 msgstr ""
 
-#: lnd-wallet.sh:1454
-msgid "  %s) %s on the %s%s (%s)"
-msgstr ""
-
-#: lnd-wallet.sh:1457
-msgid "Which one (Enter for 1): "
-msgstr ""
-
-#: lnd-wallet.sh:1465
-msgid "Could not copy %s"
-msgstr ""
-
-#: lnd-wallet.sh:1466
-msgid "%s failed its check: %s"
-msgstr ""
-
-#: lnd-wallet.sh:1468
-msgid "%s is refused: %s"
-msgstr ""
-
-#: lnd-wallet.sh:1470
-msgid "✅ %s decrypted and checked"
-msgstr ""
-
-#: lnd-wallet.sh:1475
-msgid "The safety backup: made %s (signed), wallet %s"
-msgstr ""
-
-#: lnd-wallet.sh:1477
-msgid "⚠️  This safety backup was made before they carried a signed date: its date and wallet can't"
-msgstr ""
-
-#: lnd-wallet.sh:1478
-msgid "   be verified. Only use it if you know it is the one you want."
-msgstr ""
-
-#: lnd-wallet.sh:1480
-msgid "The wallet running now:"
-msgstr ""
-
-#: lnd-wallet.sh:1483
-msgid "⚠️  This puts back the whole LND volume as it was, channel state included. That is only safe if"
-msgstr ""
-
-#: lnd-wallet.sh:1484
-msgid "   no LND has run with those channels since the safety backup was made. If channels were restored"
-msgstr ""
-
-#: lnd-wallet.sh:1485
-msgid "   from channel.backup in between, their peers have closed them: don't put the old state back."
-msgstr ""
-
-#: lnd-wallet.sh:1486
-msgid "Type 'PUT IT BACK' to replace the current wallet with this safety backup: "
-msgstr ""
-
-#: lnd-wallet.sh:1487
-msgid "Aborted by user."
-msgstr ""
-
-#: lnd-wallet.sh:1498
-msgid "Could not unpack the safety backup"
-msgstr ""
-
-#: lnd-wallet.sh:1501
-msgid "The safety backup holds links, special files or setuid/setgid files (%s), which a safety backup never has: not used"
-msgstr ""
-
-#: lnd-wallet.sh:1503
-msgid "Could not unpack the safety backup into %s"
-msgstr ""
-
-#: lnd-wallet.sh:1505
-msgid "✅ Safety backup put back into %s"
-msgstr ""
-
-#: lnd-wallet.sh:1511
-msgid "✅ BTCPay's LND is up (node ID %s)"
-msgstr ""
-
-#: lnd-wallet.sh:1513
-msgid "BTCPay's LND did not unlock the restored wallet"
-msgstr ""
-
-#: lnd-wallet.sh:1518
-msgid "⚠️ Safety backup put back, but the backup service is NOT running. Rerun %s."
-msgstr ""
-
-#: lnd-wallet.sh:1521
-msgid "🚀 Safety backup put back."
-msgstr ""
-
-#: lnd-wallet.sh:1527 lnd-wallet.sh:1559
-msgid "⚠️ No backup could be used"
-msgstr ""
-
-#: lnd-wallet.sh:1527
-msgid "✅ Using %s"
-msgstr ""
-
-#: lnd-wallet.sh:1529
-msgid "No channel.backup found, neither in a backup nor on this server."
+#: lnd-wallet.sh:1528
+msgid "  %s) %s %s%s (%s)"
 msgstr ""
 
 #: lnd-wallet.sh:1531
-msgid "BTCPay's LND isn't running with an unlocked wallet. Start BTCPay first."
+msgid "Which one (Enter for 1): "
 msgstr ""
 
-#: lnd-wallet.sh:1532
-msgid "Aborted by user: nothing was changed."
+#: lnd-wallet.sh:1539
+msgid "Could not copy %s"
 msgstr ""
 
-#: lnd-wallet.sh:1541
-msgid "BTCPay's LND did not come back up"
+#: lnd-wallet.sh:1540
+msgid "%s failed its check: %s"
+msgstr ""
+
+#: lnd-wallet.sh:1542
+msgid "%s is refused: %s"
 msgstr ""
 
 #: lnd-wallet.sh:1544
-msgid "⚠️ Could not start %s"
+msgid "✅ %s decrypted and checked"
 msgstr ""
 
-#: lnd-wallet.sh:1553
-msgid "✅ Latest usable backup: %s"
+#: lnd-wallet.sh:1549
+msgid "The safety backup: made %s (signed), wallet %s"
+msgstr ""
+
+#: lnd-wallet.sh:1551
+msgid "⚠️  This safety backup was made before they carried a signed date: its date and wallet can't"
+msgstr ""
+
+#: lnd-wallet.sh:1552
+msgid "   be verified. Only use it if you know it is the one you want."
 msgstr ""
 
 #: lnd-wallet.sh:1554
-msgid "Use this backup? Type yes: "
+msgid "The wallet running now:"
 msgstr ""
 
-#: lnd-wallet.sh:1556
-msgid "ℹ️ Not using a backup"
+#: lnd-wallet.sh:1557
+msgid "⚠️  This puts back the whole LND volume as it was, channel state included. That is only safe if"
 msgstr ""
 
-#: lnd-wallet.sh:1564
-msgid "The backup holds the wallet's seed and password (walletunlock.json)."
+#: lnd-wallet.sh:1558
+msgid "   no LND has run with those channels since the safety backup was made. If channels were restored"
 msgstr ""
 
-#: lnd-wallet.sh:1565
-msgid "Use the seed from this backup? Type yes (anything else to type the seed yourself): "
+#: lnd-wallet.sh:1559
+msgid "   from channel.backup in between, their peers have closed them: don't put the old state back."
+msgstr ""
+
+#: lnd-wallet.sh:1560
+msgid "Type 'PUT IT BACK' to replace the current wallet with this safety backup: "
+msgstr ""
+
+#: lnd-wallet.sh:1561
+msgid "Aborted by user."
+msgstr ""
+
+#: lnd-wallet.sh:1572
+msgid "Could not unpack the safety backup"
+msgstr ""
+
+#: lnd-wallet.sh:1575
+msgid "The safety backup holds links, special files or setuid/setgid files (%s), which a safety backup never has: not used"
+msgstr ""
+
+#: lnd-wallet.sh:1577
+msgid "Could not unpack the safety backup into %s"
 msgstr ""
 
 #: lnd-wallet.sh:1579
-msgid "This backup has no seed (walletunlock.json without one), so type the seed yourself."
+msgid "✅ Safety backup put back into %s"
 msgstr ""
 
 #: lnd-wallet.sh:1585
-msgid "Choose the wallet password."
+msgid "✅ BTCPay's LND is up (node ID %s)"
+msgstr ""
+
+#: lnd-wallet.sh:1587
+msgid "BTCPay's LND did not unlock the restored wallet"
+msgstr ""
+
+#: lnd-wallet.sh:1592
+msgid "⚠️ Safety backup put back, but the backup service is NOT running. Rerun %s."
+msgstr ""
+
+#: lnd-wallet.sh:1595
+msgid "🚀 Safety backup put back."
+msgstr ""
+
+#: lnd-wallet.sh:1601 lnd-wallet.sh:1633
+msgid "⚠️ No backup could be used"
 msgstr ""
 
 #: lnd-wallet.sh:1601
-msgid "Option 3 needs a channel.backup, and there is none in a backup or on this server."
+msgid "✅ Using %s"
 msgstr ""
 
-#: lnd-wallet.sh:1607
-msgid "The current wallet:"
+#: lnd-wallet.sh:1603
+msgid "No channel.backup found, neither in a backup nor on this server."
 msgstr ""
 
-#: lnd-wallet.sh:1612
-msgid "⚠️  Channels are still opening or closing. Funds from a force close are timelocked, and only"
+#: lnd-wallet.sh:1605
+msgid "BTCPay's LND isn't running with an unlocked wallet. Start BTCPay first."
 msgstr ""
 
-#: lnd-wallet.sh:1613
-msgid "   this LND's current data (channel.db) can sweep them. channel.backup doesn't cover channels"
-msgstr ""
-
-#: lnd-wallet.sh:1614
-msgid "   that are already closing. Wait until they have finished, then run this script again."
+#: lnd-wallet.sh:1606
+msgid "Aborted by user: nothing was changed."
 msgstr ""
 
 #: lnd-wallet.sh:1615
-msgid "Aborted: channels are still opening or closing."
+msgid "BTCPay's LND did not come back up"
 msgstr ""
 
-#: lnd-wallet.sh:1615
-msgid "Type 'I ACCEPT THE RISK' to continue anyway: "
+#: lnd-wallet.sh:1618
+msgid "⚠️ Could not start %s"
 msgstr ""
 
-#: lnd-wallet.sh:1616
-msgid "⚠️ Continuing with channels still opening or closing (confirmed by user)"
-msgstr ""
-
-#: lnd-wallet.sh:1621
-msgid "⚠️  The current wallet still holds funds or channels. After this, they are only reachable"
-msgstr ""
-
-#: lnd-wallet.sh:1622
-msgid "   through its old seed (in its walletunlock.json and in the safety backup). Better: close the"
-msgstr ""
-
-#: lnd-wallet.sh:1623
-msgid "   channels cooperatively and send the funds out first."
+#: lnd-wallet.sh:1627
+msgid "✅ Latest usable backup: %s"
 msgstr ""
 
 #: lnd-wallet.sh:1628
-msgid "⚠️  The current wallet has %s open channels. The seed alone doesn't bring back money in"
+msgid "Use this backup? Type yes: "
 msgstr ""
 
-#: lnd-wallet.sh:1629
-msgid "   channels: it stays stuck until the channels are restored from channel.backup."
-msgstr ""
-
-#: lnd-wallet.sh:1630 lnd-wallet.sh:1727
-msgid "Restore the channels too (option 3)? Type yes: "
+#: lnd-wallet.sh:1630
+msgid "ℹ️ Not using a backup"
 msgstr ""
 
 #: lnd-wallet.sh:1638
-msgid "⚠️  The current wallet couldn't be read, so it's unknown what it holds. The safety backup keeps"
+msgid "The backup holds the wallet's seed and password (walletunlock.json)."
 msgstr ""
 
 #: lnd-wallet.sh:1639
-msgid "   everything in it."
-msgstr ""
-
-#: lnd-wallet.sh:1644
-msgid "⚠️  LND is running and its data looks intact. Option 3 closes all your channels. If LND's data"
-msgstr ""
-
-#: lnd-wallet.sh:1645
-msgid "   is fine, recovery is probably not what you need."
-msgstr ""
-
-#: lnd-wallet.sh:1650
-msgid "ℹ️ Channels not confirmed: going on as a plain restore (option 2), without channels"
+msgid "Use the seed from this backup? Type yes (anything else to type the seed yourself): "
 msgstr ""
 
 #: lnd-wallet.sh:1653
-msgid "Aborted by user: nothing was changed. /wallet restore restores the wallet without channels."
-msgstr ""
-
-#: lnd-wallet.sh:1658
-msgid "⚠️  WARNING: This will DELETE the current LND wallet in volume '%s' (a safety backup is made first)."
+msgid "This backup has no seed (walletunlock.json without one), so type the seed yourself."
 msgstr ""
 
 #: lnd-wallet.sh:1659
-msgid "⚠️  Type 'YES I WANT TO DELETE' to confirm: "
+msgid "Choose the wallet password."
 msgstr ""
 
-#: lnd-wallet.sh:1660
-msgid "❌ Aborted by user. You did not type the exact confirmation phrase."
+#: lnd-wallet.sh:1675
+msgid "Option 3 needs a channel.backup, and there is none in a backup or on this server."
 msgstr ""
 
-#: lnd-wallet.sh:1674
-msgid "ℹ️ TLS certificate and macaroons put back from the backup, so paired apps keep working"
+#: lnd-wallet.sh:1681
+msgid "The current wallet:"
 msgstr ""
 
-#: lnd-wallet.sh:1679 serverb/serverb-watchtower-setup.sh:185
-msgid "LND could not make a seed"
-msgstr ""
-
-#: lnd-wallet.sh:1685
-msgid "LND did not return a 24-word seed"
+#: lnd-wallet.sh:1686
+msgid "⚠️  Channels are still opening or closing. Funds from a force close are timelocked, and only"
 msgstr ""
 
 #: lnd-wallet.sh:1687
-msgid "!!! WRITE DOWN THIS SEED. It is the only way to restore the wallet. !!!"
+msgid "   this LND's current data (channel.db) can sweep them. channel.backup doesn't cover channels"
 msgstr ""
 
 #: lnd-wallet.sh:1688
-msgid "---------------BEGIN LND CIPHER SEED---------------"
+msgid "   that are already closing. Wait until they have finished, then run this script again."
 msgstr ""
 
-#: lnd-wallet.sh:1693
-msgid "---------------END LND CIPHER SEED-----------------"
+#: lnd-wallet.sh:1689
+msgid "Aborted: channels are still opening or closing."
 msgstr ""
 
-#: lnd-wallet.sh:1694 serverb/serverb-watchtower-setup.sh:192
-msgid "Type 'I WROTE IT DOWN' once you have: "
+#: lnd-wallet.sh:1689
+msgid "Type 'I ACCEPT THE RISK' to continue anyway: "
 msgstr ""
 
-#: lnd-wallet.sh:1699
-msgid "ℹ️ The seed was cleared from the screen and this tmux session's scrollback."
+#: lnd-wallet.sh:1690
+msgid "⚠️ Continuing with channels still opening or closing (confirmed by user)"
 msgstr ""
 
-#: lnd-wallet.sh:1701
-msgid "⚠️ Clear your terminal's scrollback too: the seed is still in it."
+#: lnd-wallet.sh:1695
+msgid "⚠️  The current wallet still holds funds or channels. After this, they are only reachable"
 msgstr ""
 
-#: lnd-wallet.sh:1708
-msgid "⚠️ The backup's macaroons don't open with this password. Making new ones (apps need pairing again)."
+#: lnd-wallet.sh:1696
+msgid "   through its old seed (in its walletunlock.json and in the safety backup). Better: close the"
 msgstr ""
 
-#: lnd-wallet.sh:1716
-msgid "LND refused the seed"
+#: lnd-wallet.sh:1697
+msgid "   channels cooperatively and send the funds out first."
+msgstr ""
+
+#: lnd-wallet.sh:1702
+msgid "⚠️  The current wallet has %s open channels. The seed alone doesn't bring back money in"
+msgstr ""
+
+#: lnd-wallet.sh:1703
+msgid "   channels: it stays stuck until the channels are restored from channel.backup."
+msgstr ""
+
+#: lnd-wallet.sh:1704 lnd-wallet.sh:1801
+msgid "Restore the channels too (option 3)? Type yes: "
+msgstr ""
+
+#: lnd-wallet.sh:1712
+msgid "⚠️  The current wallet couldn't be read, so it's unknown what it holds. The safety backup keeps"
+msgstr ""
+
+#: lnd-wallet.sh:1713
+msgid "   everything in it."
+msgstr ""
+
+#: lnd-wallet.sh:1718
+msgid "⚠️  LND is running and its data looks intact. Option 3 closes all your channels. If LND's data"
 msgstr ""
 
 #: lnd-wallet.sh:1719
-msgid "ℹ️ New wallet's node ID: %s"
+msgid "   is fine, recovery is probably not what you need."
 msgstr ""
 
-#: lnd-wallet.sh:1721
-msgid "this seed gives node ID %s, but the wallet that was running had %s"
+#: lnd-wallet.sh:1724
+msgid "ℹ️ Channels not confirmed: going on as a plain restore (option 2), without channels"
 msgstr ""
 
-#: lnd-wallet.sh:1725
-msgid "⚠️  %s lists %s channels. Option 2 leaves their funds stuck until the"
-msgstr ""
-
-#: lnd-wallet.sh:1726
-msgid "   channels are restored."
+#: lnd-wallet.sh:1727
+msgid "Aborted by user: nothing was changed. /wallet restore restores the wallet without channels."
 msgstr ""
 
 #: lnd-wallet.sh:1732
-msgid "no channel.backup opens with this seed (a different wallet's backup, or a damaged file)"
+msgid "⚠️  WARNING: This will DELETE the current LND wallet in volume '%s' (a safety backup is made first)."
 msgstr ""
 
-#: lnd-wallet.sh:1741
-msgid "LND refused the new wallet. BTCPay is down; run the script again."
+#: lnd-wallet.sh:1733
+msgid "⚠️  Type 'YES I WANT TO DELETE' to confirm: "
 msgstr ""
 
-#: lnd-wallet.sh:1743
-msgid "Check the seed and type it again."
+#: lnd-wallet.sh:1734
+msgid "❌ Aborted by user. You did not type the exact confirmation phrase."
 msgstr ""
 
-#: lnd-wallet.sh:1749
-msgid "Choose: 1) type the seed again  2) continue anyway  3) stop: "
+#: lnd-wallet.sh:1748
+msgid "ℹ️ TLS certificate and macaroons put back from the backup, so paired apps keep working"
 msgstr ""
 
-#: lnd-wallet.sh:1758
-msgid "⚠️ Continuing without channels: no channel.backup opens with this wallet"
+#: lnd-wallet.sh:1753 serverb/serverb-watchtower-setup.sh:185
+msgid "LND could not make a seed"
+msgstr ""
+
+#: lnd-wallet.sh:1759
+msgid "LND did not return a 24-word seed"
 msgstr ""
 
 #: lnd-wallet.sh:1761
-msgid "⚠️ Continuing anyway (confirmed by user)"
+msgid "!!! WRITE DOWN THIS SEED. It is the only way to restore the wallet. !!!"
 msgstr ""
 
-#: lnd-wallet.sh:1765
-msgid "Stopped by user. BTCPay is down; run the script again, or option 5 to undo."
+#: lnd-wallet.sh:1762
+msgid "---------------BEGIN LND CIPHER SEED---------------"
+msgstr ""
+
+#: lnd-wallet.sh:1767
+msgid "---------------END LND CIPHER SEED-----------------"
+msgstr ""
+
+#: lnd-wallet.sh:1768 serverb/serverb-watchtower-setup.sh:192
+msgid "Type 'I WROTE IT DOWN' once you have: "
+msgstr ""
+
+#: lnd-wallet.sh:1773
+msgid "ℹ️ The seed was cleared from the screen and this tmux session's scrollback."
 msgstr ""
 
 #: lnd-wallet.sh:1775
-msgid "🛑 Stopping and removing the temporary LND container '%s'..."
+msgid "⚠️ Clear your terminal's scrollback too: the seed is still in it."
 msgstr ""
 
-#: lnd-wallet.sh:1788
-msgid "⚠️ Channels not restored. Run this script with option 4 to try again."
+#: lnd-wallet.sh:1782
+msgid "⚠️ The backup's macaroons don't open with this password. Making new ones (apps need pairing again)."
+msgstr ""
+
+#: lnd-wallet.sh:1790
+msgid "LND refused the seed"
+msgstr ""
+
+#: lnd-wallet.sh:1793
+msgid "ℹ️ New wallet's node ID: %s"
 msgstr ""
 
 #: lnd-wallet.sh:1795
-msgid "✅ New wallet in volume %s, node ID %s"
+msgid "this seed gives node ID %s, but the wallet that was running had %s"
 msgstr ""
 
-#: lnd-wallet.sh:1797
-msgid "ℹ️ The previous wallet is kept in the safety backup %s (pre-recovery folders)."
+#: lnd-wallet.sh:1799
+msgid "⚠️  %s lists %s channels. Option 2 leaves their funds stuck until the"
 msgstr ""
 
 #: lnd-wallet.sh:1800
+msgid "   channels are restored."
+msgstr ""
+
+#: lnd-wallet.sh:1806
+msgid "no channel.backup opens with this seed (a different wallet's backup, or a damaged file)"
+msgstr ""
+
+#: lnd-wallet.sh:1815
+msgid "LND refused the new wallet. BTCPay is down; run the script again."
+msgstr ""
+
+#: lnd-wallet.sh:1817
+msgid "Check the seed and type it again."
+msgstr ""
+
+#: lnd-wallet.sh:1823
+msgid "Choose: 1) type the seed again  2) continue anyway  3) stop: "
+msgstr ""
+
+#: lnd-wallet.sh:1832
+msgid "⚠️ Continuing without channels: no channel.backup opens with this wallet"
+msgstr ""
+
+#: lnd-wallet.sh:1835
+msgid "⚠️ Continuing anyway (confirmed by user)"
+msgstr ""
+
+#: lnd-wallet.sh:1839
+msgid "Stopped by user. BTCPay is down; run the script again, or option 5 to undo."
+msgstr ""
+
+#: lnd-wallet.sh:1849
+msgid "🛑 Stopping and removing the temporary LND container '%s'..."
+msgstr ""
+
+#: lnd-wallet.sh:1862
+msgid "⚠️ Channels not restored. Run this script with option 4 to try again."
+msgstr ""
+
+#: lnd-wallet.sh:1869
+msgid "✅ New wallet in volume %s, node ID %s"
+msgstr ""
+
+#: lnd-wallet.sh:1871
+msgid "ℹ️ The previous wallet is kept in the safety backup %s (pre-recovery folders)."
+msgstr ""
+
+#: lnd-wallet.sh:1874
 msgid "⚠️ The wallet is done, but the backup service is NOT running. Rerun %s."
 msgstr ""
 
-#: lnd-wallet.sh:1803
+#: lnd-wallet.sh:1877
 msgid "🚀 Wallet script completed successfully."
 msgstr ""
 
-#: rsync_gpg_backup.sh:120 rsync_gpg_backup.sh:1278
+#: rsync_gpg_backup.sh:67 rsync_gpg_backup.sh:1502
+msgid "❌ No backup destination is on (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB in config): lnd-manager /destinations"
+msgstr ""
+
+#: rsync_gpg_backup.sh:71 rsync_gpg_backup.sh:1511
+msgid "❌ BACKUP_TO_GITHUB is yes but GITHUB_REPO is empty: run setup (lnd-manager: /setup)"
+msgstr ""
+
+#: rsync_gpg_backup.sh:135 rsync_gpg_backup.sh:1311
 msgid "❌ Invalid safe_delete usage"
 msgstr ""
 
-#: rsync_gpg_backup.sh:126 rsync_gpg_backup.sh:1284
+#: rsync_gpg_backup.sh:141 rsync_gpg_backup.sh:1317
 msgid "❌ Unsafe path: empty target"
 msgstr ""
 
-#: rsync_gpg_backup.sh:135 rsync_gpg_backup.sh:1293
+#: rsync_gpg_backup.sh:150 rsync_gpg_backup.sh:1326
 msgid "❌ Failed to resolve path: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:141 rsync_gpg_backup.sh:1299
+#: rsync_gpg_backup.sh:156 rsync_gpg_backup.sh:1332
 msgid "❌ Unsafe path: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:147 rsync_gpg_backup.sh:1305
+#: rsync_gpg_backup.sh:162 rsync_gpg_backup.sh:1338
 msgid "❌ Refusing to delete outside safe bases: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:157 rsync_gpg_backup.sh:1315
+#: rsync_gpg_backup.sh:172 rsync_gpg_backup.sh:1348
 msgid "❌ Refusing delete: the attached volume (UUID %s) is not mounted at %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:168 rsync_gpg_backup.sh:1322
+#: rsync_gpg_backup.sh:183 rsync_gpg_backup.sh:1355
 msgid "⚠️ Target not found: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:178 rsync_gpg_backup.sh:1328
+#: rsync_gpg_backup.sh:193 rsync_gpg_backup.sh:1361
 msgid "🗑️ Safely removed: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:180 rsync_gpg_backup.sh:1330
+#: rsync_gpg_backup.sh:195 rsync_gpg_backup.sh:1363
 msgid "❌ Failed to remove: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:189
+#: rsync_gpg_backup.sh:204
 msgid "This installs or updates the LND backup service (%s)."
 msgstr ""
 
-#: rsync_gpg_backup.sh:191
+#: rsync_gpg_backup.sh:206
 msgid "What the service does"
 msgstr ""
 
-#: rsync_gpg_backup.sh:192
+#: rsync_gpg_backup.sh:207
 msgid "  It runs all the time as the backup user (%s), not as root. When LND's channel backup"
 msgstr ""
 
-#: rsync_gpg_backup.sh:193
+#: rsync_gpg_backup.sh:208
 msgid "  changes (a channel opens or closes), it packs LND's files (channel.backup, the wallet,"
 msgstr ""
 
-#: rsync_gpg_backup.sh:194
+#: rsync_gpg_backup.sh:209
 msgid "  walletunlock.json, macaroons, TLS certificate), encrypts and signs them with the backup GPG key,"
 msgstr ""
 
-#: rsync_gpg_backup.sh:195
-msgid "  and copies the result to the attached volume"
+#: rsync_gpg_backup.sh:210
+msgid "  and copies the result to each destination that is on:"
 msgstr ""
 
-#: rsync_gpg_backup.sh:196
-msgid "  (%s) and to Server B (%s). It keeps the 10 newest there, plus one"
+#: rsync_gpg_backup.sh:214
+msgid "  Each keeps the 10 newest, plus one"
 msgstr ""
 
-#: rsync_gpg_backup.sh:197
+#: rsync_gpg_backup.sh:215
 msgid "  per day for 30 days and one per month for 12 months. Once an hour it checks for a change it"
 msgstr ""
 
-#: rsync_gpg_backup.sh:198
+#: rsync_gpg_backup.sh:216
 msgid "  missed; the files LND rewrites by itself all the time (wallet.db, macaroons.db) don't count."
 msgstr ""
 
-#: rsync_gpg_backup.sh:200
+#: rsync_gpg_backup.sh:218
 msgid "What the installer sets up"
 msgstr ""
 
-#: rsync_gpg_backup.sh:201
+#: rsync_gpg_backup.sh:219
 msgid "  - The safe folders: the only folders the service may ever delete from (asked next)."
 msgstr ""
 
-#: rsync_gpg_backup.sh:202
+#: rsync_gpg_backup.sh:220
 msgid "  - Read access for the backup user to config, and to the LND folders it watches (the folders"
 msgstr ""
 
-#: rsync_gpg_backup.sh:203
+#: rsync_gpg_backup.sh:221
 msgid "    only, not the files in them)."
 msgstr ""
 
-#: rsync_gpg_backup.sh:204
+#: rsync_gpg_backup.sh:222
 msgid "  - A root helper, %s, that can only read files inside LND's folder,"
 msgstr ""
 
-#: rsync_gpg_backup.sh:205
+#: rsync_gpg_backup.sh:223
 msgid "    and a sudo rule that lets the backup user run that helper and nothing else."
 msgstr ""
 
-#: rsync_gpg_backup.sh:206
+#: rsync_gpg_backup.sh:224
 msgid "  - Keeps the backup user out of the docker group (that would amount to root)."
 msgstr ""
 
-#: rsync_gpg_backup.sh:207
+#: rsync_gpg_backup.sh:225
 msgid "  - Installs missing tools: rsync, gnupg, inotify-tools, xxhash, acl."
 msgstr ""
 
-#: rsync_gpg_backup.sh:208
+#: rsync_gpg_backup.sh:226
 msgid "  - Stops the service, writes it to %s and"
 msgstr ""
 
-#: rsync_gpg_backup.sh:209
+#: rsync_gpg_backup.sh:227
 msgid "    %s, then enables and starts it."
 msgstr ""
 
-#: rsync_gpg_backup.sh:210
+#: rsync_gpg_backup.sh:228
 msgid "  - Asks whether to delete the existing backups (only if you type DELETE ALL BACKUPS)."
 msgstr ""
 
-#: rsync_gpg_backup.sh:211
+#: rsync_gpg_backup.sh:229
 msgid "  It doesn't touch BTCPay or the LND wallet."
 msgstr ""
 
-#: rsync_gpg_backup.sh:213
+#: rsync_gpg_backup.sh:231
 msgid "Press Enter to continue, or Ctrl-C to stop: "
 msgstr ""
 
-#: rsync_gpg_backup.sh:231
+#: rsync_gpg_backup.sh:250
 msgid "not an absolute path"
 msgstr ""
 
-#: rsync_gpg_backup.sh:239
+#: rsync_gpg_backup.sh:258
 msgid "%s is a system folder"
 msgstr ""
 
-#: rsync_gpg_backup.sh:248
+#: rsync_gpg_backup.sh:267
 msgid "%s is or contains the home folder %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:257
+#: rsync_gpg_backup.sh:276
 msgid "%s is or contains %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:314
+#: rsync_gpg_backup.sh:333
 msgid "❌ No terminal to confirm the safe folders, and no installed list to reuse. Run the installer in a terminal."
 msgstr ""
 
-#: rsync_gpg_backup.sh:320
+#: rsync_gpg_backup.sh:339
 msgid "❌ Installed safe folder not allowed: %s. Run the installer in a terminal."
 msgstr ""
 
-#: rsync_gpg_backup.sh:325
+#: rsync_gpg_backup.sh:344
 msgid "ℹ️ No terminal: reusing the installed safe folders: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:329
+#: rsync_gpg_backup.sh:348
 msgid "Safe folders: the backup only deletes files inside these. Suggested: the list from the installed service."
 msgstr ""
 
-#: rsync_gpg_backup.sh:332
+#: rsync_gpg_backup.sh:351
 msgid "Safe folders: the backup only deletes files inside these. Suggested: the backup folders from config."
 msgstr ""
 
-#: rsync_gpg_backup.sh:334
+#: rsync_gpg_backup.sh:353
 msgid "Press Enter to keep a folder, edit it, or clear it to drop it."
 msgstr ""
 
-#: rsync_gpg_backup.sh:339
+#: rsync_gpg_backup.sh:358
 msgid "Safe folder: "
 msgstr ""
 
-#: rsync_gpg_backup.sh:343
+#: rsync_gpg_backup.sh:362
 msgid "Add another folder (Enter to finish): "
 msgstr ""
 
-#: rsync_gpg_backup.sh:356
+#: rsync_gpg_backup.sh:375
 msgid "❌ %s (from config) is not inside any safe folder"
 msgstr ""
 
-#: rsync_gpg_backup.sh:358 rsync_gpg_backup.sh:370
+#: rsync_gpg_backup.sh:377 rsync_gpg_backup.sh:389
 msgid "Let's go through the list again."
 msgstr ""
 
-#: rsync_gpg_backup.sh:363
+#: rsync_gpg_backup.sh:382
 msgid "Safe folders:"
 msgstr ""
 
-#: rsync_gpg_backup.sh:365
+#: rsync_gpg_backup.sh:384
 msgid "Type yes to use these folders: "
 msgstr ""
 
-#: rsync_gpg_backup.sh:366
+#: rsync_gpg_backup.sh:385
 msgid "❌ Safe folders not confirmed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:373
+#: rsync_gpg_backup.sh:392
 msgid "✅ Safe folders confirmed: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:379 rsync_gpg_backup.sh:1338
+#: rsync_gpg_backup.sh:400 rsync_gpg_backup.sh:1373
 msgid "❌ %s is not under any SAFE_BASES entry"
 msgstr ""
 
-#: rsync_gpg_backup.sh:380
+#: rsync_gpg_backup.sh:401
 msgid "❌ Rerun the installer and include it in the safe folders"
 msgstr ""
 
-#: rsync_gpg_backup.sh:388
+#: rsync_gpg_backup.sh:409
 msgid "❌ %s is a symlink. Stopping: changing it as root could change its target."
 msgstr ""
 
-#: rsync_gpg_backup.sh:408
+#: rsync_gpg_backup.sh:429
 msgid "✅ Removed %s from group %s (replaced by read-only ACLs)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:425
+#: rsync_gpg_backup.sh:446
 msgid "❌ %s still can't read %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:430
+#: rsync_gpg_backup.sh:451
 msgid "❌ %s can write %s or %s, which root uses. Fix their permissions first."
 msgstr ""
 
-#: rsync_gpg_backup.sh:437
+#: rsync_gpg_backup.sh:458
 msgid "❌ Configuration file not found at %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:446
+#: rsync_gpg_backup.sh:467
 msgid "❌ LND_BACKUP_HELPER_PATH must be an absolute path: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:450
+#: rsync_gpg_backup.sh:471
 msgid "⚙️ Installing %s..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:566
+#: rsync_gpg_backup.sh:587
 msgid "❌ Generated helper has a syntax error — not installed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:573 serverb/serverb-releases.sh:107
+#: rsync_gpg_backup.sh:594 serverb/serverb-releases.sh:107
 #: serverb/serverb-releases.sh:192 serverb/serverb-update:211
 #: serverb/serverb-update:214
 msgid "✅ Installed %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:576
+#: rsync_gpg_backup.sh:597
 msgid "⚙️ Configuring sudoers for %s..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:596
+#: rsync_gpg_backup.sh:617
 msgid "❌ visudo validation failed — sudoers not updated"
 msgstr ""
 
-#: rsync_gpg_backup.sh:608
+#: rsync_gpg_backup.sh:629
 msgid "✅ Sudoers updated and validated for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:610
+#: rsync_gpg_backup.sh:631
 msgid "❌ Global sudoers validation failed — reverting changes"
 msgstr ""
 
-#: rsync_gpg_backup.sh:616
+#: rsync_gpg_backup.sh:637
 msgid "ℹ️ Sudoers already up-to-date for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:624
+#: rsync_gpg_backup.sh:645
 msgid "Removing %s from the docker group..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:626
+#: rsync_gpg_backup.sh:647
 msgid "%s removed from docker group."
 msgstr ""
 
-#: rsync_gpg_backup.sh:631
+#: rsync_gpg_backup.sh:652
 msgid "mountpoint command not found. Installing util-linux..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:666
+#: rsync_gpg_backup.sh:687
 msgid "Missing dependency: %s (package: %s). Installing..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:682
+#: rsync_gpg_backup.sh:703
 msgid "Failed to install %s or command %s is still missing."
 msgstr ""
 
-#: rsync_gpg_backup.sh:689
+#: rsync_gpg_backup.sh:710
 msgid "All dependencies are already installed."
 msgstr ""
 
-#: rsync_gpg_backup.sh:705
+#: rsync_gpg_backup.sh:726
 msgid "⚠️ %s goes through a symlink, so it was not made"
 msgstr ""
 
-#: rsync_gpg_backup.sh:709
+#: rsync_gpg_backup.sh:730
 msgid "✅ Made %s (LND makes it only when it first archives a channel.backup)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:711 serverb-lib.sh:223
+#: rsync_gpg_backup.sh:732 serverb-lib.sh:223
 msgid "❌ Could not make %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:741
+#: rsync_gpg_backup.sh:762
 msgid "❌ LND folder does not exist: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:745
+#: rsync_gpg_backup.sh:766
 msgid "❌ %s, or a folder above it, is a symlink: no ACLs set there"
 msgstr ""
 
-#: rsync_gpg_backup.sh:762
+#: rsync_gpg_backup.sh:783
 msgid "🔑 Added x ACL for %s on %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:768
+#: rsync_gpg_backup.sh:789
 msgid "🔑 Added rx ACL for %s on %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:776
+#: rsync_gpg_backup.sh:797
 msgid "❌ %s still cannot watch %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:781
+#: rsync_gpg_backup.sh:802
 msgid "✅ %s can watch the LND folders"
 msgstr ""
 
-#: rsync_gpg_backup.sh:785
+#: rsync_gpg_backup.sh:806
 msgid "❌ Failed to set up inotify access for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:801 rsync_gpg_backup.sh:1467
+#: rsync_gpg_backup.sh:823 rsync_gpg_backup.sh:1519
 msgid "❌ Refusing to operate on invalid ATTACHED_VOLUME: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:807 rsync_gpg_backup.sh:1473
+#: rsync_gpg_backup.sh:829 rsync_gpg_backup.sh:1525
 msgid "❌ ATTACHED_VOLUME does not exist: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:813 rsync_gpg_backup.sh:1479
+#: rsync_gpg_backup.sh:835 rsync_gpg_backup.sh:1531
 msgid "❌ The attached volume (UUID %s) is not mounted at %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:821
+#: rsync_gpg_backup.sh:843
 msgid "📁 Created %s for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:828
+#: rsync_gpg_backup.sh:851
 msgid "⚠️ Failed to stop service (may not exist or already stopped)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:837
+#: rsync_gpg_backup.sh:860
 msgid "⚠️  The existing backups can be deleted now: everything in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:838
+#: rsync_gpg_backup.sh:861
 msgid "   and in %s. The wallet safety backups in"
 msgstr ""
 
-#: rsync_gpg_backup.sh:839
+#: rsync_gpg_backup.sh:862
 msgid "   %s are kept. Server B's copies aren't touched."
 msgstr ""
 
-#: rsync_gpg_backup.sh:839
+#: rsync_gpg_backup.sh:862
 msgid "the pre-recovery folder"
 msgstr ""
 
-#: rsync_gpg_backup.sh:840
+#: rsync_gpg_backup.sh:863
 msgid "   Usually you keep them: they are your only copies of older wallet states."
 msgstr ""
 
-#: rsync_gpg_backup.sh:841
+#: rsync_gpg_backup.sh:864
 msgid "Type DELETE ALL BACKUPS to delete them, or press Enter to keep them: "
 msgstr ""
 
-#: rsync_gpg_backup.sh:848
+#: rsync_gpg_backup.sh:871
 msgid "ℹ️ No terminal: keeping existing backups"
 msgstr ""
 
-#: rsync_gpg_backup.sh:854
+#: rsync_gpg_backup.sh:877
 msgid "⛔ Clearing attached volume and temporary backup directory..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:867
+#: rsync_gpg_backup.sh:890
 msgid "🧹 Clearing the backups in %s..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:871
+#: rsync_gpg_backup.sh:894
 msgid "🔒 Keeping the wallet safety backups in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:878
+#: rsync_gpg_backup.sh:901
 msgid "⚠️ No backups folder on the attached volume: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:885
+#: rsync_gpg_backup.sh:908
 msgid "⚠️ Temporary backup directory does not exist: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:890
+#: rsync_gpg_backup.sh:913
 msgid "⚠️ %s item(s) could not be deleted and were left in place:"
 msgstr ""
 
-#: rsync_gpg_backup.sh:894
+#: rsync_gpg_backup.sh:917
 msgid "⚠️ The install goes on; delete them by hand if you need them gone."
 msgstr ""
 
-#: rsync_gpg_backup.sh:898
+#: rsync_gpg_backup.sh:921
 msgid "✔️ Skipping directory clearing."
 msgstr ""
 
-#: rsync_gpg_backup.sh:905
+#: rsync_gpg_backup.sh:928
 msgid "⚠️ Could not remove the old %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:921
+#: rsync_gpg_backup.sh:944
 msgid "❌ Failed to create TEST_INOTIFY_PARENT_FOLDER"
 msgstr ""
 
-#: rsync_gpg_backup.sh:926
+#: rsync_gpg_backup.sh:949
 msgid "❌ Failed to create TEST_INOTIFY_FOLDER"
 msgstr ""
 
-#: rsync_gpg_backup.sh:944
+#: rsync_gpg_backup.sh:967
 msgid "ℹ️ Inotify test mode set to: %s (config: %s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:948
+#: rsync_gpg_backup.sh:971
 msgid "📄 Creating rsync-folder-mirror script at %s..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1120
+#: rsync_gpg_backup.sh:1153
 msgid "🔍 SSH[%s] took %ss (rc=%s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1123
+#: rsync_gpg_backup.sh:1156
 msgid "❌ SSH[%s] failed: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1149
+#: rsync_gpg_backup.sh:1182
 msgid "💓 Heartbeat alive"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1235
+#: rsync_gpg_backup.sh:1268
 msgid "❌ No safe folders in this script. Rerun rsync_gpg_backup.sh."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1339
+#: rsync_gpg_backup.sh:1374
 msgid "❌ Rerun rsync_gpg_backup.sh and include it in the safe folders"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1351
+#: rsync_gpg_backup.sh:1386
 msgid "❌ Server B's backup gate didn't answer"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1356
+#: rsync_gpg_backup.sh:1391
 msgid "❌ Server B answered without its backup gate. Install it there: server-b-install.sh"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1364
+#: rsync_gpg_backup.sh:1399
 msgid "🧪 Loaded test config: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1374
+#: rsync_gpg_backup.sh:1409
 msgid "❌ Another backup process is already running. Exiting."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1378
+#: rsync_gpg_backup.sh:1413
 msgid "🔒 Global lock acquired (PID %s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1386
+#: rsync_gpg_backup.sh:1421
 msgid "❌ %s (PID %s) died unexpectedly"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1404
+#: rsync_gpg_backup.sh:1439
 msgid "❌ Failed to remove backup working file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1429
+#: rsync_gpg_backup.sh:1464
 msgid "🔓 Releasing global lock on %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1492
+#: rsync_gpg_backup.sh:1507
+msgid "❌ Failed to load %s. Rerun rsync_gpg_backup.sh."
+msgstr ""
+
+#: rsync_gpg_backup.sh:1545
 msgid "❌ Failed to remove leftover backup file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1574
+#: rsync_gpg_backup.sh:1627
 msgid "🔍 Verifying copy stability..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1580
+#: rsync_gpg_backup.sh:1633
 msgid "❌ Temp dir vanished before processing file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1591
+#: rsync_gpg_backup.sh:1644
 msgid "❌ Temp dir missing right before copy: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1597
+#: rsync_gpg_backup.sh:1650
 msgid "❌ Missing file during verification: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1608
+#: rsync_gpg_backup.sh:1661
 msgid "⚠️ Source changed during read: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1614
+#: rsync_gpg_backup.sh:1667
 msgid "❌ Copy mismatch: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1619
+#: rsync_gpg_backup.sh:1672
 msgid "✅ Verified: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1631
+#: rsync_gpg_backup.sh:1684
 msgid "❌ Cannot access file (missing or permission denied): %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1637
+#: rsync_gpg_backup.sh:1690
 msgid "❌ Missing original hash for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1646
+#: rsync_gpg_backup.sh:1699
 msgid "❌ Copied file missing: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1652
+#: rsync_gpg_backup.sh:1705
 msgid "❌ Failed to hash copied file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1657
+#: rsync_gpg_backup.sh:1710
 msgid "❌ Hash mismatch after rsync:"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1658
+#: rsync_gpg_backup.sh:1711
 msgid "   Source: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1659
+#: rsync_gpg_backup.sh:1712
 msgid "   Copy:   %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1664
+#: rsync_gpg_backup.sh:1717
 msgid "✅ Copied file hash verification passed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1676
+#: rsync_gpg_backup.sh:1729
 msgid "📁 Creating test directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1698
+#: rsync_gpg_backup.sh:1751
 msgid "🟢 start_hash_changer running in background with PID: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1720
+#: rsync_gpg_backup.sh:1773
 msgid "⚠️ No channel backups found in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1727
+#: rsync_gpg_backup.sh:1780
 msgid "⚠️ Latest backup exists but is not a valid file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1808
+#: rsync_gpg_backup.sh:1861
 msgid "⏳ Waiting for files to settle (no changes for %s seconds)..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1825
+#: rsync_gpg_backup.sh:1878
 msgid "❌ File never appeared: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1828
+#: rsync_gpg_backup.sh:1881
 msgid "⏳ Waiting for file to exist: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1839
+#: rsync_gpg_backup.sh:1892
 msgid "❌ Timeout waiting for files to settle (%ss exceeded)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1841
+#: rsync_gpg_backup.sh:1894
 msgid "⚠️ File flapping: %s (changes: %s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1867
+#: rsync_gpg_backup.sh:1920
 msgid "🌀 Relevant file change detected: %s (count=%s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1869
+#: rsync_gpg_backup.sh:1922
 msgid "⏩ Ignoring unrelated file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1875
+#: rsync_gpg_backup.sh:1928
 msgid "⏳ Waiting for files to settle..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1882
+#: rsync_gpg_backup.sh:1935
 msgid "✅ Files are stable. Proceeding."
 msgstr ""
 
-#: rsync_gpg_backup.sh:1896
+#: rsync_gpg_backup.sh:1949
 msgid "⚠️ File missing: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1902
+#: rsync_gpg_backup.sh:1955
 msgid "❌ Failed to hash file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1915
+#: rsync_gpg_backup.sh:1968
 msgid "🔄 Change detected in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1918
+#: rsync_gpg_backup.sh:1971
 msgid "⏩ No change in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1932
+#: rsync_gpg_backup.sh:1985
 msgid "❌ Failed to create metadata directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1939
+#: rsync_gpg_backup.sh:1992
 msgid "❌ Failed to create temporary hash file"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1949 rsync_gpg_backup.sh:2661
+#: rsync_gpg_backup.sh:2002 rsync_gpg_backup.sh:2774
 msgid "❌ Missing staged hash for: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1955
+#: rsync_gpg_backup.sh:2008
 msgid "❌ Failed writing hash entry for: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1963
+#: rsync_gpg_backup.sh:2016
 msgid "🧾 Stored updated file hashes"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1966
+#: rsync_gpg_backup.sh:2019
 msgid "❌ Failed to commit file hashes to %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1982 rsync_gpg_backup.sh:2000
+#: rsync_gpg_backup.sh:2035 rsync_gpg_backup.sh:2053
 msgid "❌ Failed to determine disk space for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1987
+#: rsync_gpg_backup.sh:2040
 msgid "❌ Insufficient disk space in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1988 rsync_gpg_backup.sh:2006
+#: rsync_gpg_backup.sh:2041 rsync_gpg_backup.sh:2059
 msgid "Required: %s KB, Available: %s KB"
 msgstr ""
 
-#: rsync_gpg_backup.sh:1991
+#: rsync_gpg_backup.sh:2044
 msgid "✅ TMP space check passed (home FS): %s KB available"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2005
+#: rsync_gpg_backup.sh:2058
 msgid "❌ Insufficient disk space in ATTACHED_VOLUME"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2009
+#: rsync_gpg_backup.sh:2062
 msgid "✅ ATTACHED_VOLUME space check passed: %s KB available"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2019
+#: rsync_gpg_backup.sh:2072
 msgid "⏳ Skipping: debounce active"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2029
+#: rsync_gpg_backup.sh:2082
 msgid "⏳ Skipping: failure cooldown active (%ss)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2045
+#: rsync_gpg_backup.sh:2098
 msgid "🌀 Detected change in: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2056
+#: rsync_gpg_backup.sh:2109
 msgid "⚠️ Snapshot empty during event — skipping"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2061
+#: rsync_gpg_backup.sh:2114
 msgid "⏩ No meaningful changes detected, skipping backup"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2065
+#: rsync_gpg_backup.sh:2118
 msgid "🚀 Changes confirmed → performing backup..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2070
+#: rsync_gpg_backup.sh:2123
 msgid "✅ Backup completed successfully"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2077
+#: rsync_gpg_backup.sh:2130
 msgid "❌ Backup failed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2117
+#: rsync_gpg_backup.sh:2170
 msgid "▶️ Check requested"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2125
+#: rsync_gpg_backup.sh:2178
 msgid "❌ remote_pending retry failed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2130
+#: rsync_gpg_backup.sh:2181
+msgid "❌ github_pending retry failed"
+msgstr ""
+
+#: rsync_gpg_backup.sh:2186
 msgid "❌ milestones_pending retry failed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2134
+#: rsync_gpg_backup.sh:2190
 msgid "🔎 Running fingerprint reconciliation..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2139
+#: rsync_gpg_backup.sh:2195
 msgid "⚠️ Empty snapshot — skipping reconciliation"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2140
+#: rsync_gpg_backup.sh:2196
 msgid "skipped: no LND files found"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2149
+#: rsync_gpg_backup.sh:2205
 msgid "⚠️ Could not fingerprint LND's files this time (a file changed while being read?): next check in an hour"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2150
+#: rsync_gpg_backup.sh:2206
 msgid "skipped: files changed while being read"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2159
+#: rsync_gpg_backup.sh:2215
 msgid "✅ No changes detected (fingerprint match)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2160
+#: rsync_gpg_backup.sh:2216
 msgid "no changes"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2165
+#: rsync_gpg_backup.sh:2221
 msgid "🚨 Change detected via fingerprint mismatch"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2169
+#: rsync_gpg_backup.sh:2225
 msgid "✅ Reconciliation backup completed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2170
+#: rsync_gpg_backup.sh:2226
 msgid "changes found, backed up"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2172
+#: rsync_gpg_backup.sh:2228
 msgid "❌ Backup failed during reconciliation"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2173
+#: rsync_gpg_backup.sh:2229
 msgid "changes found, backup failed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2181
+#: rsync_gpg_backup.sh:2237
 msgid "🟢 Reconciliation loop started (PID: %s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2225
+#: rsync_gpg_backup.sh:2281
 msgid "📦 Sending %s to Server B's backup gate..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2234
+#: rsync_gpg_backup.sh:2290
 msgid "⚠️ Server B's backup gate is older and can't check uploads: update it there (step 1 of serverb-setup.sh, or /update scripts)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2252
+#: rsync_gpg_backup.sh:2308
 msgid "✅ Stored on Server B and checked (sha256) in %ss (attempt %s/%s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2258
+#: rsync_gpg_backup.sh:2314
 msgid "⏱️ Timeout after %ss"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2260
+#: rsync_gpg_backup.sh:2316
 msgid "❌ Server B's checksum doesn't match this copy"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2262
+#: rsync_gpg_backup.sh:2318
 msgid "❌ Copy to Server B failed (attempt %s/%s, exit code %s): %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2267
+#: rsync_gpg_backup.sh:2323
 msgid "⏳ Retrying in %s seconds..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2273
+#: rsync_gpg_backup.sh:2329
 msgid "🚨 COPY TO SERVER B FAILED AFTER ALL RETRIES (exit code: %s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2288
+#: rsync_gpg_backup.sh:2350
 msgid "⏩ Backup running, will retry remote_pending next time"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2297
+#: rsync_gpg_backup.sh:2359
 msgid "⚠️ remote_pending points to a missing file (%s), removing marker"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2302
+#: rsync_gpg_backup.sh:2364
 msgid "🔁 Retrying remote copy of %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2305
+#: rsync_gpg_backup.sh:2367
 msgid "✅ Remote copy caught up, remote_pending cleared"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2307
+#: rsync_gpg_backup.sh:2370
 msgid "❌ Remote copy still failing, keeping remote_pending"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2321
+#: rsync_gpg_backup.sh:2384
 msgid "📌 Starting milestone capture phase..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2341
+#: rsync_gpg_backup.sh:2404
 msgid "❌ Failed to create local milestone directories in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2356
+#: rsync_gpg_backup.sh:2419
 msgid "⚠️ No backup found for milestone copy"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2364
+#: rsync_gpg_backup.sh:2427
 msgid "daily"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2364
+#: rsync_gpg_backup.sh:2427
 msgid "monthly"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2368
+#: rsync_gpg_backup.sh:2431
 msgid "⏩ %s milestone already exists: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2373
+#: rsync_gpg_backup.sh:2436
 msgid "❌ Failed to create %s milestone: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2378
+#: rsync_gpg_backup.sh:2441
 msgid "📌 Created %s milestone: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2394
-msgid "⏩ Backup running, will retry milestones next time"
+#: rsync_gpg_backup.sh:2472
+msgid "⏩ Backup running, will retry GitHub next time"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2403
-msgid "⚠️ milestones_pending points to a missing file (%s), removing marker"
+#: rsync_gpg_backup.sh:2479
+msgid "⚠️ github_pending points to a missing file (%s), removing marker"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2408
-msgid "🔁 Retrying milestones from %s"
+#: rsync_gpg_backup.sh:2483
+msgid "🔁 Retrying the GitHub copy of %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2411
-msgid "✅ Milestones caught up, milestones_pending cleared"
+#: rsync_gpg_backup.sh:2488
+msgid "✅ GitHub copy caught up, github_pending cleared"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2413
-msgid "❌ Milestones still failing, keeping milestones_pending"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2446
-msgid "❌ Files kept changing during the backup, giving up after %s restarts"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2451
-msgid "🔁 Starting the backup again (restart %s of %s)"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2463
-msgid "⏩ Backup already running, skipping"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2473
-msgid "🔒 Function lock acquired"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2480
-msgid "❌ Unsafe TMP_BACKUP_DIR"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2489
-msgid "📁 Creating TMP_BACKUP_DIR: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2492
-msgid "❌ Failed to create TMP_BACKUP_DIR"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2501
-msgid "❌ Failed to create temporary backup directory"
+#: rsync_gpg_backup.sh:2491
+msgid "❌ GitHub copy still failing, keeping github_pending"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2507
-msgid "❌ Failed to chown temporary backup directory"
+msgid "⏩ Backup running, will retry milestones next time"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2512
-msgid "❌ Failed to chmod temporary backup directory"
+#: rsync_gpg_backup.sh:2516
+msgid "⚠️ milestones_pending points to a missing file (%s), removing marker"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2522
-msgid "⚠️ Missing file (or not readable by the helper): %s"
+#: rsync_gpg_backup.sh:2521
+msgid "🔁 Retrying milestones from %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2528
-msgid "⚠️ No files available yet — skipping backup"
+#: rsync_gpg_backup.sh:2524
+msgid "✅ Milestones caught up, milestones_pending cleared"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2533
-msgid "📂 Snapshot contains %s files:"
+#: rsync_gpg_backup.sh:2526
+msgid "❌ Milestones still failing, keeping milestones_pending"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2541
-msgid "⚠️ Snapshot inconsistent (file disappeared): %s"
+#: rsync_gpg_backup.sh:2559
+msgid "❌ Files kept changing during the backup, giving up after %s restarts"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2546
-msgid "✅ All snapshot files exist"
+#: rsync_gpg_backup.sh:2564
+msgid "🔁 Starting the backup again (restart %s of %s)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2555
-msgid "🔁 Backup attempt %s of %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2558
-msgid "⏳ Waiting for files to settle before backup..."
-msgstr ""
-
-#: rsync_gpg_backup.sh:2562
-msgid "❌ Files did not stabilize in time"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2574
-msgid "⚠️ Snapshot changed during stabilization — retrying..."
+#: rsync_gpg_backup.sh:2576
+msgid "⏩ Backup already running, skipping"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2586
-msgid "❌ Max attempts reached. Aborting backup."
+msgid "🔒 Function lock acquired"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2590
-msgid "✅ Files stable. Proceeding with backup..."
+#: rsync_gpg_backup.sh:2593
+msgid "❌ Unsafe TMP_BACKUP_DIR"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2600
-msgid "⚠️ File missing (or inaccessible) in snapshot: %s"
+#: rsync_gpg_backup.sh:2602
+msgid "📁 Creating TMP_BACKUP_DIR: %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2605
-msgid "❌ Failed to hash file (staging phase): %s"
+msgid "❌ Failed to create TMP_BACKUP_DIR"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2610
-msgid "❌ Empty hash produced (unexpected): %s"
+#: rsync_gpg_backup.sh:2614
+msgid "❌ Failed to create temporary backup directory"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2617
-msgid "🧾 Captured source file hashes (post-stabilization)"
+#: rsync_gpg_backup.sh:2620
+msgid "❌ Failed to chown temporary backup directory"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2629
-msgid "🔍 Latest on disk: %s"
+#: rsync_gpg_backup.sh:2625
+msgid "❌ Failed to chmod temporary backup directory"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2630
-msgid "📦 Latest in snapshot: %s"
+#: rsync_gpg_backup.sh:2635
+msgid "⚠️ Missing file (or not readable by the helper): %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2633
-msgid "⚠️ Snapshot outdated vs latest backup"
+#: rsync_gpg_backup.sh:2641
+msgid "⚠️ No files available yet — skipping backup"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2634
-msgid "🔁 Restarting backup to include newest channel backup"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2639
-msgid "🔎 Final pre-rsync validation: ensuring all snapshot files still exist..."
-msgstr ""
-
-#: rsync_gpg_backup.sh:2643
-msgid "❌ Snapshot file disappeared before rsync: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2644
-msgid "🔁 Restarting backup due to inconsistent snapshot"
+#: rsync_gpg_backup.sh:2646
+msgid "📂 Snapshot contains %s files:"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2654
-msgid "❌ File missing in snapshot before copy: %s"
+msgid "⚠️ Snapshot inconsistent (file disappeared): %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:2659
+msgid "✅ All snapshot files exist"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2668
-msgid "🧾 Loaded staged hashes into COPY_VERIFY_HASHES"
+msgid "🔁 Backup attempt %s of %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2672
-msgid "🔍 Snapshot fingerprint: %s"
+#: rsync_gpg_backup.sh:2671
+msgid "⏳ Waiting for files to settle before backup..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2676
-msgid "✅ Snapshot validated. All files exist."
+#: rsync_gpg_backup.sh:2675
+msgid "❌ Files did not stabilize in time"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2680
-msgid "📦 Copying snapshot files to temporary directory..."
+#: rsync_gpg_backup.sh:2687
+msgid "⚠️ Snapshot changed during stabilization — retrying..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2689
-msgid "❌ Failed to create directory for %s"
+#: rsync_gpg_backup.sh:2699
+msgid "❌ Max attempts reached. Aborting backup."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2698
-msgid "❌ Failed to copy %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2705
-msgid "❌ Failed to set timestamp on %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2710
-msgid "➡️ Copied: %s → %s"
+#: rsync_gpg_backup.sh:2703
+msgid "✅ Files stable. Proceeding with backup..."
 msgstr ""
 
 #: rsync_gpg_backup.sh:2713
-msgid "✅ Copy phase completed"
+msgid "⚠️ File missing (or inaccessible) in snapshot: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2720
-msgid "❌ Copied snapshot fingerprint mismatch — retrying backup"
+#: rsync_gpg_backup.sh:2718
+msgid "❌ Failed to hash file (staging phase): %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2723
-msgid "✅ Copy fingerprint verified"
+msgid "❌ Empty hash produced (unexpected): %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2728
-msgid "❌ Copy stability check failed — retrying backup"
+#: rsync_gpg_backup.sh:2730
+msgid "🧾 Captured source file hashes (post-stabilization)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2736
-msgid "❌ Aborting backup due to corrupted rsync copy"
+#: rsync_gpg_backup.sh:2742
+msgid "🔍 Latest on disk: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2744
-msgid "🧹 Safely cleaned temporary backup directory: %s"
+#: rsync_gpg_backup.sh:2743
+msgid "📦 Latest in snapshot: %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2746
-msgid "❌ Unsafe LND_TMP_BACKUP — skipping cleanup: %s"
+msgid "⚠️ Snapshot outdated vs latest backup"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2763
-msgid "❌ Failed to create timestamped backup directory: %s"
+#: rsync_gpg_backup.sh:2747
+msgid "🔁 Restarting backup to include newest channel backup"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2766
-msgid "🛠️ Created timestamped backup directory: %s"
+#: rsync_gpg_backup.sh:2752
+msgid "🔎 Final pre-rsync validation: ensuring all snapshot files still exist..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2769
-msgid "🛠️ Moving files to timestamped directory: %s"
+#: rsync_gpg_backup.sh:2756
+msgid "❌ Snapshot file disappeared before rsync: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2771
-msgid "❌ Failed to move files to timestamped directory: %s"
+#: rsync_gpg_backup.sh:2757
+msgid "🔁 Restarting backup due to inconsistent snapshot"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2775
-msgid "✅ Files moved to timestamped directory: %s"
+#: rsync_gpg_backup.sh:2767
+msgid "❌ File missing in snapshot before copy: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2777
-msgid "Using the wait_for_files_to_settle Function Before Compression..."
+#: rsync_gpg_backup.sh:2781
+msgid "🧾 Loaded staged hashes into COPY_VERIFY_HASHES"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2784
-msgid "❌ Files in %s did not settle before compression"
+#: rsync_gpg_backup.sh:2785
+msgid "🔍 Snapshot fingerprint: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2788
-msgid "⚠️ No files to wait for in %s"
+#: rsync_gpg_backup.sh:2789
+msgid "✅ Snapshot validated. All files exist."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2792
-msgid "🔐 Compressing Folder into One File..."
+#: rsync_gpg_backup.sh:2793
+msgid "📦 Copying snapshot files to temporary directory..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2803
-msgid "❌ Failed to compress backup directory: %s"
+#: rsync_gpg_backup.sh:2802
+msgid "❌ Failed to create directory for %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2807
-msgid "📦 Backup compressed successfully into: %s"
+#: rsync_gpg_backup.sh:2811
+msgid "❌ Failed to copy %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2812
-msgid "⏳ Flushing file system buffers after compression."
+#: rsync_gpg_backup.sh:2818
+msgid "❌ Failed to set timestamp on %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2817
-msgid "❌ Failed to chown %s"
+#: rsync_gpg_backup.sh:2823
+msgid "➡️ Copied: %s → %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2822
-msgid "❌ Failed to chmod %s"
+#: rsync_gpg_backup.sh:2826
+msgid "✅ Copy phase completed"
+msgstr ""
+
+#: rsync_gpg_backup.sh:2833
+msgid "❌ Copied snapshot fingerprint mismatch — retrying backup"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2836
-msgid "✅ SHA256 checksum created: %s"
+msgid "✅ Copy fingerprint verified"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2840
-msgid "🔐 Encrypting backup with GPG..."
+#: rsync_gpg_backup.sh:2841
+msgid "❌ Copy stability check failed — retrying backup"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2845
-msgid "❌ GPG_FINGERPRINT is not set"
+#: rsync_gpg_backup.sh:2849
+msgid "❌ Aborting backup due to corrupted rsync copy"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2852
-msgid "❌ GPG key with fingerprint not found: %s"
+#: rsync_gpg_backup.sh:2857
+msgid "🧹 Safely cleaned temporary backup directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2853
-msgid "⚠️ Ensure the correct key is imported for user: %s"
+#: rsync_gpg_backup.sh:2859
+msgid "❌ Unsafe LND_TMP_BACKUP — skipping cleanup: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2867
-msgid "❌ GPG_PASSPHRASE_FILE missing or not owned by %s: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:2874
-msgid "❌ GPG_PASSPHRASE_FILE must have mode 600: %s"
+#: rsync_gpg_backup.sh:2876
+msgid "❌ Failed to create timestamped backup directory: %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2879
-msgid "🔐 Using loopback mode for GPG (passphrase file provided)"
+msgid "🛠️ Created timestamped backup directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2885
-msgid "🔓 No GPG passphrase file provided (assuming unprotected key or agent)"
+#: rsync_gpg_backup.sh:2882
+msgid "🛠️ Moving files to timestamped directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2912
-msgid "❌ Failed to create GPG payload archive"
+#: rsync_gpg_backup.sh:2884
+msgid "❌ Failed to move files to timestamped directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2918
-msgid "❌ GPG encrypt+sign failed for backup artifacts using fingerprint: %s"
+#: rsync_gpg_backup.sh:2888
+msgid "✅ Files moved to timestamped directory: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2922
-msgid "✅ GPG encryption + signing successful: %s"
+#: rsync_gpg_backup.sh:2890
+msgid "Using the wait_for_files_to_settle Function Before Compression..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2931
-msgid "🔓 Decrypting encrypted backup for verification..."
+#: rsync_gpg_backup.sh:2897
+msgid "❌ Files in %s did not settle before compression"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2940
-msgid "❌ GPG decryption failed for verification"
+#: rsync_gpg_backup.sh:2901
+msgid "⚠️ No files to wait for in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2945
-msgid "📦 Extracting verification bundle..."
+#: rsync_gpg_backup.sh:2905
+msgid "🔐 Compressing Folder into One File..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:2916
+msgid "❌ Failed to compress backup directory: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:2920
+msgid "📦 Backup compressed successfully into: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:2925
+msgid "⏳ Flushing file system buffers after compression."
+msgstr ""
+
+#: rsync_gpg_backup.sh:2930
+msgid "❌ Failed to chown %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:2935
+msgid "❌ Failed to chmod %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2949
-msgid "❌ Failed to extract verification bundle"
+msgid "✅ SHA256 checksum created: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2956
-msgid "🔍 Verifying checksum integrity..."
+#: rsync_gpg_backup.sh:2953
+msgid "🔐 Encrypting backup with GPG..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:2962
-msgid "❌ Checksum verification failed! Backup corrupted!"
+#: rsync_gpg_backup.sh:2958
+msgid "❌ GPG_FINGERPRINT is not set"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2967
-msgid "✅ Encrypted backup integrity verified via checksum"
+#: rsync_gpg_backup.sh:2965
+msgid "❌ GPG key with fingerprint not found: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2974
-msgid "🧹 Unencrypted tar.gz removed: %s"
+#: rsync_gpg_backup.sh:2966
+msgid "⚠️ Ensure the correct key is imported for user: %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:2980
-msgid "❌ Failed to remove unencrypted file: %s"
+msgid "❌ GPG_PASSPHRASE_FILE missing or not owned by %s: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2984
-msgid "🧹 Unencrypted backup copies removed from %s"
+#: rsync_gpg_backup.sh:2987
+msgid "❌ GPG_PASSPHRASE_FILE must have mode 600: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2990
-msgid "❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume."
+#: rsync_gpg_backup.sh:2992
+msgid "🔐 Using loopback mode for GPG (passphrase file provided)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:2995
-msgid "📦 Rsync encrypted backup to %s..."
+#: rsync_gpg_backup.sh:2998
+msgid "🔓 No GPG passphrase file provided (assuming unprotected key or agent)"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3004
-msgid "✅ Rsync completed successfully to second backup directory."
+#: rsync_gpg_backup.sh:3025
+msgid "❌ Failed to create GPG payload archive"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3010
-msgid "❌ Rsync failed to %s. Continuing backup process."
+#: rsync_gpg_backup.sh:3031
+msgid "❌ GPG encrypt+sign failed for backup artifacts using fingerprint: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3018
-msgid "🎉 RSYNC STAGE CONFIRMED SUCCESS"
+#: rsync_gpg_backup.sh:3035
+msgid "✅ GPG encryption + signing successful: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3023
-msgid "🧾 Cleared remote_pending"
+#: rsync_gpg_backup.sh:3044
+msgid "🔓 Decrypting encrypted backup for verification..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3027
-msgid "🚨 Remote copy failed. Continuing with the attached-volume copy only."
-msgstr ""
-
-#: rsync_gpg_backup.sh:3030
-msgid "❌ Both the attached-volume and the remote copy failed. Not committing hashes."
-msgstr ""
-
-#: rsync_gpg_backup.sh:3034
-msgid "🔍 Proceeding to post-rsync validation"
-msgstr ""
-
-#: rsync_gpg_backup.sh:3040
-msgid "🔍 Verifying final hash: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:3043
-msgid "❌ File missing before commit: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:3048
-msgid "❌ Failed to hash file before commit: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:3051
-msgid "❌ File disappeared: %s"
+#: rsync_gpg_backup.sh:3053
+msgid "❌ GPG decryption failed for verification"
 msgstr ""
 
 #: rsync_gpg_backup.sh:3058
-msgid "❌ File changed since stabilization: %s"
+msgid "📦 Extracting verification bundle..."
 msgstr ""
 
 #: rsync_gpg_backup.sh:3062
-msgid "✅ Final hash verified: %s"
-msgstr ""
-
-#: rsync_gpg_backup.sh:3067
-msgid "✅ Post-rsync hash verification complete"
+msgid "❌ Failed to extract verification bundle"
 msgstr ""
 
 #: rsync_gpg_backup.sh:3069
-msgid "🧾 Starting hash commit phase"
+msgid "🔍 Verifying checksum integrity..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3073
-msgid "❌ commit_file_hashes failed"
+#: rsync_gpg_backup.sh:3075
+msgid "❌ Checksum verification failed! Backup corrupted!"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3077
-msgid "🧾 Hash commit phase complete"
+#: rsync_gpg_backup.sh:3080
+msgid "✅ Encrypted backup integrity verified via checksum"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3078
-msgid "🧾 Stored source file hashes captured post-stabilization to %s"
+#: rsync_gpg_backup.sh:3087
+msgid "🧹 Unencrypted tar.gz removed: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3084
-msgid "🧾 Updated stored snapshot fingerprint"
+#: rsync_gpg_backup.sh:3093
+msgid "❌ Failed to remove unencrypted file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3086
-msgid "⚠️ Failed to save snapshot fingerprint to %s"
+#: rsync_gpg_backup.sh:3097
+msgid "🧹 Unencrypted backup copies removed from %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3092
-msgid "🚨 Marked for remote retry in %s: %s"
+#: rsync_gpg_backup.sh:3107
+msgid "📦 Rsync encrypted backup to %s..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3094 rsync_gpg_backup.sh:3112
-msgid "❌ Failed to write %s"
+#: rsync_gpg_backup.sh:3114
+msgid "❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3110
-msgid "⚠️ Milestones not complete, the hourly check will retry them from %s"
+#: rsync_gpg_backup.sh:3117
+msgid "✅ Rsync completed successfully to second backup directory."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3119
-msgid "🧹 Starting safer backup rotation in %s..."
+#: rsync_gpg_backup.sh:3123
+msgid "❌ Rsync failed to %s. Continuing backup process."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3146
-msgid "❌ Failed to delete old backup: %s"
+#: rsync_gpg_backup.sh:3132
+msgid "🎉 RSYNC STAGE CONFIRMED SUCCESS"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3152
-msgid "🧹 Old encrypted backups cleaned in %s. Retained last 10 backups."
+#: rsync_gpg_backup.sh:3136
+msgid "🧾 Cleared remote_pending"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3163
-msgid "🧹 Cleaning local milestone retention..."
+#: rsync_gpg_backup.sh:3156
+msgid "❌ The backup reached none of its destinations. Not committing hashes."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3177
-msgid "🗑️ Removed old daily milestone: %s"
+#: rsync_gpg_backup.sh:3165
+msgid "❌ Could not keep a copy for the retry in %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3179
-msgid "❌ Failed to delete daily milestone: %s"
+#: rsync_gpg_backup.sh:3169
+msgid "🚨 Not every destination has it yet; the hourly check tries again."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3193
-msgid "🗑️ Removed old monthly milestone: %s"
+#: rsync_gpg_backup.sh:3172
+msgid "🔍 Proceeding to post-rsync validation"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3195
-msgid "❌ Failed to delete monthly milestone: %s"
+#: rsync_gpg_backup.sh:3178
+msgid "🔍 Verifying final hash: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3201
-msgid "🧹 Local milestone cleanup complete"
+#: rsync_gpg_backup.sh:3181
+msgid "❌ File missing before commit: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3186
+msgid "❌ Failed to hash file before commit: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3189
+msgid "❌ File disappeared: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3196
+msgid "❌ File changed since stabilization: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3200
+msgid "✅ Final hash verified: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3205
+msgid "✅ Post-rsync hash verification complete"
 msgstr ""
 
 #: rsync_gpg_backup.sh:3207
-msgid "❌ Failed to delete old hash file: %s"
+msgid "🧾 Starting hash commit phase"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3223
-msgid "✅ systemd READY notification sent"
+#: rsync_gpg_backup.sh:3211
+msgid "❌ commit_file_hashes failed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3228
-msgid "⚡ %s is empty or an error occurred while checking. Performing initial backup..."
+#: rsync_gpg_backup.sh:3215
+msgid "🧾 Hash commit phase complete"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3232
-msgid "❌ Backup failed. Exiting script."
+#: rsync_gpg_backup.sh:3216
+msgid "🧾 Stored source file hashes captured post-stabilization to %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3236
-msgid "⚠️ A backup folder (encrypted_backup_*) already exists in %s, skipping initial backup."
+#: rsync_gpg_backup.sh:3222
+msgid "🧾 Updated stored snapshot fingerprint"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3240
-msgid "📡 Starting file watcher..."
+#: rsync_gpg_backup.sh:3224
+msgid "⚠️ Failed to save snapshot fingerprint to %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3250
-msgid "📡 Starting inotify watcher..."
+#: rsync_gpg_backup.sh:3230
+msgid "🚨 Marked for remote retry in %s: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3255
-msgid "🧪 Test mode watcher started"
+#: rsync_gpg_backup.sh:3232 rsync_gpg_backup.sh:3239 rsync_gpg_backup.sh:3260
+msgid "❌ Failed to write %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3237
+msgid "🚨 Marked for a GitHub retry: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3258
+msgid "⚠️ Milestones not complete, the hourly check will retry them from %s"
 msgstr ""
 
 #: rsync_gpg_backup.sh:3267
-msgid "📡 Running real inotifywait stream..."
+msgid "🧹 Starting safer backup rotation in %s..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3284
-msgid "🚀 Starting watcher..."
+#: rsync_gpg_backup.sh:3294
+msgid "❌ Failed to delete old backup: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3289
-msgid "📡 Starting watcher stream..."
+#: rsync_gpg_backup.sh:3300
+msgid "🧹 Old encrypted backups cleaned in %s. Retained last 10 backups."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3304
-msgid "🧪 Manual trigger detected"
+#: rsync_gpg_backup.sh:3311
+msgid "🧹 Cleaning local milestone retention..."
 msgstr ""
 
-#: rsync_gpg_backup.sh:3307
-msgid "🚀 Starting hash changer"
+#: rsync_gpg_backup.sh:3325
+msgid "🗑️ Removed old daily milestone: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3310
-msgid "⏩ Hash changer already running"
+#: rsync_gpg_backup.sh:3327
+msgid "❌ Failed to delete daily milestone: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3314
-msgid "❌ Failed to remove TEST_TRIGGER_FILE"
+#: rsync_gpg_backup.sh:3341
+msgid "🗑️ Removed old monthly milestone: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3320
-msgid "❌ handle_event failed for: %s"
+#: rsync_gpg_backup.sh:3343
+msgid "❌ Failed to delete monthly milestone: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3330
-msgid "⚠️ The hourly check had stopped: starting it again"
+#: rsync_gpg_backup.sh:3349
+msgid "🧹 Local milestone cleanup complete"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3340
-msgid "⚠️ Watcher crashed or exited"
+#: rsync_gpg_backup.sh:3356
+msgid "❌ Failed to delete old hash file: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3354
-msgid "⏳ Restarting watcher in %s seconds (attempt #%s)..."
+#: rsync_gpg_backup.sh:3372
+msgid "✅ systemd READY notification sent"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3365
-msgid "🟢 Watcher stable for %ss → resetting restart counter"
-msgstr ""
-
-#: rsync_gpg_backup.sh:3375
-msgid "ℹ️ No file changes detected in 24h (system idle)"
+#: rsync_gpg_backup.sh:3379
+msgid "⚡ No backup yet (%s). Performing initial backup..."
 msgstr ""
 
 #: rsync_gpg_backup.sh:3383
+msgid "❌ Backup failed. Exiting script."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3387
+msgid "⚠️ A backup folder (encrypted_backup_*) already exists in %s, skipping initial backup."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3391
+msgid "📡 Starting file watcher..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3401
+msgid "📡 Starting inotify watcher..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3406
+msgid "🧪 Test mode watcher started"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3418
+msgid "📡 Running real inotifywait stream..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3435
+msgid "🚀 Starting watcher..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3440
+msgid "📡 Starting watcher stream..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3455
+msgid "🧪 Manual trigger detected"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3458
+msgid "🚀 Starting hash changer"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3461
+msgid "⏩ Hash changer already running"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3465
+msgid "❌ Failed to remove TEST_TRIGGER_FILE"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3471
+msgid "❌ handle_event failed for: %s"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3481
+msgid "⚠️ The hourly check had stopped: starting it again"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3491
+msgid "⚠️ Watcher crashed or exited"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3505
+msgid "⏳ Restarting watcher in %s seconds (attempt #%s)..."
+msgstr ""
+
+#: rsync_gpg_backup.sh:3516
+msgid "🟢 Watcher stable for %ss → resetting restart counter"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3526
+msgid "ℹ️ No file changes detected in 24h (system idle)"
+msgstr ""
+
+#: rsync_gpg_backup.sh:3534
 msgid "❌ Generated service script has a syntax error — not installed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3430
+#: rsync_gpg_backup.sh:3581
 msgid "❌ systemctl daemon-reload failed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3433
+#: rsync_gpg_backup.sh:3584
 msgid "✅ systemctl daemon-reload completed"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3440 rsync_gpg_backup.sh:3445
+#: rsync_gpg_backup.sh:3591 rsync_gpg_backup.sh:3596
 msgid "❌ Failed to enable/start service: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3443
+#: rsync_gpg_backup.sh:3594
 msgid "✅ Service enabled; it starts after this boot step: %s"
 msgstr ""
 
-#: rsync_gpg_backup.sh:3448
+#: rsync_gpg_backup.sh:3599
 msgid "✅ Service enabled and started: %s"
 msgstr ""
 
@@ -3277,7 +3445,7 @@ msgstr ""
 msgid "SERVER_B_USER is not set in config: the user on Server B that holds the backups."
 msgstr ""
 
-#: serverb-scripts.sh:87 setup_script.sh:567
+#: serverb-scripts.sh:87 setup_script.sh:609
 msgid "User on Server B: "
 msgstr ""
 
@@ -4659,955 +4827,1059 @@ msgstr ""
 msgid "BTCPay's LND container (%s) isn't running. Backups start once it runs"
 msgstr ""
 
-#: setup_script.sh:301
-msgid "The attached volume (UUID %s) is attached"
+#: setup_script.sh:300
+msgid "The attached volume is off (BACKUP_TO_VOLUME)"
 msgstr ""
 
 #: setup_script.sh:303
+msgid "The attached volume (UUID %s) is attached"
+msgstr ""
+
+#: setup_script.sh:305
 msgid "No disk with UUID %s (UUID in config) is attached. Attach the backup disk, or empty UUID to choose another"
 msgstr ""
 
-#: setup_script.sh:308
+#: setup_script.sh:310
 msgid "%s unused %s filesystem(s) for the attached volume; setup asks which"
 msgstr ""
 
-#: setup_script.sh:310
+#: setup_script.sh:312
 msgid "No unused %s filesystem for the attached volume yet: setup explains how to prepare the disk"
 msgstr ""
 
 #: setup_script.sh:318
+msgid "Server B is off (BACKUP_TO_SERVER_B)"
+msgstr ""
+
+#: setup_script.sh:322
 msgid "Server B answers at %s, port %s"
 msgstr ""
 
-#: setup_script.sh:320
+#: setup_script.sh:324
 msgid "Server B doesn't answer at %s, port %s: check REMOTE_SERVER and REMOTE_SSH_PORT in config, that Server B runs, and its firewall"
 msgstr ""
 
-#: setup_script.sh:323
+#: setup_script.sh:327
 msgid "Server B: setup asks for its address"
 msgstr ""
 
-#: setup_script.sh:328
+#: setup_script.sh:332
 msgid "❌ %s problem(s) above: fix them, then run setup again. Nothing was changed."
 msgstr ""
 
-#: setup_script.sh:332
+#: setup_script.sh:336
 msgid "✅ Ready for setup. Nothing was changed."
 msgstr ""
 
-#: setup_script.sh:335
+#: setup_script.sh:339
 msgid "✅ Ready. Setup asks before each step."
 msgstr ""
 
-#: setup_script.sh:352
+#: setup_script.sh:356
 msgid "MAIN_USER is not set in config. It's your own account on this server, usually the one running this setup."
 msgstr ""
 
-#: setup_script.sh:355
+#: setup_script.sh:359
 msgid "Main user: "
 msgstr ""
 
-#: setup_script.sh:372
+#: setup_script.sh:376
 msgid "User '%s' already exists."
 msgstr ""
 
-#: setup_script.sh:374 setup_script.sh:397
+#: setup_script.sh:378 setup_script.sh:401
 msgid "Creating user '%s'..."
 msgstr ""
 
-#: setup_script.sh:376 setup_script.sh:399
+#: setup_script.sh:380 setup_script.sh:403
 msgid "❌ Could not create user '%s'"
 msgstr ""
 
-#: setup_script.sh:381
+#: setup_script.sh:385
 msgid "SERVER_A_USER is not set in config. The backup service runs as its own user; choose its name."
 msgstr ""
 
-#: setup_script.sh:384
+#: setup_script.sh:388
 msgid "Backup user name: "
 msgstr ""
 
-#: setup_script.sh:387
+#: setup_script.sh:391
 msgid "User '%s' already exists. Use it as the backup user? Type yes: "
 msgstr ""
 
-#: setup_script.sh:389
+#: setup_script.sh:393
 msgid "Create user '%s'? Type yes: "
 msgstr ""
 
-#: setup_script.sh:411
+#: setup_script.sh:415
 msgid "use a file name only (letters, digits, '.', _ or -), no folders"
 msgstr ""
 
-#: setup_script.sh:439
-msgid "⚠️  ATTACHED_VOLUME in config is %s, inside a home folder. Its owner could swap that"
+#: setup_script.sh:429
+msgid "type yes or no"
+msgstr ""
+
+#: setup_script.sh:432
+msgid "Where should the backups go? Each destination is on (yes) or off (no); at least one must be on."
+msgstr ""
+
+#: setup_script.sh:433
+msgid "  1. The attached volume: an extra disk on this server. Quick to restore from, but on this server."
+msgstr ""
+
+#: setup_script.sh:434
+msgid "  2. Server B: your second server, through its backup gate. A broken-into Server A can't delete there."
+msgstr ""
+
+#: setup_script.sh:435
+msgid "  3. GitHub: a private repository of yours, written with a deploy key (a key for that one"
+msgstr ""
+
+#: setup_script.sh:436
+msgid "     repository). Free, but a broken-into Server A could delete the copies there."
 msgstr ""
 
 #: setup_script.sh:440
-msgid "   folder for a symlink while the disk isn't mounted, and the next mount would follow it."
+msgid "1. The attached volume (yes/no): "
 msgstr ""
 
 #: setup_script.sh:441
-msgid "   The mount point should be %s (owned by root). If the disk is already"
+msgid "2. Server B (yes/no): "
 msgstr ""
 
 #: setup_script.sh:442
-msgid "   mounted at the old place, setup moves the mount below (it asks again first)."
+msgid "3. GitHub (yes/no): "
 msgstr ""
 
-#: setup_script.sh:443
-msgid "Type MOVE to set ATTACHED_VOLUME to %s: "
+#: setup_script.sh:450
+msgid "❌ At least one destination must be on."
 msgstr ""
 
-#: setup_script.sh:444
-msgid "❌ Stopped: ATTACHED_VOLUME stays %s. Set it outside home folders to go on."
+#: setup_script.sh:456
+msgid "⚠️  Only the attached volume: no copy leaves this server. If this server is lost, the backups are"
 msgstr ""
 
-#: setup_script.sh:466
-msgid "not a filesystem UUID"
+#: setup_script.sh:457
+msgid "   lost with it. Server B or GitHub can be turned on later: lnd-manager /destinations."
 msgstr ""
 
-#: setup_script.sh:468
-msgid "no disk on this server has UUID %s (is the volume attached?)"
+#: setup_script.sh:479
+msgid "⚠️  ATTACHED_VOLUME in config is %s, inside a home folder. Its owner could swap that"
+msgstr ""
+
+#: setup_script.sh:480
+msgid "   folder for a symlink while the disk isn't mounted, and the next mount would follow it."
 msgstr ""
 
 #: setup_script.sh:481
-msgid "enter a number from the list (1-%s) or one of its UUIDs"
+msgid "   The mount point should be %s (owned by root). If the disk is already"
 msgstr ""
 
-#: setup_script.sh:489
-msgid "Preparing the attached volume"
+#: setup_script.sh:482
+msgid "   mounted at the old place, setup moves the mount below (it asks again first)."
 msgstr ""
 
-#: setup_script.sh:490
-msgid "  The backups need a disk of their own: a block volume from your VPS provider, or a second disk."
+#: setup_script.sh:483
+msgid "Type MOVE to set ATTACHED_VOLUME to %s: "
 msgstr ""
 
-#: setup_script.sh:491
-msgid "  Not the system disk. Before going on:"
-msgstr ""
-
-#: setup_script.sh:492
-msgid "  1. Attach it to this server (in the provider's panel, or plug it in). Then"
-msgstr ""
-
-#: setup_script.sh:493
-msgid "        lsblk -f"
-msgstr ""
-
-#: setup_script.sh:494
-msgid "     lists it, usually as /dev/sdb or /dev/vdb. A new disk shows no FSTYPE and no UUID yet."
-msgstr ""
-
-#: setup_script.sh:495
-msgid "  2. Only if it is new and empty: make a %s filesystem on it. This ERASES that disk, so"
-msgstr ""
-
-#: setup_script.sh:496
-msgid "     check its name in lsblk twice; never the disk that holds / or /var/lib/docker:"
-msgstr ""
-
-#: setup_script.sh:497
-msgid "        sudo mkfs.%s -L lnd-backups /dev/sdX        (sdX = the new disk)"
-msgstr ""
-
-#: setup_script.sh:498
-msgid "     This script never formats disks itself."
-msgstr ""
-
-#: setup_script.sh:499
-msgid "  3. lsblk -f now shows its UUID. Below, choose it from the list of unused %s filesystems."
-msgstr ""
-
-#: setup_script.sh:500
-msgid "  Don't mount it or add it to /etc/fstab yourself: setup does that, at %s"
-msgstr ""
-
-#: setup_script.sh:501
-msgid "  (owned by root, with %s), and gives the backup user only"
-msgstr ""
-
-#: setup_script.sh:502
-msgid "  the %s folder on it."
+#: setup_script.sh:484
+msgid "❌ Stopped: ATTACHED_VOLUME stays %s. Set it outside home folders to go on."
 msgstr ""
 
 #: setup_script.sh:506
-msgid "No unused %s filesystem found yet (or set FILE_SYSTEM_TYPE in %s to its type)."
+msgid "not a filesystem UUID"
 msgstr ""
 
-#: setup_script.sh:507
-msgid "Prepare the disk as above, then press Enter to look again (Ctrl-C to stop): "
+#: setup_script.sh:508
+msgid "no disk on this server has UUID %s (is the volume attached?)"
 msgstr ""
 
-#: setup_script.sh:517
-msgid "Unused %s filesystems:"
+#: setup_script.sh:521
+msgid "enter a number from the list (1-%s) or one of its UUIDs"
 msgstr ""
 
-#: setup_script.sh:526
-msgid "Volume (number or UUID): "
+#: setup_script.sh:529
+msgid "Preparing the attached volume"
+msgstr ""
+
+#: setup_script.sh:530
+msgid "  The backups need a disk of their own: a block volume from your VPS provider, or a second disk."
+msgstr ""
+
+#: setup_script.sh:531
+msgid "  Not the system disk. Before going on:"
+msgstr ""
+
+#: setup_script.sh:532
+msgid "  1. Attach it to this server (in the provider's panel, or plug it in). Then"
 msgstr ""
 
 #: setup_script.sh:533
-msgid "Setup will add %s to /etc/fstab, mount it at %s and make %s the owner of %s on it."
+msgid "        lsblk -f"
 msgstr ""
 
 #: setup_script.sh:534
-msgid "Use %s as the attached volume? Type yes: "
+msgid "     lists it, usually as /dev/sdb or /dev/vdb. A new disk shows no FSTYPE and no UUID yet."
+msgstr ""
+
+#: setup_script.sh:535
+msgid "  2. Only if it is new and empty: make a %s filesystem on it. This ERASES that disk, so"
+msgstr ""
+
+#: setup_script.sh:536
+msgid "     check its name in lsblk twice; never the disk that holds / or /var/lib/docker:"
+msgstr ""
+
+#: setup_script.sh:537
+msgid "        sudo mkfs.%s -L lnd-backups /dev/sdX        (sdX = the new disk)"
+msgstr ""
+
+#: setup_script.sh:538
+msgid "     This script never formats disks itself."
+msgstr ""
+
+#: setup_script.sh:539
+msgid "  3. lsblk -f now shows its UUID. Below, choose it from the list of unused %s filesystems."
+msgstr ""
+
+#: setup_script.sh:540
+msgid "  Don't mount it or add it to /etc/fstab yourself: setup does that, at %s"
+msgstr ""
+
+#: setup_script.sh:541
+msgid "  (owned by root, with %s), and gives the backup user only"
+msgstr ""
+
+#: setup_script.sh:542
+msgid "  the %s folder on it."
+msgstr ""
+
+#: setup_script.sh:546
+msgid "No unused %s filesystem found yet (or set FILE_SYSTEM_TYPE in %s to its type)."
 msgstr ""
 
 #: setup_script.sh:547
-msgid "REMOTE_SERVER is not set in config."
+msgid "Prepare the disk as above, then press Enter to look again (Ctrl-C to stop): "
 msgstr ""
 
-#: setup_script.sh:548
-msgid "Server B address (hostname or IP): "
-msgstr ""
-
-#: setup_script.sh:555
-msgid "REMOTE_SSH_PORT is not set in config."
-msgstr ""
-
-#: setup_script.sh:556
-msgid "Server B SSH port: "
-msgstr ""
-
-#: setup_script.sh:565
-msgid "SERVER_B_USER is not set in config. It's the user on Server B that holds the backups; Server A's key"
+#: setup_script.sh:557
+msgid "Unused %s filesystems:"
 msgstr ""
 
 #: setup_script.sh:566
-msgid "reaches only this account. It may exist already, or Server B's user script can create it."
+msgid "Volume (number or UUID): "
 msgstr ""
 
-#: setup_script.sh:575
-msgid "SERVER_B_KNOWN_HOST_FINGERPRINT is not set in config."
+#: setup_script.sh:573
+msgid "Setup will add %s to /etc/fstab, mount it at %s and make %s the owner of %s on it."
 msgstr ""
 
-#: setup_script.sh:577
-msgid "🔎 Fetching Server B's host keys from %s, port %s..."
+#: setup_script.sh:574
+msgid "Use %s as the attached volume? Type yes: "
 msgstr ""
 
-#: setup_script.sh:594
-msgid "❌ Could not fetch a host key from %s port %s. Check REMOTE_SERVER, REMOTE_SSH_PORT and that Server B's SSH server is running."
+#: setup_script.sh:589
+msgid "REMOTE_SERVER is not set in config."
+msgstr ""
+
+#: setup_script.sh:590
+msgid "Server B address (hostname or IP): "
+msgstr ""
+
+#: setup_script.sh:597
+msgid "REMOTE_SSH_PORT is not set in config."
+msgstr ""
+
+#: setup_script.sh:598
+msgid "Server B SSH port: "
 msgstr ""
 
 #: setup_script.sh:607
-msgid "⚠️  CHECK SERVER B'S FINGERPRINT YOURSELF BEFORE YOU CONTINUE"
+msgid "SERVER_B_USER is not set in config. It's the user on Server B that holds the backups; Server A's key"
 msgstr ""
 
-#: setup_script.sh:609
-msgid "This fingerprint was fetched over the network, so it proves nothing yet."
-msgstr ""
-
-#: setup_script.sh:610
-msgid "If someone is intercepting the connection, it is THEIR key: Server A would"
-msgstr ""
-
-#: setup_script.sh:611
-msgid "trust them from now on and send every backup of your Lightning node to them."
-msgstr ""
-
-#: setup_script.sh:613
-msgid "Fetched (%s): %s"
-msgstr ""
-
-#: setup_script.sh:615
-msgid "On Server B itself (its console, or an SSH session you already trust), run:"
-msgstr ""
-
-#: setup_script.sh:616
-msgid "    ssh-keygen -lf %s"
+#: setup_script.sh:608
+msgid "reaches only this account. It may exist already, or Server B's user script can create it."
 msgstr ""
 
 #: setup_script.sh:617
-msgid "It must show exactly the same fingerprint, character for character."
+msgid "SERVER_B_KNOWN_HOST_FINGERPRINT is not set in config."
 msgstr ""
 
-#: setup_script.sh:618
-msgid "If it doesn't, or you can't check, do NOT type yes."
+#: setup_script.sh:619
+msgid "🔎 Fetching Server B's host keys from %s, port %s..."
 msgstr ""
 
-#: setup_script.sh:620
-msgid "Type yes if Server B shows exactly this fingerprint: "
+#: setup_script.sh:636
+msgid "❌ Could not fetch a host key from %s port %s. Check REMOTE_SERVER, REMOTE_SSH_PORT and that Server B's SSH server is running."
 msgstr ""
 
-#: setup_script.sh:621
-msgid "❌ Server B's host fingerprint was not confirmed. Nothing was saved."
+#: setup_script.sh:649
+msgid "⚠️  CHECK SERVER B'S FINGERPRINT YOURSELF BEFORE YOU CONTINUE"
 msgstr ""
 
-#: setup_script.sh:633
-msgid "Do you want to view the private key now so you can save it securely? (y/n): "
+#: setup_script.sh:651
+msgid "This fingerprint was fetched over the network, so it proves nothing yet."
 msgstr ""
 
-#: setup_script.sh:635
-msgid "📋 Here is your private key (ensure you save it in a secure location):"
+#: setup_script.sh:652
+msgid "If someone is intercepting the connection, it is THEIR key: Server A would"
 msgstr ""
 
-#: setup_script.sh:638
-msgid "❗ Make sure to save the private key in a secure location later."
+#: setup_script.sh:653
+msgid "trust them from now on and send every backup of your Lightning node to them."
+msgstr ""
+
+#: setup_script.sh:655
+msgid "Fetched (%s): %s"
 msgstr ""
 
 #: setup_script.sh:657
+msgid "On Server B itself (its console, or an SSH session you already trust), run:"
+msgstr ""
+
+#: setup_script.sh:658
+msgid "    ssh-keygen -lf %s"
+msgstr ""
+
+#: setup_script.sh:659
+msgid "It must show exactly the same fingerprint, character for character."
+msgstr ""
+
+#: setup_script.sh:660
+msgid "If it doesn't, or you can't check, do NOT type yes."
+msgstr ""
+
+#: setup_script.sh:662
+msgid "Type yes if Server B shows exactly this fingerprint: "
+msgstr ""
+
+#: setup_script.sh:663
+msgid "❌ Server B's host fingerprint was not confirmed. Nothing was saved."
+msgstr ""
+
+#: setup_script.sh:675
+msgid "Do you want to view the private key now so you can save it securely? (y/n): "
+msgstr ""
+
+#: setup_script.sh:677
+msgid "📋 Here is your private key (ensure you save it in a secure location):"
+msgstr ""
+
+#: setup_script.sh:680
+msgid "❗ Make sure to save the private key in a secure location later."
+msgstr ""
+
+#: setup_script.sh:699
 msgid "🔍 Testing if SSH access already works..."
 msgstr ""
 
-#: setup_script.sh:661
+#: setup_script.sh:703
 msgid "✅ SSH key already set up and working. Skipping setup."
 msgstr ""
 
-#: setup_script.sh:667
+#: setup_script.sh:709
 msgid "❌ SSH connection failed. Proceeding with SSH key setup..."
 msgstr ""
 
-#: setup_script.sh:671
+#: setup_script.sh:713
 msgid "🔐 Setting up SSH key for %s..."
 msgstr ""
 
-#: setup_script.sh:676
+#: setup_script.sh:718
 msgid "🔑 SSH key already exists at %s. Skipping generation."
 msgstr ""
 
-#: setup_script.sh:679
+#: setup_script.sh:721
 msgid "Do you want to paste an existing SSH private key? (y/n): "
 msgstr ""
 
-#: setup_script.sh:681
+#: setup_script.sh:723
 msgid "📋 Press ENTER, then paste your SSH private key. Press CTRL+D when finished:"
 msgstr ""
 
-#: setup_script.sh:691
+#: setup_script.sh:733
 msgid "❌ Failed to save the private key to %s. Exiting."
 msgstr ""
 
-#: setup_script.sh:694
+#: setup_script.sh:736
 msgid "✅ Private SSH key saved to %s."
 msgstr ""
 
-#: setup_script.sh:702
+#: setup_script.sh:744
 msgid "❌ Could not derive a public key. Is the pasted key valid and without a passphrase? Exiting."
 msgstr ""
 
-#: setup_script.sh:707
+#: setup_script.sh:749
 msgid "✅ Derived public key saved to %s."
 msgstr ""
 
-#: setup_script.sh:709
+#: setup_script.sh:751
 msgid "❌ No key data received. Exiting."
 msgstr ""
 
-#: setup_script.sh:714
+#: setup_script.sh:756
 msgid "❌ SSH key generation failed. Exiting."
 msgstr ""
 
-#: setup_script.sh:717
+#: setup_script.sh:759
 msgid "✅ New SSH key generated at %s."
 msgstr ""
 
-#: setup_script.sh:732
+#: setup_script.sh:774
 msgid "🔎 Fetching host fingerprints..."
 msgstr ""
 
-#: setup_script.sh:748
+#: setup_script.sh:790
 msgid "✅ Host fingerprint matches expected value."
 msgstr ""
 
-#: setup_script.sh:762
+#: setup_script.sh:804
 msgid "❌ ERROR: Host fingerprint does not match expected fingerprint!"
 msgstr ""
 
-#: setup_script.sh:763
+#: setup_script.sh:805
 msgid "Expected: %s"
 msgstr ""
 
-#: setup_script.sh:764
+#: setup_script.sh:806
 msgid "Found:"
 msgstr ""
 
-#: setup_script.sh:766
+#: setup_script.sh:808
 msgid "Check SERVER_B_KNOWN_HOST_FINGERPRINT in config, or confirm Server B's host keys on Server B itself."
 msgstr ""
 
-#: setup_script.sh:773
+#: setup_script.sh:815
 msgid "Server A's key must get into ~/.ssh/authorized_keys of %s on Server B. Either:"
 msgstr ""
 
-#: setup_script.sh:774
+#: setup_script.sh:816
 msgid "  1) %s exists on Server B and you know its password: setup copies the key now"
 msgstr ""
 
-#: setup_script.sh:775
+#: setup_script.sh:817
 msgid "  2) setup makes serverb-user-setup.sh for you to run on Server B with sudo. It creates"
 msgstr ""
 
-#: setup_script.sh:776
+#: setup_script.sh:818
 msgid "     %s (no password, key login only), or sets up the existing one, with this key"
 msgstr ""
 
-#: setup_script.sh:784
+#: setup_script.sh:826
 msgid "ℹ️ Run serverb-user-setup.sh on Server B, then setup again: it goes on from here."
 msgstr ""
 
-#: setup_script.sh:789
+#: setup_script.sh:831
 msgid "📤 Copying SSH public key to remote server..."
 msgstr ""
 
-#: setup_script.sh:793
+#: setup_script.sh:835
 msgid "❌ No public key found in %s. Exiting."
 msgstr ""
 
-#: setup_script.sh:808
+#: setup_script.sh:850
 msgid "✅ Public key successfully copied to remote server."
 msgstr ""
 
-#: setup_script.sh:810
+#: setup_script.sh:852
 msgid "❌ Failed to automatically copy public key to remote server."
 msgstr ""
 
-#: setup_script.sh:812
+#: setup_script.sh:854
 msgid "=== MANUAL STEP REQUIRED ==="
 msgstr ""
 
-#: setup_script.sh:813
+#: setup_script.sh:855
 msgid "Copy the public key file:"
 msgstr ""
 
-#: setup_script.sh:815
+#: setup_script.sh:857
 msgid "To the remote server: %s@%s"
 msgstr ""
 
-#: setup_script.sh:816
+#: setup_script.sh:858
 msgid "Then append its contents to ~/.ssh/authorized_keys on the remote server."
 msgstr ""
 
-#: setup_script.sh:817
+#: setup_script.sh:859
 msgid "You can run the following commands on the remote server:"
 msgstr ""
 
-#: setup_script.sh:819
+#: setup_script.sh:861
 msgid "mkdir -p ~/.ssh"
 msgstr ""
 
-#: setup_script.sh:820
+#: setup_script.sh:862
 msgid "chmod 700 ~/.ssh"
 msgstr ""
 
-#: setup_script.sh:821
+#: setup_script.sh:863
 msgid "cat <paste or copy contents of %s> >> ~/.ssh/authorized_keys"
 msgstr ""
 
-#: setup_script.sh:822
+#: setup_script.sh:864
 msgid "chmod 600 ~/.ssh/authorized_keys"
 msgstr ""
 
-#: setup_script.sh:826
+#: setup_script.sh:868
 msgid "💡 Would you like to manually paste the public SSH key now? (y/n): "
 msgstr ""
 
-#: setup_script.sh:828
+#: setup_script.sh:870
 msgid "📋 Press ENTER, then paste the public SSH key. Press CTRL+D when finished:"
 msgstr ""
 
-#: setup_script.sh:837
+#: setup_script.sh:879
 msgid "✅ Public key manually added to remote server successfully."
 msgstr ""
 
-#: setup_script.sh:839
+#: setup_script.sh:881
 msgid "❌ Failed to add pasted public key to remote server."
 msgstr ""
 
-#: setup_script.sh:842
+#: setup_script.sh:884
 msgid "❌ No key was entered. Skipping manual key addition."
 msgstr ""
 
-#: setup_script.sh:847
+#: setup_script.sh:889
 msgid "After doing this, test the connection by running:"
 msgstr ""
 
-#: setup_script.sh:848
+#: setup_script.sh:890
 msgid "  sudo -u %s ssh -i %s -p %s %s@%s"
 msgstr ""
 
-#: setup_script.sh:857
+#: setup_script.sh:899
 msgid "🧪 Final test of SSH connection..."
 msgstr ""
 
-#: setup_script.sh:859
+#: setup_script.sh:901
 msgid "✅ Final SSH connection test succeeded."
 msgstr ""
 
-#: setup_script.sh:861
+#: setup_script.sh:903
 msgid "❌ Final SSH connection test failed. Exiting."
 msgstr ""
 
-#: setup_script.sh:875
+#: setup_script.sh:917
 msgid "⚠️  Server B still gives this key a full shell: anyone who got %s here could delete"
 msgstr ""
 
-#: setup_script.sh:876
+#: setup_script.sh:918
 msgid "   every backup there. Setup can install Server B's backup gate now (as %s, no root):"
 msgstr ""
 
-#: setup_script.sh:877
+#: setup_script.sh:919
 msgid "   the key may then only store new backups, list and fetch them, and Server B rotates them"
 msgstr ""
 
-#: setup_script.sh:878
+#: setup_script.sh:920
 msgid "   itself. Keep another way into Server B (your own key or password) for later changes."
 msgstr ""
 
-#: setup_script.sh:879
+#: setup_script.sh:921
 msgid "   The backup service and lnd-wallet.sh need the gate: without it, copies to Server B fail."
 msgstr ""
 
-#: setup_script.sh:880
+#: setup_script.sh:922
 msgid "Type yes to install the backup gate on Server B: "
 msgstr ""
 
-#: setup_script.sh:889
+#: setup_script.sh:931
 msgid "✅ Server B's backup gate is installed: this key can no longer delete or overwrite there"
 msgstr ""
 
-#: setup_script.sh:897
+#: setup_script.sh:939
 msgid "❌ Installing Server B's backup gate failed. Install it there by hand: copy server-b-install.sh and server-a-key.pub from %s to Server B and run there, as %s: bash server-b-install.sh server-a-key.pub"
 msgstr ""
 
-#: setup_script.sh:899
+#: setup_script.sh:941
 msgid "❌ Installing Server B's backup gate failed. Install it there by hand: copy server-b-install.sh and %s to Server B and run, as %s: ./server-b-install.sh server-a-key.pub"
 msgstr ""
 
-#: setup_script.sh:904
+#: setup_script.sh:946
 msgid "⚠️ Server B's backup gate not installed: copies to Server B will fail until it is (server-b-install.sh)"
 msgstr ""
 
-#: setup_script.sh:907
+#: setup_script.sh:949
 msgid "✅ Server B answers through its backup gate"
 msgstr ""
 
-#: setup_script.sh:910
+#: setup_script.sh:974
+msgid "GitHub: make a new, empty, PRIVATE repository for the backups only (github.com/new), for"
+msgstr ""
+
+#: setup_script.sh:975
+msgid "example lnd-backups. Not this project's repository, and never a public one."
+msgstr ""
+
+#: setup_script.sh:979
+msgid "The repository, as owner/name: "
+msgstr ""
+
+#: setup_script.sh:985
+msgid "❌ %s is a public repository: anyone could download the backups (encrypted, but still). Make it private on GitHub (Settings, Danger Zone), then run setup again."
+msgstr ""
+
+#: setup_script.sh:993
+msgid "❌ Could not make the deploy key %s"
+msgstr ""
+
+#: setup_script.sh:994
+msgid "✅ Deploy key made: %s"
+msgstr ""
+
+#: setup_script.sh:998 setup_script.sh:1012
+msgid "✅ The deploy key can write to %s"
+msgstr ""
+
+#: setup_script.sh:1001
+msgid "Add this deploy key to %s on GitHub: the repository's Settings, Deploy keys, Add deploy key."
+msgstr ""
+
+#: setup_script.sh:1002
+msgid "Paste the line below, and tick \"Allow write access\" (the backups are written with it):"
+msgstr ""
+
+#: setup_script.sh:1007
+msgid "Type yes once it is added (or no to stop): "
+msgstr ""
+
+#: setup_script.sh:1008
+msgid "❌ Stopped: GitHub isn't set up. Run setup again to go on."
+msgstr ""
+
+#: setup_script.sh:1015
+msgid "❌ The key can read %s but not write: tick \"Allow write access\" for it on GitHub."
+msgstr ""
+
+#: setup_script.sh:1017
+msgid "❌ GitHub doesn't let this key into %s yet: check the repository name and the deploy key."
+msgstr ""
+
+#: setup_script.sh:1023
 msgid "=== Setup complete on Server A ==="
 msgstr ""
 
-#: setup_script.sh:923
+#: setup_script.sh:1036
 msgid "🔐 GPG private key not found for %s."
 msgstr ""
 
-#: setup_script.sh:925
+#: setup_script.sh:1038
 msgid "Do you want to paste an existing ASCII-armored GPG private key? (y/n): "
 msgstr ""
 
-#: setup_script.sh:927
+#: setup_script.sh:1040
 msgid "🔐 Please paste your ASCII-armored GPG private key below."
 msgstr ""
 
-#: setup_script.sh:928
+#: setup_script.sh:1041
 msgid "Press ENTER to begin, then paste the key, then press CTRL+D when done:"
 msgstr ""
 
-#: setup_script.sh:935
+#: setup_script.sh:1048
 msgid "❌ No GPG key content received. Aborting."
 msgstr ""
 
-#: setup_script.sh:943
+#: setup_script.sh:1056
 msgid "✅ GPG key imported successfully."
 msgstr ""
 
-#: setup_script.sh:947
+#: setup_script.sh:1060
 msgid "❌ GPG key import failed."
 msgstr ""
 
-#: setup_script.sh:952
+#: setup_script.sh:1065
 msgid "Would you like to generate a new GPG key for %s? (y/n): "
 msgstr ""
 
-#: setup_script.sh:954
+#: setup_script.sh:1067
 msgid "🛠️ Generating new GPG key..."
 msgstr ""
 
-#: setup_script.sh:966
+#: setup_script.sh:1079
 msgid "✅ GPG key generated successfully."
 msgstr ""
 
-#: setup_script.sh:974
+#: setup_script.sh:1087
 msgid "✅ GPG private key exported to %s for backup."
 msgstr ""
 
-#: setup_script.sh:976
+#: setup_script.sh:1089
 msgid "❌ GPG private key export to %s failed."
 msgstr ""
 
-#: setup_script.sh:980
+#: setup_script.sh:1093
 msgid "Would you like to export and view the private key (for backup)? (y/n): "
 msgstr ""
 
-#: setup_script.sh:983 setup_script.sh:1015
+#: setup_script.sh:1096 setup_script.sh:1128
 msgid "⚠️  COPY AND STORE THIS PRIVATE KEY SECURELY:"
 msgstr ""
 
-#: setup_script.sh:990 setup_script.sh:1022
+#: setup_script.sh:1103 setup_script.sh:1135
 msgid "Have you saved this GPG key securely? Type 'yes' or 'y' to continue: "
 msgstr ""
 
-#: setup_script.sh:995 setup_script.sh:1027
+#: setup_script.sh:1108 setup_script.sh:1140
 msgid "❗ Please type 'yes' or 'y' only when you've saved the key securely."
 msgstr ""
 
-#: setup_script.sh:1000
+#: setup_script.sh:1113
 msgid "❌ GPG key generation failed."
 msgstr ""
 
-#: setup_script.sh:1004
+#: setup_script.sh:1117
 msgid "❌ A GPG key is required. Exiting."
 msgstr ""
 
-#: setup_script.sh:1009
+#: setup_script.sh:1122
 msgid "🔐 GPG key for %s already exists."
 msgstr ""
 
-#: setup_script.sh:1012
+#: setup_script.sh:1125
 msgid "Would you like to view/export the existing private key (ASCII-armored)? (y/n): "
 msgstr ""
 
-#: setup_script.sh:1037
+#: setup_script.sh:1150
 msgid "❌ GPG key directory %s does not exist. Exiting."
 msgstr ""
 
-#: setup_script.sh:1040
+#: setup_script.sh:1153
 msgid "✅ GPG key directory %s exists."
 msgstr ""
 
-#: setup_script.sh:1045
+#: setup_script.sh:1158
 msgid "❌ GPG recipient %s not found. Exiting."
 msgstr ""
 
-#: setup_script.sh:1048
+#: setup_script.sh:1161
 msgid "✅ GPG recipient %s found successfully."
 msgstr ""
 
-#: setup_script.sh:1061
+#: setup_script.sh:1174
 msgid "❌ GPG_FINGERPRINT in config (%s) isn't the fingerprint of a key matching %s in %s's keyring. Fix it in %s (or empty it to have it filled in)."
 msgstr ""
 
-#: setup_script.sh:1070
+#: setup_script.sh:1183
 msgid "❌ No fingerprint found for GPG key %s"
 msgstr ""
 
-#: setup_script.sh:1074
+#: setup_script.sh:1187
 msgid "❌ %s keys in %s's keyring match %s:"
 msgstr ""
 
-#: setup_script.sh:1076
+#: setup_script.sh:1189
 msgid "❌ Set GPG_FINGERPRINT in %s to the one the backups should use, or delete the others (sudo -u %s gpg --delete-secret-and-public-key <fingerprint>), then rerun setup_script.sh."
 msgstr ""
 
-#: setup_script.sh:1082
+#: setup_script.sh:1195
 msgid "❌ The private key for %s isn't in %s's keyring; the service needs it to sign backups."
 msgstr ""
 
-#: setup_script.sh:1089
+#: setup_script.sh:1202
 msgid "✅ GPG key trust level set to ultimate."
 msgstr ""
 
-#: setup_script.sh:1091
+#: setup_script.sh:1204
 msgid "❌ Setting GPG key trust failed."
 msgstr ""
 
-#: setup_script.sh:1097
+#: setup_script.sh:1210
 msgid "Installing ACL and inotify-tools..."
 msgstr ""
 
-#: setup_script.sh:1100
+#: setup_script.sh:1213
 msgid "ACL and inotify-tools installation complete."
 msgstr ""
 
-#: setup_script.sh:1103
+#: setup_script.sh:1216
 msgid "Creating the backup log file at %s and granting full control to %s..."
 msgstr ""
 
-#: setup_script.sh:1106
+#: setup_script.sh:1219
 msgid "Backup log file created and permissions set."
 msgstr ""
 
-#: setup_script.sh:1109
+#: setup_script.sh:1222
 msgid "Granting full control over %s to %s..."
 msgstr ""
 
-#: setup_script.sh:1113
+#: setup_script.sh:1226
 msgid "Permissions for %s set."
 msgstr ""
 
-#: setup_script.sh:1116
+#: setup_script.sh:1229
 msgid "Removing ACL for SSH private key at %s..."
 msgstr ""
 
-#: setup_script.sh:1119
-msgid "ACL for SSH key removed."
-msgstr ""
-
-#: setup_script.sh:1122
-msgid "Setting permissions for the private key..."
-msgstr ""
-
-#: setup_script.sh:1124 setup_script.sh:1144
+#: setup_script.sh:1237 setup_script.sh:1259
 msgid "❌ Failed to set permissions on %s"
 msgstr ""
 
-#: setup_script.sh:1126 setup_script.sh:1146
+#: setup_script.sh:1239 setup_script.sh:1261
 msgid "✅ Permissions for %s set."
 msgstr ""
 
-#: setup_script.sh:1130
+#: setup_script.sh:1242
+msgid "ACL for SSH key removed."
+msgstr ""
+
+#: setup_script.sh:1245
 msgid "Removing ACL for GPG private key at %s..."
 msgstr ""
 
-#: setup_script.sh:1132
+#: setup_script.sh:1247
 msgid "ACL for GPG key removed."
 msgstr ""
 
-#: setup_script.sh:1135
+#: setup_script.sh:1250
 msgid "Setting ownership and permissions for the GPG key directory..."
 msgstr ""
 
-#: setup_script.sh:1138
+#: setup_script.sh:1253
 msgid "❌ Failed to set ownership on %s"
 msgstr ""
 
-#: setup_script.sh:1140
+#: setup_script.sh:1255
 msgid "✅ Ownership for %s set."
 msgstr ""
 
-#: setup_script.sh:1156
+#: setup_script.sh:1271
 msgid "⚠️  %s is in the docker group, which amounts to root without a password: anything"
 msgstr ""
 
-#: setup_script.sh:1157
+#: setup_script.sh:1272
 msgid "   running as %s can read the LND wallet's password and seed. These scripts don't need it."
 msgstr ""
 
-#: setup_script.sh:1158
+#: setup_script.sh:1273
 msgid "   Without it, use 'sudo docker ...' (asks for your password, and is logged)."
 msgstr ""
 
-#: setup_script.sh:1159
+#: setup_script.sh:1274
 msgid "   It takes effect at your next login. Anything of your own that runs docker as %s"
 msgstr ""
 
-#: setup_script.sh:1160
+#: setup_script.sh:1275
 msgid "   without sudo (a cron job, a monitor) would stop working."
 msgstr ""
 
-#: setup_script.sh:1161
+#: setup_script.sh:1276
 msgid "Type REMOVE to take %s out of the docker group (Enter to keep): "
 msgstr ""
 
-#: setup_script.sh:1163
+#: setup_script.sh:1278
 msgid "✅ %s removed from the docker group (from the next login)"
 msgstr ""
 
-#: setup_script.sh:1165
+#: setup_script.sh:1280
 msgid "⚠️ %s stays in the docker group"
 msgstr ""
 
-#: setup_script.sh:1203
+#: setup_script.sh:1319
 msgid "❌ No device found with UUID %s"
 msgstr ""
 
-#: setup_script.sh:1206
+#: setup_script.sh:1322
 msgid "✅ Device for UUID %s is: %s"
 msgstr ""
 
-#: setup_script.sh:1212
+#: setup_script.sh:1328
 msgid "❌ /etc/fstab already mounts %s at %s, not UUID=%s. Fix /etc/fstab or UUID in %s."
 msgstr ""
 
-#: setup_script.sh:1219
+#: setup_script.sh:1335
 msgid "⚠️  /etc/fstab mounts this disk (UUID %s) at %s. It moves to %s:"
 msgstr ""
 
-#: setup_script.sh:1220
+#: setup_script.sh:1336
 msgid "   the backup service is stopped, the disk unmounted from the old place, the /etc/fstab line"
 msgstr ""
 
-#: setup_script.sh:1221
+#: setup_script.sh:1337
 msgid "   changed (old file kept as /etc/fstab.before-lnd-backups-move), and the disk mounted at the"
 msgstr ""
 
-#: setup_script.sh:1222
+#: setup_script.sh:1338
 msgid "   new place. The backups on it stay as they are."
 msgstr ""
 
-#: setup_script.sh:1223
+#: setup_script.sh:1339
 msgid "Type MOVE to move the mount: "
 msgstr ""
 
-#: setup_script.sh:1224
+#: setup_script.sh:1340
 msgid "❌ Stopped: the mount stays at %s"
 msgstr ""
 
-#: setup_script.sh:1229
+#: setup_script.sh:1345
 msgid "🛑 Backup service stopped (setup's installer step starts it again)"
 msgstr ""
 
-#: setup_script.sh:1232
+#: setup_script.sh:1348
 msgid "❌ Could not unmount %s: something still uses it (see: sudo lsof +f -- %s)"
 msgstr ""
 
-#: setup_script.sh:1244
+#: setup_script.sh:1360
 msgid "📝 /etc/fstab: UUID=%s now mounts at %s"
 msgstr ""
 
-#: setup_script.sh:1247
+#: setup_script.sh:1363
 msgid "🧹 Removed the old mount point %s"
 msgstr ""
 
-#: setup_script.sh:1254
+#: setup_script.sh:1370
 msgid "❌ %s is a symlink. Remove it; the mount point must be a real folder owned by root."
 msgstr ""
 
-#: setup_script.sh:1258
+#: setup_script.sh:1374
 msgid "📁 Creating mount point directory: %s"
 msgstr ""
 
-#: setup_script.sh:1261
+#: setup_script.sh:1377
 msgid "📁 Mount point %s already exists."
 msgstr ""
 
-#: setup_script.sh:1275
+#: setup_script.sh:1391
 msgid "📝 /etc/fstab: mount options for %s are now %s (were %s)"
 msgstr ""
 
-#: setup_script.sh:1280
+#: setup_script.sh:1396
 msgid "✅ UUID %s is already in /etc/fstab at %s"
 msgstr ""
 
-#: setup_script.sh:1283
+#: setup_script.sh:1399
 msgid "📝 Adding entry for UUID %s to /etc/fstab..."
 msgstr ""
 
-#: setup_script.sh:1297
+#: setup_script.sh:1413
 msgid "❌ %s is already mounted from %s, not %s (UUID %s). Unmount it or fix UUID in %s."
 msgstr ""
 
-#: setup_script.sh:1300
+#: setup_script.sh:1416
 msgid "📂 %s is already mounted at %s"
 msgstr ""
 
-#: setup_script.sh:1302
+#: setup_script.sh:1418
 msgid "⛓️ Mounting %s to %s..."
 msgstr ""
 
-#: setup_script.sh:1311
+#: setup_script.sh:1427
 msgid "⛓️ %s is mounted without %s: remounting with %s"
 msgstr ""
 
-#: setup_script.sh:1317
+#: setup_script.sh:1433
 msgid "✅ Successfully mounted %s at %s"
 msgstr ""
 
-#: setup_script.sh:1319
+#: setup_script.sh:1435
 msgid "❌ Mounting failed. Please check the /etc/fstab file for errors."
 msgstr ""
 
-#: setup_script.sh:1323
+#: setup_script.sh:1439
 msgid "✅ Mount setup complete. The device should be mounted now and will be automatically mounted on every reboot."
 msgstr ""
 
-#: setup_script.sh:1334
+#: setup_script.sh:1450
 msgid "❌ %s is a symlink. Stopping."
 msgstr ""
 
-#: setup_script.sh:1339
+#: setup_script.sh:1455
 msgid "Made %s owner of %s (%s itself stays root's)"
 msgstr ""
 
-#: setup_script.sh:1341
+#: setup_script.sh:1457
 msgid "Changing ownership of %s to %s failed."
 msgstr ""
 
-#: setup_script.sh:1349
+#: setup_script.sh:1467
 msgid "⚠️ WARNING: You are about to perform a manual step that involves storing a copy of your LND seed."
 msgstr ""
 
-#: setup_script.sh:1350
+#: setup_script.sh:1468
 msgid "To securely store the seed, follow these steps:"
 msgstr ""
 
-#: setup_script.sh:1351
+#: setup_script.sh:1469
 msgid "1. Go to 'Server Settings' in your BTCpayServer dashboard."
 msgstr ""
 
-#: setup_script.sh:1352
+#: setup_script.sh:1470
 msgid "2. Click on 'Services' in the menu."
 msgstr ""
 
-#: setup_script.sh:1353
+#: setup_script.sh:1471
 msgid "3. Select 'LND Seed Backup'."
 msgstr ""
 
-#: setup_script.sh:1354
+#: setup_script.sh:1472
 msgid "4. Click on 'See information' to view and copy your LND seed."
 msgstr ""
 
-#: setup_script.sh:1355
+#: setup_script.sh:1473
 msgid "⚠️ Make sure to store this seed in a secure location! Losing the seed means losing access to your LND wallet."
 msgstr ""
 
-#: setup_script.sh:1358
+#: setup_script.sh:1476
 msgid "Have you securely stored your LND seed? (y/n): "
 msgstr ""
 
-#: setup_script.sh:1361
+#: setup_script.sh:1479
 msgid "✅ LND seed backup step confirmed. Proceeding with the backup process."
 msgstr ""
 
-#: setup_script.sh:1364
+#: setup_script.sh:1482
 msgid "❌ LND seed backup step not completed. Please ensure that the seed is securely stored before proceeding."
 msgstr ""
 
-#: setup_script.sh:1369
+#: setup_script.sh:1487
 msgid "Last step: the backup service (rsync_gpg_backup.sh). It watches LND's channel backup and, after"
 msgstr ""
 
-#: setup_script.sh:1370
-msgid "every change, stores an encrypted, signed copy on the attached volume and on Server B."
+#: setup_script.sh:1488
+msgid "every change, stores an encrypted, signed copy at the destinations you chose."
 msgstr ""
 
-#: setup_script.sh:1371
+#: setup_script.sh:1489
 msgid "It explains what it does first. Later: lnd-manager /install, or rerun setup."
 msgstr ""
 
-#: setup_script.sh:1376
+#: setup_script.sh:1494
 msgid "📦 Installing the scripts and config root-owned into %s..."
 msgstr ""
 
-#: setup_script.sh:1378
+#: setup_script.sh:1496
 msgid "❌ install-scripts.sh failed: the installed copies are not up to date"
 msgstr ""
 
-#: setup_script.sh:1385
+#: setup_script.sh:1503
 msgid "📦 Install or update the backup service now? (y/n): "
 msgstr ""
 
-#: setup_script.sh:1387
+#: setup_script.sh:1505
 msgid "▶️ Installing the backup service (%s)..."
 msgstr ""
 
-#: setup_script.sh:1390
+#: setup_script.sh:1508
 msgid "✅ Backup service installer finished."
 msgstr ""
 
-#: setup_script.sh:1392
+#: setup_script.sh:1510
 msgid "❌ The backup service installer is missing or not executable: %s"
 msgstr ""
 
-#: setup_script.sh:1395
+#: setup_script.sh:1513
 msgid "⏭️ Backup service not installed now. Later: lnd-manager /install"
 msgstr ""
 
-#: setup_script.sh:1406
+#: setup_script.sh:1524
 msgid "Writing logrotate configuration to %s..."
 msgstr ""
 
-#: setup_script.sh:1419
+#: setup_script.sh:1537
 msgid "Setup complete! What's done and what's next: lnd-manager, then /checklist"
 msgstr ""
 
@@ -5795,757 +6067,828 @@ msgstr ""
 
 #: lnd-manager.py:98
 #, python-format
+msgid "backup: copying to GitHub"
+msgstr ""
+
+#: lnd-manager.py:99
+#, python-format
 msgid "backup: encrypting"
 msgstr ""
 
-#: lnd-manager.py:98
+#: lnd-manager.py:99
 #, python-format
 msgid "backup: milestones"
 msgstr ""
 
-#: lnd-manager.py:98
+#: lnd-manager.py:99
 #, python-format
 msgid "backup: removing old backups"
 msgstr ""
 
-#: lnd-manager.py:99
+#: lnd-manager.py:100
 #, python-format
 msgid "backup: verifying the copy"
 msgstr ""
 
-#: lnd-manager.py:99
+#: lnd-manager.py:100
 #, python-format
 msgid "backup: waiting for files to settle"
 msgstr ""
 
-#: lnd-manager.py:113
+#: lnd-manager.py:122
 #, python-format
 msgid "Backup"
 msgstr ""
 
-#: lnd-manager.py:114
+#: lnd-manager.py:123
 #, python-format
 msgid "Attached volume"
 msgstr ""
 
-#: lnd-manager.py:116
+#: lnd-manager.py:124
 #, python-format
-msgid "Milestones, local"
+msgid "Server B"
 msgstr ""
 
-#: lnd-manager.py:125 serverb/serverb-dashboard.py:80
+#: lnd-manager.py:125
 #, python-format
-msgid "what is set up, and what to do next"
+msgid "GitHub"
 msgstr ""
 
 #: lnd-manager.py:126
 #, python-format
-msgid "Shows each setup step, whether it is done, and what to run for the ones that aren't: settings, the root-owned install, the attached volume, your seed and GPG key stored safely, the backup service, the first backups, and the watchtower (optional). Read only."
+msgid "Milestones, local"
 msgstr ""
 
-#: lnd-manager.py:129
+#: lnd-manager.py:142 serverb/serverb-dashboard.py:80
 #, python-format
-msgid "run the hourly check now"
-msgstr ""
-
-#: lnd-manager.py:130
-#, python-format
-msgid "Asks the backup service to check LND's files now instead of at the next hourly check. If any changed, it makes a backup. Nothing is stopped or deleted."
-msgstr ""
-
-#: lnd-manager.py:132
-#, python-format
-msgid "full backup log"
-msgstr ""
-
-#: lnd-manager.py:133
-#, python-format
-msgid "Opens the whole backup log in less (q comes back here). Read only."
-msgstr ""
-
-#: lnd-manager.py:134
-#, python-format
-msgid "start the backup service"
-msgstr ""
-
-#: lnd-manager.py:135
-#, python-format
-msgid "Starts the backup service. BTCPay and LND aren't touched."
-msgstr ""
-
-#: lnd-manager.py:136
-#, python-format
-msgid "stop the backup service"
-msgstr ""
-
-#: lnd-manager.py:137
-#, python-format
-msgid "Stops the backup service: no backups are made until it is started again. BTCPay and LND keep running."
-msgstr ""
-
-#: lnd-manager.py:139
-#, python-format
-msgid "restart the backup service"
-msgstr ""
-
-#: lnd-manager.py:140
-#, python-format
-msgid "Stops and starts the backup service, for example after editing config. A backup that is running is stopped and made again later. BTCPay and LND keep running."
-msgstr ""
-
-#: lnd-manager.py:142
-#, python-format
-msgid "setup_script.sh: users, keys, attached volume, Server B"
+msgid "what is set up, and what to do next"
 msgstr ""
 
 #: lnd-manager.py:143
 #, python-format
-msgid "Runs setup_script.sh: the backup user, the SSH key for Server B, the GPG backup key, the attached volume. It asks before each step and doesn't touch BTCPay or LND."
-msgstr ""
-
-#: lnd-manager.py:145
-#, python-format
-msgid "make the scripts to run on Server B"
+msgid "Shows each setup step, whether it is done, and what to run for the ones that aren't: settings, the root-owned install, the attached volume, your seed and GPG key stored safely, the backup service, the first backups, and the watchtower (optional). Read only."
 msgstr ""
 
 #: lnd-manager.py:146
 #, python-format
-msgid "Runs serverb-scripts.sh: makes the scripts you run on Server B with sudo (the backup user, a pruned bitcoind, the blockchain import, the watchtower, the Server B dashboard), with your settings filled in. Asks for settings config doesn't have yet. Shows each script's sha256 and how to copy them to Server B. Changes nothing on either server."
+msgid "run the hourly check now"
+msgstr ""
+
+#: lnd-manager.py:147
+#, python-format
+msgid "Asks the backup service to check LND's files now instead of at the next hourly check. If any changed, it makes a backup. Nothing is stopped or deleted."
+msgstr ""
+
+#: lnd-manager.py:149
+#, python-format
+msgid "full backup log"
 msgstr ""
 
 #: lnd-manager.py:150
 #, python-format
-msgid "send Server B its settings (and the scripts, if you choose)"
+msgid "Opens the whole backup log in less (q comes back here). Read only."
 msgstr ""
 
 #: lnd-manager.py:151
 #, python-format
-msgid "Runs serverb-scripts.sh send: asks for settings config doesn't have yet, then sends Server B serverb.conf through the backup gate, and, if you choose, serverb-install.sh with all the scripts made here. They go into the backup user's ~/serverb-setup; nothing runs there. Then shows what to run on Server B with sudo: serverb-setup.sh from a git clone, or serverb-install.sh."
+msgid "start the backup service"
 msgstr ""
 
-#: lnd-manager.py:155
+#: lnd-manager.py:152
 #, python-format
-msgid "prune BTCPay's blockchain (BTCPay's presets)"
+msgid "Starts the backup service. BTCPay and LND aren't touched."
+msgstr ""
+
+#: lnd-manager.py:153
+#, python-format
+msgid "stop the backup service"
+msgstr ""
+
+#: lnd-manager.py:154
+#, python-format
+msgid "Stops the backup service: no backups are made until it is started again. BTCPay and LND keep running."
 msgstr ""
 
 #: lnd-manager.py:156
 #, python-format
-msgid "Prunes BTCPay's blockchain with one of BTCPay's opt-save-storage presets: ~100, ~50, ~25 (recommended) or ~5 GB. Old blocks are deleted: BTCPay can then no longer rescan for old transactions. Stops BTCPay's bitcoind and LND for a few minutes while btcpay-setup.sh applies it; you type STOP BTCPAY first."
+msgid "restart the backup service"
+msgstr ""
+
+#: lnd-manager.py:157
+#, python-format
+msgid "Stops and starts the backup service, for example after editing config. A backup that is running is stopped and made again later. BTCPay and LND keep running."
+msgstr ""
+
+#: lnd-manager.py:159
+#, python-format
+msgid "setup_script.sh: users, keys, attached volume, Server B"
 msgstr ""
 
 #: lnd-manager.py:160
 #, python-format
-msgid "copy BTCPay's pruned blockchain to Server B"
+msgid "Runs setup_script.sh: the backup user, the SSH key for Server B, the GPG backup key, the attached volume. It asks before each step and doesn't touch BTCPay or LND."
 msgstr ""
 
-#: lnd-manager.py:161
+#: lnd-manager.py:162
 #, python-format
-msgid "Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. It asks where it is pruned to Server B's size: here, in a copy beside BTCPay's (BTCPay's own blockchain isn't changed; less to send), or on Server B after the import. It checks there is room on both servers first. Two passes: the first while BTCPay runs, the second stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B."
+msgid "make the scripts to run on Server B"
+msgstr ""
+
+#: lnd-manager.py:163
+#, python-format
+msgid "Runs serverb-scripts.sh: makes the scripts you run on Server B with sudo (the backup user, a pruned bitcoind, the blockchain import, the watchtower, the Server B dashboard), with your settings filled in. Asks for settings config doesn't have yet. Shows each script's sha256 and how to copy them to Server B. Changes nothing on either server."
+msgstr ""
+
+#: lnd-manager.py:167
+#, python-format
+msgid "where the backups go: each destination on or off"
 msgstr ""
 
 #: lnd-manager.py:168
 #, python-format
-msgid "back to a chain or tower operation that is still running"
+msgid "Shows the attached volume, Server B and GitHub, each on or off, with its last copy. /destination volume, /destination serverb and /destination github turn one on or off. Read only."
 msgstr ""
 
-#: lnd-manager.py:169
+#: lnd-manager.py:170
 #, python-format
-msgid "Goes back to /chain prune, /chain copy or /tower add still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here."
+msgid "turn the attached volume on or off"
 msgstr ""
 
 #: lnd-manager.py:171
 #, python-format
-msgid "use Server B's watchtower for this node"
+msgid "Runs destinations.sh volume. Off: new backups no longer go to the attached volume (type TURN OFF); the copies there stay, and restoring still looks there. On: runs setup, which mounts the disk, then reinstalls the backup service. At least one destination stays on."
 msgstr ""
 
-#: lnd-manager.py:172
+#: lnd-manager.py:174
 #, python-format
-msgid "Asks for the watchtower's public key and address if config lacks them, then turns on BTCPay's watchtower client (opt-lnd-wtclient: Stops BTCPay's LND for a few minutes, you type STOP BTCPAY) and adds the tower. LND then sends it encrypted channel updates."
+msgid "turn Server B on or off"
 msgstr ""
 
 #: lnd-manager.py:175
 #, python-format
-msgid "the watchtower client's towers"
+msgid "Runs destinations.sh serverb. Off: new backups no longer go to Server B (type TURN OFF); its copies stay. On: runs setup, which sets up Server B's key and gate, then reinstalls the backup service. At least one destination stays on."
 msgstr ""
 
-#: lnd-manager.py:176
+#: lnd-manager.py:178
 #, python-format
-msgid "Shows the towers BTCPay's LND uses and its statistics (lncli wtclient towers, stats). Read only."
-msgstr ""
-
-#: lnd-manager.py:178 serverb/serverb-dashboard.py:117
-#, python-format
-msgid "install the newest release of these scripts"
+msgid "turn GitHub on or off"
 msgstr ""
 
 #: lnd-manager.py:179
 #, python-format
-msgid "Runs sudo lnd-update: gets the newest release from GitHub, checks its signature against the release key installed with the scripts, and asks you to type UPDATE. It installs it when no backup, wallet operation or /chain or /tower operation runs (else it waits up to 24 hours, then at the next boot), and reinstalls the backup service. LND and BTCPay keep running."
+msgid "Runs destinations.sh github. On: runs setup, which asks for your private repository (owner/name), makes a deploy key and shows it to add on GitHub with write access, then reinstalls the backup service. Off: new backups no longer go there (type TURN OFF); its copies stay. A broken-into server could delete the copies on GitHub: Server B's can't."
 msgstr ""
 
 #: lnd-manager.py:183
 #, python-format
-msgid "rsync_gpg_backup.sh: install or update the backup service"
+msgid "send Server B its settings (and the scripts, if you choose)"
 msgstr ""
 
 #: lnd-manager.py:184
 #, python-format
-msgid "Installs or updates the backup service: encrypted, signed backups of LND's files to the attached volume and Server B, run as the backup user. Also its read-only root helper and sudo rule. It explains everything first, and deletes existing backups only if you type DELETE ALL BACKUPS. BTCPay and LND aren't touched."
+msgid "Runs serverb-scripts.sh send: asks for settings config doesn't have yet, then sends Server B serverb.conf through the backup gate, and, if you choose, serverb-install.sh with all the scripts made here. They go into the backup user's ~/serverb-setup; nothing runs there. Then shows what to run on Server B with sudo: serverb-setup.sh from a git clone, or serverb-install.sh."
 msgstr ""
 
 #: lnd-manager.py:188
 #, python-format
-msgid "replace the wallet with a new one"
+msgid "prune BTCPay's blockchain (BTCPay's presets)"
 msgstr ""
 
 #: lnd-manager.py:189
 #, python-format
-msgid "Makes a new LND wallet in place of the current one. Stops BTCPay for a few minutes. The current wallet is kept in a safety backup, but its funds stay reachable only through its old seed. Asks you to type confirmations before anything changes."
-msgstr ""
-
-#: lnd-manager.py:192
-#, python-format
-msgid "restore the wallet from its seed"
+msgid "Prunes BTCPay's blockchain with one of BTCPay's opt-save-storage presets: ~100, ~50, ~25 (recommended) or ~5 GB. Old blocks are deleted: BTCPay can then no longer rescan for old transactions. Stops BTCPay's bitcoind and LND for a few minutes while btcpay-setup.sh applies it; you type STOP BTCPAY first."
 msgstr ""
 
 #: lnd-manager.py:193
 #, python-format
-msgid "Restores the wallet's on-chain funds from its seed: from the latest backup, or typed. Stops BTCPay; the scan for old funds can take minutes to hours. Channels are not restored (/wallet channels). Safety backup and typed confirmations first."
+msgid "copy BTCPay's pruned blockchain to Server B"
 msgstr ""
 
-#: lnd-manager.py:196
+#: lnd-manager.py:194
 #, python-format
-msgid "restore the wallet and the channels"
-msgstr ""
-
-#: lnd-manager.py:197
-#, python-format
-msgid "Restores the wallet from its seed and the channels from channel.backup: each peer closes its channel and your share comes back on-chain. Stops BTCPay. Never while another LND with this seed runs. Safety backup and typed confirmations first."
-msgstr ""
-
-#: lnd-manager.py:200
-#, python-format
-msgid "restore the channels into the running wallet"
+msgid "Copies BTCPay's pruned blockchain to Server B's bitcoind (into the folder serverb-bitcoind-setup.sh made), so it doesn't sync for days. It asks where it is pruned to Server B's size: here, in a copy beside BTCPay's (BTCPay's own blockchain isn't changed; less to send), or on Server B after the import. It checks there is room on both servers first. Two passes: the first while BTCPay runs, the second stops BTCPay for a few minutes (you type STOP BTCPAY). Runs in tmux; /chain attach goes back to it. Then run serverb-import-chain.sh on Server B."
 msgstr ""
 
 #: lnd-manager.py:201
 #, python-format
-msgid "Restores the channels from channel.backup into the wallet that runs now, for example after /wallet restore. Stops BTCPay for a few minutes for a safety backup. Never while another LND with this seed runs. Typed confirmations first."
+msgid "back to a chain or tower operation that is still running"
+msgstr ""
+
+#: lnd-manager.py:202
+#, python-format
+msgid "Goes back to /chain prune, /chain copy or /tower add still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here."
 msgstr ""
 
 #: lnd-manager.py:204
 #, python-format
-msgid "put a safety backup back"
+msgid "use Server B's watchtower for this node"
 msgstr ""
 
 #: lnd-manager.py:205
 #, python-format
-msgid "Puts a safety backup back as the whole LND volume, channel state included. Only safe if no LND has run with those channels since. Stops BTCPay. Saves the current wallet first, and asks you to type confirmations."
+msgid "Asks for the watchtower's public key and address if config lacks them, then turns on BTCPay's watchtower client (opt-lnd-wtclient: Stops BTCPay's LND for a few minutes, you type STOP BTCPAY) and adds the tower. LND then sends it encrypted channel updates."
 msgstr ""
 
 #: lnd-manager.py:208
 #, python-format
-msgid "back to a wallet operation that is still running"
+msgid "the watchtower client's towers"
 msgstr ""
 
 #: lnd-manager.py:209
 #, python-format
+msgid "Shows the towers BTCPay's LND uses and its statistics (lncli wtclient towers, stats). Read only."
+msgstr ""
+
+#: lnd-manager.py:211 serverb/serverb-dashboard.py:117
+#, python-format
+msgid "install the newest release of these scripts"
+msgstr ""
+
+#: lnd-manager.py:212
+#, python-format
+msgid "Runs sudo lnd-update: gets the newest release from GitHub, checks its signature against the release key installed with the scripts, and asks you to type UPDATE. It installs it when no backup, wallet operation or /chain or /tower operation runs (else it waits up to 24 hours, then at the next boot), and reinstalls the backup service. LND and BTCPay keep running."
+msgstr ""
+
+#: lnd-manager.py:216
+#, python-format
+msgid "rsync_gpg_backup.sh: install or update the backup service"
+msgstr ""
+
+#: lnd-manager.py:217
+#, python-format
+msgid "Installs or updates the backup service: encrypted, signed backups of LND's files to the attached volume and Server B, run as the backup user. Also its read-only root helper and sudo rule. It explains everything first, and deletes existing backups only if you type DELETE ALL BACKUPS. BTCPay and LND aren't touched."
+msgstr ""
+
+#: lnd-manager.py:221
+#, python-format
+msgid "replace the wallet with a new one"
+msgstr ""
+
+#: lnd-manager.py:222
+#, python-format
+msgid "Makes a new LND wallet in place of the current one. Stops BTCPay for a few minutes. The current wallet is kept in a safety backup, but its funds stay reachable only through its old seed. Asks you to type confirmations before anything changes."
+msgstr ""
+
+#: lnd-manager.py:225
+#, python-format
+msgid "restore the wallet from its seed"
+msgstr ""
+
+#: lnd-manager.py:226
+#, python-format
+msgid "Restores the wallet's on-chain funds from its seed: from the latest backup, or typed. Stops BTCPay; the scan for old funds can take minutes to hours. Channels are not restored (/wallet channels). Safety backup and typed confirmations first."
+msgstr ""
+
+#: lnd-manager.py:229
+#, python-format
+msgid "restore the wallet and the channels"
+msgstr ""
+
+#: lnd-manager.py:230
+#, python-format
+msgid "Restores the wallet from its seed and the channels from channel.backup: each peer closes its channel and your share comes back on-chain. Stops BTCPay. Never while another LND with this seed runs. Safety backup and typed confirmations first."
+msgstr ""
+
+#: lnd-manager.py:233
+#, python-format
+msgid "restore the channels into the running wallet"
+msgstr ""
+
+#: lnd-manager.py:234
+#, python-format
+msgid "Restores the channels from channel.backup into the wallet that runs now, for example after /wallet restore. Stops BTCPay for a few minutes for a safety backup. Never while another LND with this seed runs. Typed confirmations first."
+msgstr ""
+
+#: lnd-manager.py:237
+#, python-format
+msgid "put a safety backup back"
+msgstr ""
+
+#: lnd-manager.py:238
+#, python-format
+msgid "Puts a safety backup back as the whole LND volume, channel state included. Only safe if no LND has run with those channels since. Stops BTCPay. Saves the current wallet first, and asks you to type confirmations."
+msgstr ""
+
+#: lnd-manager.py:241
+#, python-format
+msgid "back to a wallet operation that is still running"
+msgstr ""
+
+#: lnd-manager.py:242
+#, python-format
 msgid "Goes back to a wallet operation still running in tmux, for example after the SSH connection dropped. Ctrl-b d leaves it running and comes back here."
 msgstr ""
 
-#: lnd-manager.py:211 serverb/serverb-dashboard.py:125
+#: lnd-manager.py:244 serverb/serverb-dashboard.py:125
 #, python-format
 msgid "support the project, license"
 msgstr ""
 
-#: lnd-manager.py:212 serverb/serverb-dashboard.py:126
+#: lnd-manager.py:245 serverb/serverb-dashboard.py:126
 #, python-format
 msgid "Shows the project's donation address, its page and a summary of the license. Text only: nothing is fetched or sent."
 msgstr ""
 
-#: lnd-manager.py:214 serverb/serverb-dashboard.py:128
+#: lnd-manager.py:247 serverb/serverb-dashboard.py:128
 #, python-format
 msgid "leave the dashboard"
 msgstr ""
 
-#: lnd-manager.py:215
+#: lnd-manager.py:248
 #, python-format
 msgid "Leaves the dashboard. The backup service keeps running."
 msgstr ""
 
-#: lnd-manager.py:322
+#: lnd-manager.py:355
 #, python-format
 msgid "Can't read the log (%s) or the journal"
 msgstr ""
 
-#: lnd-manager.py:359
-#, python-format
-msgid "never"
-msgstr ""
-
-#: lnd-manager.py:365
+#: lnd-manager.py:398
 msgid "yesterday %H:%M"
 msgstr ""
 
-#: lnd-manager.py:368
+#: lnd-manager.py:401
 #, python-format
 msgid "%s (%s ago)"
 msgstr ""
 
-#: lnd-manager.py:437
+#: lnd-manager.py:471
 #, python-format
 msgid "Settings in config"
 msgstr ""
 
-#: lnd-manager.py:438
+#: lnd-manager.py:472
 #, python-format
 msgid "/setup asks for them: "
 msgstr ""
 
-#: lnd-manager.py:446
+#: lnd-manager.py:480
 #, python-format
 msgid "/setup installs them (or sudo ./install-scripts.sh in your working folder)"
 msgstr ""
 
-#: lnd-manager.py:448
+#: lnd-manager.py:482
 #, python-format
 msgid "config in your working folder changed since it was installed: sudo ./install-scripts.sh there (setup does it too)"
 msgstr ""
 
-#: lnd-manager.py:450
+#: lnd-manager.py:484
 #, python-format
 msgid "Scripts installed root-owned"
 msgstr ""
 
-#: lnd-manager.py:460
+#: lnd-manager.py:495
 #, python-format
 msgid "Attached volume mounted at %s"
 msgstr ""
 
-#: lnd-manager.py:461
+#: lnd-manager.py:496
 #, python-format
 msgid "/setup mounts it (attach the disk first)"
 msgstr ""
 
-#: lnd-manager.py:464
+#: lnd-manager.py:499
 #, python-format
 msgid "your LND seed"
 msgstr ""
 
-#: lnd-manager.py:465
+#: lnd-manager.py:500
 #, python-format
 msgid "the GPG backup key"
 msgstr ""
 
-#: lnd-manager.py:467
+#: lnd-manager.py:502
 #, python-format
 msgid "LND seed and GPG key stored safely, away from this server"
 msgstr ""
 
-#: lnd-manager.py:468
+#: lnd-manager.py:503
 #, python-format
 msgid "not confirmed yet: %s. /setup asks (for the GPG key: answer y to view it, then confirm)"
 msgstr ""
 
-#: lnd-manager.py:469
+#: lnd-manager.py:504
 #, python-format
 msgid " and "
 msgstr ""
 
-#: lnd-manager.py:472
+#: lnd-manager.py:507
 #, python-format
 msgid "/install installs it"
 msgstr ""
 
-#: lnd-manager.py:474
+#: lnd-manager.py:509
 #, python-format
 msgid "it is %s: /start, and /log if it stops again"
 msgstr ""
 
-#: lnd-manager.py:475
+#: lnd-manager.py:510
 #, python-format
 msgid "Backup service running"
 msgstr ""
 
-#: lnd-manager.py:477
+#: lnd-manager.py:513
 #, python-format
 msgid "First backup on the attached volume"
 msgstr ""
 
-#: lnd-manager.py:478
+#: lnd-manager.py:514
 #, python-format
 msgid "made at the next change of LND's channel backup; /check looks now. /log says why it fails"
 msgstr ""
 
-#: lnd-manager.py:479
+#: lnd-manager.py:516
 #, python-format
 msgid "First backup on Server B"
 msgstr ""
 
-#: lnd-manager.py:480
+#: lnd-manager.py:517
 #, python-format
 msgid "made with the next backup. If it fails, /log says why (Server B's gate: /setup installs it)"
 msgstr ""
 
-#: lnd-manager.py:484
+#: lnd-manager.py:519
+#, python-format
+msgid "First backup on GitHub"
+msgstr ""
+
+#: lnd-manager.py:520
+#, python-format
+msgid "made with the next backup. If it fails, /log says why (the deploy key: /setup shows it)"
+msgstr ""
+
+#: lnd-manager.py:524
 #, python-format
 msgid "Watchtower on Server B (optional)"
 msgstr ""
 
-#: lnd-manager.py:485
+#: lnd-manager.py:525
 #, python-format
 msgid "/serverb send gives Server B its settings and says what to run there; then /tower add"
 msgstr ""
 
-#: lnd-manager.py:492
+#: lnd-manager.py:532
 #, python-format
 msgid "Setup checklist"
 msgstr ""
 
-#: lnd-manager.py:500
+#: lnd-manager.py:540
 #, python-format
 msgid "Everything above is read from config, the status file and the system; only the"
 msgstr ""
 
-#: lnd-manager.py:501
+#: lnd-manager.py:541
 #, python-format
 msgid "seed and GPG key step comes from your answers in setup."
 msgstr ""
 
-#: lnd-manager.py:570
+#: lnd-manager.py:610
 #, python-format
 msgid "Update waiting: %s is installed at the next boot (not safe for 24 hours)"
 msgstr ""
 
-#: lnd-manager.py:572
+#: lnd-manager.py:612
 #, python-format
 msgid "Update waiting: %s, installed once it is safe (no backup or wallet operation running)"
 msgstr ""
 
-#: lnd-manager.py:575
+#: lnd-manager.py:615
 #, python-format
 msgid "Update: these scripts %s are out (installed: %s). /update"
 msgstr ""
 
-#: lnd-manager.py:590
+#: lnd-manager.py:630
 #, python-format
 msgid "Service is %s (%s)"
 msgstr ""
 
-#: lnd-manager.py:592
+#: lnd-manager.py:632
 #, python-format
 msgid "Service is %s"
 msgstr ""
 
-#: lnd-manager.py:598
+#: lnd-manager.py:638
 #, python-format
 msgid "Service restarted %d time(s) since it was started"
 msgstr ""
 
-#: lnd-manager.py:602
+#: lnd-manager.py:642
 #, python-format
 msgid "No status file at %s (rerun rsync_gpg_backup.sh, then wait for the service to start)"
 msgstr ""
 
-#: lnd-manager.py:605
+#: lnd-manager.py:645
 #, python-format
 msgid "STATUS_FILE is empty in config, so the service writes no status"
 msgstr ""
 
-#: lnd-manager.py:622
+#: lnd-manager.py:665
 #, python-format
 msgid "%s: retry pending for %s"
 msgstr ""
 
-#: lnd-manager.py:627
+#: lnd-manager.py:670
 #, python-format
 msgid "Last backup failed %s%s"
 msgstr ""
 
-#: lnd-manager.py:634
+#: lnd-manager.py:677
 #, python-format
 msgid "Files changed %s ago and no backup has succeeded since"
 msgstr ""
 
-#: lnd-manager.py:639
+#: lnd-manager.py:683
 #, python-format
 msgid "Server B is behind: its last copy is older than the attached volume's"
 msgstr ""
 
-#: lnd-manager.py:645
+#: lnd-manager.py:685
+#, python-format
+msgid "No copy leaves this server (only the attached volume is on): /destinations"
+msgstr ""
+
+#: lnd-manager.py:691
 #, python-format
 msgid "The hourly check hasn't run for %s"
 msgstr ""
 
-#: lnd-manager.py:673
+#: lnd-manager.py:719
 #, python-format
 msgid " for %s"
 msgstr ""
 
-#: lnd-manager.py:674
+#: lnd-manager.py:720
 #, python-format
 msgid ", restarts: %s"
 msgstr ""
 
-#: lnd-manager.py:686 serverb/serverb-dashboard.py:344
+#: lnd-manager.py:732 serverb/serverb-dashboard.py:344
 #, python-format
 msgid "Setup: %d of %d steps done. Next: %s (/checklist)"
 msgstr ""
 
-#: lnd-manager.py:689
+#: lnd-manager.py:735
 #, python-format
 msgid "Service: "
 msgstr ""
 
-#: lnd-manager.py:692
+#: lnd-manager.py:738
 #, python-format
 msgid "/wallet attach to go back to it"
 msgstr ""
 
-#: lnd-manager.py:692
+#: lnd-manager.py:738
 #, python-format
 msgid "in another terminal (not in tmux)"
 msgstr ""
 
-#: lnd-manager.py:693
+#: lnd-manager.py:739
 #, python-format
 msgid "Wallet operation running: %s, since %s, %s"
 msgstr ""
 
-#: lnd-manager.py:699
+#: lnd-manager.py:745
 #, python-format
 msgid ", since "
 msgstr ""
 
-#: lnd-manager.py:699
+#: lnd-manager.py:745
 #, python-format
 msgid "Job: %s%s"
 msgstr ""
 
-#: lnd-manager.py:703
+#: lnd-manager.py:749
 #, python-format
 msgid "Last file change: %s  %s"
 msgstr ""
 
-#: lnd-manager.py:706
+#: lnd-manager.py:752
 #, python-format
 msgid "Last file change: none since the status file was created"
 msgstr ""
 
-#: lnd-manager.py:712
+#: lnd-manager.py:758
 #, python-format
 msgid "Backups"
 msgstr ""
 
-#: lnd-manager.py:712
+#: lnd-manager.py:758
 #, python-format
 msgid "Last failure"
 msgstr ""
 
-#: lnd-manager.py:712
+#: lnd-manager.py:758
 #, python-format
 msgid "Last success"
 msgstr ""
 
-#: lnd-manager.py:719
+#: lnd-manager.py:765
 #, python-format
 msgid "Hourly check"
 msgstr ""
 
-#: lnd-manager.py:726
+#: lnd-manager.py:772
 #, python-format
 msgid "   retry pending since %s"
 msgstr ""
 
-#: lnd-manager.py:730 serverb/serverb-dashboard.py:620
+#: lnd-manager.py:776 serverb/serverb-dashboard.py:620
 #, python-format
 msgid "Problems"
 msgstr ""
 
-#: lnd-manager.py:734
+#: lnd-manager.py:780
 #, python-format
 msgid "  none"
 msgstr ""
 
-#: lnd-manager.py:735
+#: lnd-manager.py:781
 #, python-format
 msgid "Errors in the last 24h: %d"
 msgstr ""
 
-#: lnd-manager.py:744
+#: lnd-manager.py:790
 #, python-format
 msgid "Log:"
 msgstr ""
 
-#: lnd-manager.py:752
+#: lnd-manager.py:798
 #, python-format
 msgid " / commands  s start/stop  r restart  c check now  l log  w wallet  q quit"
 msgstr ""
 
-#: lnd-manager.py:766 serverb/serverb-dashboard.py:546
+#: lnd-manager.py:812 serverb/serverb-dashboard.py:546
 #, python-format
 msgid "Could not run it: %s"
 msgstr ""
 
-#: lnd-manager.py:769 serverb/serverb-dashboard.py:548
+#: lnd-manager.py:815 serverb/serverb-dashboard.py:548
 #, python-format
 msgid ""
 "\n"
 "Exit code %d. Press Enter to return to the dashboard."
 msgstr ""
 
-#: lnd-manager.py:810
+#: lnd-manager.py:856
 #, python-format
 msgid "The service isn't running, so there is no check to run"
 msgstr ""
 
-#: lnd-manager.py:823
+#: lnd-manager.py:869
 #, python-format
 msgid "Back from the log"
 msgstr ""
 
-#: lnd-manager.py:829 lnd-manager.py:834 lnd-manager.py:839 lnd-manager.py:857
+#: lnd-manager.py:875 lnd-manager.py:880 lnd-manager.py:885 lnd-manager.py:892
+#: lnd-manager.py:910
 #, python-format
 msgid "not set"
 msgstr ""
 
-#: lnd-manager.py:829
+#: lnd-manager.py:875
 #, python-format
 msgid "setup_script.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr ""
 
-#: lnd-manager.py:834 lnd-manager.py:839 lnd-manager.py:857
+#: lnd-manager.py:880 lnd-manager.py:892 lnd-manager.py:910
 #, python-format
 msgid "serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr ""
 
-#: lnd-manager.py:846 serverb/serverb-dashboard.py:491
+#: lnd-manager.py:885
+#, python-format
+msgid "destinations.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
+msgstr ""
+
+#: lnd-manager.py:899 serverb/serverb-dashboard.py:491
 #: serverb/serverb-dashboard.py:584
 #, python-format
 msgid "Support"
 msgstr ""
 
-#: lnd-manager.py:849 serverb/serverb-dashboard.py:581
+#: lnd-manager.py:902 serverb/serverb-dashboard.py:581
 #, python-format
 msgid "Checklist"
 msgstr ""
 
-#: lnd-manager.py:863
+#: lnd-manager.py:916
 #, python-format
 msgid "No wallet operation is running"
 msgstr ""
 
-#: lnd-manager.py:865
+#: lnd-manager.py:918
 #, python-format
 msgid "The wallet operation runs in another terminal, not in tmux: nothing to attach to"
 msgstr ""
 
-#: lnd-manager.py:870
+#: lnd-manager.py:923
 #, python-format
 msgid "A wallet operation is already running: wait for it, or /wallet attach"
 msgstr ""
 
-#: lnd-manager.py:876
+#: lnd-manager.py:929
 #, python-format
 msgid "Run: "
 msgstr ""
 
-#: lnd-manager.py:889
+#: lnd-manager.py:943
 #, python-format
 msgid "✅ %s: done"
 msgstr ""
 
-#: lnd-manager.py:891
+#: lnd-manager.py:945
 #, python-format
 msgid "⚠️ %s: still running in tmux. /%s attach to go back to it"
 msgstr ""
 
-#: lnd-manager.py:894
+#: lnd-manager.py:948
 #, python-format
 msgid "⚠️ %s: not started, an earlier wallet operation was still open"
 msgstr ""
 
-#: lnd-manager.py:895
+#: lnd-manager.py:949
 #, python-format
 msgid "❌ %s: exit code %d"
 msgstr ""
 
-#: lnd-manager.py:900
+#: lnd-manager.py:954
 #, python-format
 msgid "(placeholder: SUPPORT_BTC_ADDRESS in config)"
 msgstr ""
 
-#: lnd-manager.py:901
+#: lnd-manager.py:955
 #, python-format
 msgid "(placeholder: SUPPORT_URL in config)"
 msgstr ""
 
-#: lnd-manager.py:905 serverb/serverb-dashboard.py:405
+#: lnd-manager.py:959 serverb/serverb-dashboard.py:405
 #, python-format
 msgid "If it keeps your node safe, please support its development:"
 msgstr ""
 
-#: lnd-manager.py:906 serverb/serverb-dashboard.py:406
+#: lnd-manager.py:960 serverb/serverb-dashboard.py:406
 #, python-format
 msgid "  Bitcoin:  "
 msgstr ""
 
-#: lnd-manager.py:907 serverb/serverb-dashboard.py:407
+#: lnd-manager.py:961 serverb/serverb-dashboard.py:407
 #, python-format
 msgid "  Project:  "
 msgstr ""
 
-#: lnd-manager.py:909
+#: lnd-manager.py:963
 #, python-format
 msgid "License (the full text is in LICENSE, next to the scripts)"
 msgstr ""
 
-#: lnd-manager.py:910 serverb/serverb-dashboard.py:410
+#: lnd-manager.py:964 serverb/serverb-dashboard.py:410
 #, python-format
 msgid "  Free for personal and business use up to USD 1,000,000 annual sales income."
 msgstr ""
 
-#: lnd-manager.py:911 serverb/serverb-dashboard.py:411
+#: lnd-manager.py:965 serverb/serverb-dashboard.py:411
 #, python-format
 msgid "  Above that: a one-time USD 50 payment in bitcoin to the donation address."
 msgstr ""
 
-#: lnd-manager.py:912 serverb/serverb-dashboard.py:412
+#: lnd-manager.py:966 serverb/serverb-dashboard.py:412
 #, python-format
 msgid "  Used in another commercial node service or tool: a one-time USD 500 payment."
 msgstr ""
 
-#: lnd-manager.py:913 serverb/serverb-dashboard.py:413
+#: lnd-manager.py:967 serverb/serverb-dashboard.py:413
 #, python-format
 msgid "  A commercial user that doesn't pay agrees to pay 10 percent of those sales instead."
 msgstr ""
 
-#: lnd-manager.py:914 serverb/serverb-dashboard.py:414
+#: lnd-manager.py:968 serverb/serverb-dashboard.py:414
 #, python-format
 msgid "  Keep your bitcoin payment receipt (transaction ID) as proof."
 msgstr ""
 
-#: lnd-manager.py:916 serverb/serverb-dashboard.py:416
+#: lnd-manager.py:970 serverb/serverb-dashboard.py:416
 #, python-format
 msgid "No warranty: use it at your own risk."
 msgstr ""
 
-#: lnd-manager.py:933
+#: lnd-manager.py:987
 #, python-format
 msgid " q back   Up/Down scroll"
 msgstr ""
 
-#: lnd-manager.py:1091
+#: lnd-manager.py:1145
 #, python-format
 msgid "Log"
 msgstr ""
 
-#: lnd-manager.py:1155 serverb/serverb-dashboard.py:660
+#: lnd-manager.py:1209 serverb/serverb-dashboard.py:660
 #, python-format
 msgid " no matching command"
 msgstr ""
 
-#: lnd-manager.py:1173 serverb/serverb-dashboard.py:752
+#: lnd-manager.py:1227 serverb/serverb-dashboard.py:752
 #, python-format
 msgid "Not a terminal. Use --once for a text status."
 msgstr ""
@@ -7086,6 +7429,14 @@ msgstr ""
 msgid "❌ Run it with sudo: sudo lnd-update %s"
 msgstr ""
 
+#: destinations.sh
+msgid "Cancelled: nothing was changed."
+msgstr ""
+
+#: destinations.sh
+msgid "❌ install-scripts.sh failed"
+msgstr ""
+
 #: install-scripts.sh
 msgid "❌ %s has a syntax error"
 msgstr ""
@@ -7104,10 +7455,6 @@ msgstr ""
 
 #: serverb-scripts.sh
 msgid "❌ Could not write %s"
-msgstr ""
-
-#: serverb-scripts.sh
-msgid "❌ install-scripts.sh failed"
 msgstr ""
 
 #: serverb-lib.sh

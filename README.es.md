@@ -27,8 +27,9 @@ Hay tres partes:
 - **Servidor B**: un segundo servidor en otro lugar.
 
 Un servicio de copias de seguridad en el Servidor A vigila la copia de los canales de LND. Después
-de cada cambio hace una copia cifrada y firmada con su clave GPG. Una copia va al volumen adjunto
-y otra al Servidor B.
+de cada cambio hace una copia cifrada y firmada con su clave GPG. La copia va a los destinos que
+usted elija, cada uno activado o desactivado: el volumen adjunto, el Servidor B y un repositorio
+privado de GitHub.
 
 La clave del Servidor A solo puede guardar, listar y descargar copias en el Servidor B, y enviarle sus ajustes. No puede
 iniciar sesión allí ni ejecutar nada más, así que quien entre sin permiso en el Servidor A no puede
@@ -99,6 +100,9 @@ El panel del Servidor B:
    una cosa a la vez y guarda sus respuestas en `config`. Cubre:
    - **El usuario de copias**, una cuenta aparte que hace el trabajo de las copias. La
      configuración la crea.
+   - **Adónde van las copias**: el volumen adjunto, el Servidor B y GitHub, cada uno activado o
+     desactivado (vea [Adónde van las copias](#adónde-van-las-copias)). Los pasos siguientes son
+     solo para los que estén activados.
    - **El volumen adjunto**. Elija el disco de la lista; la configuración lo monta de forma segura.
    - **El Servidor B**: su dirección, su puerto SSH y el usuario que guardará las copias. Después
      la configuración muestra la huella del Servidor B. **Compruébela en el propio Servidor B**
@@ -143,6 +147,41 @@ ejecutarse.
 
 Las copias solo se hacen cuando cambia la copia de los canales de LND (por ejemplo, cuando se abre
 o se cierra un canal). En un nodo tranquilo es normal pasar días sin una copia nueva.
+
+## Adónde van las copias
+
+Cada copia va a todos los destinos activados. Actívelos y desactívelos en el panel: `/destinations`
+los muestra, y `/destination volume`, `/destination serverb` y `/destination github` activan o
+desactivan uno. Al menos uno queda activado, y el panel avisa mientras ninguna copia salga del
+Servidor A.
+
+| Destino | Qué es | ¿Puede borrar las copias de allí quien entre sin permiso en el Servidor A? |
+|---|---|---|
+| **El volumen adjunto** | Un disco adicional en el Servidor A. Desde él se restaura más rápido. | Sí: está en el Servidor A. |
+| **Servidor B** | Su segundo servidor, a través de su compuerta de copias. | No: la compuerta nunca borra ni sobrescribe. |
+| **GitHub** | Un repositorio privado suyo. Gratis. | Sí: GitHub no puede impedirlo en un repositorio privado gratuito. |
+
+Cada uno guarda las 10 copias más recientes, la primera de cada día durante 30 días y la de cada
+mes durante 12 meses, y las copias de resguardo que hace `lnd-wallet`. Al desactivar uno se
+conservan las copias que ya tiene, y la restauración sigue buscando en todos. Un destino que falla
+se vuelve a intentar cada hora.
+
+**GitHub**, paso a paso:
+1. En github.com, cree un repositorio nuevo solo para las copias, por ejemplo `lnd-backups`. Tiene
+   que ser **privado** y estar vacío. No el repositorio de este proyecto.
+2. Active GitHub (`/destination github`, o responda que sí en la configuración) y escriba el
+   repositorio como `owner/name`. La configuración comprueba que no sea público.
+3. La configuración crea una **deploy key** (clave de despliegue) para el usuario de copias y la
+   muestra: una clave SSH que solo llega a ese repositorio. En GitHub, abra en el repositorio
+   **Settings → Deploy keys → Add deploy key**, péguela y marque **Allow write access**. En el
+   servidor no queda ninguna contraseña ni token de cuenta de GitHub.
+4. La configuración comprueba que la clave puede escribir, y luego el servicio de copias envía allí
+   cada copia.
+
+El repositorio guarda solo las copias actuales: cada envío reemplaza su historial, así que las
+copias antiguas desaparecen de verdad y el repositorio sigue siendo pequeño (GitHub pide que los
+repositorios no pasen de 1 GB). Las copias están cifradas con su clave GPG, así que GitHub no puede
+leerlas; no guarde esa clave en GitHub.
 
 ## Si pierde la billetera
 

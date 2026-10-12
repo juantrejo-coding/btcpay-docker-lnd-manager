@@ -62,7 +62,7 @@ if [[ "$(realpath -m -- "$DEST")" == "$(realpath -m -- "$SRC_DIR")" ]]; then
 fi
 
 SCRIPTS=(setup_script.sh config-lib.sh rsync_gpg_backup.sh lnd-wallet.sh lnd-manager.py server-b-install.sh
-         chain-tower.sh i18n.sh lnd-update.sh update-lib.sh server-a-status.sh)
+         chain-tower.sh i18n.sh lnd-update.sh update-lib.sh server-a-status.sh github-lib.sh)
 for f in "${SCRIPTS[@]}"; do
     [[ -f "$SRC_DIR/$f" ]] || { say "❌ Missing %s/%s" "$SRC_DIR" "$f" >&2; exit 1; }
     case "$f" in

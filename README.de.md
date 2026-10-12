@@ -27,8 +27,9 @@ Es gibt drei Teile:
 - **Server B**: ein zweiter Server an einem anderen Ort.
 
 Ein Backup-Dienst auf Server A überwacht das Kanal-Backup von LND. Nach jeder Änderung erstellt er
-eine verschlüsselte, mit Ihrem GPG-Schlüssel signierte Kopie. Eine Kopie geht auf das angehängte
-Volume, eine auf Server B.
+eine verschlüsselte, mit Ihrem GPG-Schlüssel signierte Kopie. Die Kopien gehen an die Ziele, die
+Sie wählen: das angehängte Volume, Server B und ein privates GitHub-Repository, jedes ein- oder
+ausgeschaltet.
 
 Der Schlüssel von Server A kann auf Server B nur Backups ablegen, auflisten und abrufen und Server B
 seine Einstellungen übergeben. Er kann
@@ -101,6 +102,9 @@ Das Dashboard auf Server B:
    fragt eine Sache nach der anderen und speichert Ihre Antworten in `config`. Es umfasst:
    - **Den Backup-Benutzer**, ein eigenes Konto, das die Backup-Arbeit erledigt. Das Setup legt
      es an.
+   - **Wohin die Backups gehen**: das angehängte Volume, Server B und GitHub, jedes ein- oder
+     ausgeschaltet (siehe [Wohin die Backups gehen](#wohin-die-backups-gehen)). Die folgenden
+     Schritte gelten nur für die eingeschalteten.
    - **Das angehängte Volume**. Wählen Sie die Festplatte aus der Liste; das Setup hängt sie
      sicher ein.
    - **Server B**: seine Adresse, sein SSH-Port und der Benutzer, der die Backups aufbewahrt.
@@ -148,6 +152,41 @@ er tut, bevor er ausgeführt wird.
 
 Backups werden nur erstellt, wenn sich das Kanal-Backup von LND ändert (zum Beispiel, wenn ein
 Kanal geöffnet oder geschlossen wird). Tage ohne neues Backup sind bei einem ruhigen Node normal.
+
+## Wohin die Backups gehen
+
+Jedes Backup geht an jedes eingeschaltete Ziel. Sie schalten sie im Dashboard ein und aus:
+`/destinations` zeigt sie an, `/destination volume`, `/destination serverb` und `/destination github`
+schalten eines ein oder aus. Mindestens eines bleibt eingeschaltet, und das Dashboard warnt, solange
+keine Kopie Server A verlässt.
+
+| Ziel | Was es ist | Kann ein Einbruch auf Server A die Kopien dort löschen? |
+|---|---|---|
+| **Das angehängte Volume** | Eine zusätzliche Festplatte an Server A. Daraus lässt sich am schnellsten wiederherstellen. | Ja: Es liegt auf Server A. |
+| **Server B** | Ihr zweiter Server, über sein Backup-Gate. | Nein: Das Gate löscht und überschreibt nie. |
+| **GitHub** | Ein privates Repository von Ihnen. Kostenlos. | Ja: GitHub kann das bei einem kostenlosen privaten Repository nicht verhindern. |
+
+Jedes Ziel behält die 10 neuesten Backups, 30 Tage lang das erste jedes Tages und 12 Monate lang das
+erste jedes Monats, dazu die Sicherheitskopien, die `lnd-wallet` anlegt. Wenn Sie ein Ziel
+ausschalten, bleiben die Kopien dort erhalten, und die Wiederherstellung sucht weiterhin überall.
+Ein Ziel, bei dem etwas fehlschlägt, wird jede Stunde erneut versucht.
+
+**GitHub**, Schritt für Schritt:
+1. Legen Sie auf github.com ein neues Repository nur für die Backups an, zum Beispiel `lnd-backups`.
+   Es muss **privat** und leer sein. Nicht das Repository dieses Projekts.
+2. Schalten Sie GitHub ein (`/destination github`, oder antworten Sie im Setup mit Ja) und geben Sie
+   das Repository als `owner/name` ein. Das Setup prüft, dass es nicht öffentlich ist.
+3. Das Setup erstellt einen **Deploy-Key** für den Backup-Benutzer und zeigt ihn an: einen
+   SSH-Schlüssel, der nur dieses eine Repository erreicht. Öffnen Sie auf GitHub im Repository
+   **Settings → Deploy keys → Add deploy key**, fügen Sie ihn ein und setzen Sie den Haken bei
+   **Allow write access**. Weder ein GitHub-Passwort noch ein Konto-Token kommt auf den Server.
+4. Das Setup prüft, ob der Schlüssel schreiben kann; danach sendet der Backup-Dienst jedes Backup
+   dorthin.
+
+Das Repository behält nur die aktuellen Backups: Jeder Upload ersetzt seine Historie, alte Backups
+sind also wirklich weg, und das Repository bleibt klein (GitHub bittet darum, dass Repositories
+unter 1 GB bleiben). Die Backups sind mit Ihrem GPG-Schlüssel verschlüsselt, daher kann GitHub sie
+nicht lesen; legen Sie diesen Schlüssel nicht auf GitHub ab.
 
 ## Wenn Sie die Wallet verlieren
 

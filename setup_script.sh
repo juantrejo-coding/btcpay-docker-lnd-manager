@@ -296,7 +296,9 @@ preflight() {
     fi
 
     # The attached volume
-    if [[ -n "$UUID" ]]; then
+    if [[ "${BACKUP_TO_VOLUME:-yes}" != yes ]]; then
+        check_ok "$(T "The attached volume is off (BACKUP_TO_VOLUME)")"
+    elif [[ -n "$UUID" ]]; then
         if [[ -n "$(lsblk -rpno NAME,UUID 2>/dev/null | awk -v u="$UUID" '$2 == u { print $1 }')" ]]; then
             check_ok "$(T "The attached volume (UUID %s) is attached" "$UUID")"
         else
@@ -312,7 +314,9 @@ preflight() {
     fi
 
     # Server B's SSH port, if config names it already (otherwise setup asks for it)
-    if [[ -n "$REMOTE_SERVER" ]]; then
+    if [[ "${BACKUP_TO_SERVER_B:-yes}" != yes ]]; then
+        check_ok "$(T "Server B is off (BACKUP_TO_SERVER_B)")"
+    elif [[ -n "$REMOTE_SERVER" ]]; then
         port="${REMOTE_SSH_PORT:-22}"
         if timeout 10 bash -c 'exec 3<>"/dev/tcp/$1/$2"' _ "$REMOTE_SERVER" "$port" 2>/dev/null; then
             check_ok "$(T "Server B answers at %s, port %s" "$REMOTE_SERVER" "$port")"
@@ -418,6 +422,42 @@ else
     save_config_value KEY_FILENAME lnd_backup_ssh_key || exit 1
 fi
 
+# === Backup destinations (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB) ===
+# Each one on or off; the answers already in config are suggested. Setup then sets up only the
+# ones that are on. At least one must be on. Later: lnd-manager /destinations.
+yes_no_problem() {
+    [[ "$1" == yes || "$1" == no ]] || say "type yes or no"
+}
+echo
+say "Where should the backups go? Each destination is on (yes) or off (no); at least one must be on."
+say "  1. The attached volume: an extra disk on this server. Quick to restore from, but on this server."
+say "  2. Server B: your second server, through its backup gate. A broken-into Server A can't delete there."
+say "  3. GitHub: a private repository of yours, written with a deploy key (a key for that one"
+say "     repository). Free, but a broken-into Server A could delete the copies there."
+while :; do
+    for setting in BACKUP_TO_VOLUME BACKUP_TO_SERVER_B BACKUP_TO_GITHUB; do
+        case "$setting" in
+            BACKUP_TO_VOLUME) prompt=$(T "1. The attached volume (yes/no): ") ;;
+            BACKUP_TO_SERVER_B) prompt=$(T "2. Server B (yes/no): ") ;;
+            BACKUP_TO_GITHUB) prompt=$(T "3. GitHub (yes/no): ") ;;
+        esac
+        current="${!setting:-}"
+        [[ "$current" == yes || "$current" == no ]] || { [[ "$setting" == BACKUP_TO_GITHUB ]] && current=no || current=yes; }
+        ask_config_value "$setting" "$prompt" yes_no_problem "$current"
+        [[ "$ASKED_VALUE" == "${!setting:-}" ]] || save_config_value "$setting" "$ASKED_VALUE" || exit 1
+    done
+    if [[ "$BACKUP_TO_VOLUME" != yes && "$BACKUP_TO_SERVER_B" != yes && "$BACKUP_TO_GITHUB" != yes ]]; then
+        say "❌ At least one destination must be on."
+        continue
+    fi
+    break
+done
+if [[ "$BACKUP_TO_SERVER_B" != yes && "$BACKUP_TO_GITHUB" != yes ]]; then
+    say "⚠️  Only the attached volume: no copy leaves this server. If this server is lost, the backups are"
+    say "   lost with it. Server B or GitHub can be turned on later: lnd-manager /destinations."
+fi
+
+if [[ "$BACKUP_TO_VOLUME" == yes ]]; then
 # === Attached volume: a mount point no user can swap for a symlink ===
 # Older versions mounted the attached volume in the backup user's home. That user can replace
 # the empty folder with a symlink while the disk isn't mounted; the next mount follows it, and
@@ -539,7 +579,9 @@ else
     done
     save_config_value UUID "${VOL_UUIDS[$chosen]}" || exit 1
 fi
+fi
 
+if [[ "$BACKUP_TO_SERVER_B" == yes ]]; then
 # === Server B address and SSH port ===
 if [[ -n "$REMOTE_SERVER" ]]; then
     check_config_value REMOTE_SERVER remote_server_problem
@@ -906,6 +948,77 @@ if [[ "$(server_b_mode)" == shell ]]; then
 elif [[ "$(server_b_mode)" == gate ]]; then
     log_message "$(T "✅ Server B answers through its backup gate")"
 fi
+fi
+
+# ----------------------------
+# GitHub (BACKUP_TO_GITHUB)
+# ----------------------------
+# A deploy key for the backup user, made here, that you add to your private repository. Everything
+# with it runs as the backup user (its key, its known_hosts with github.com's pinned host key).
+github_as_backup_user() {
+    {
+        declare -p I18N 2>/dev/null || true
+        # The message functions (named through compgen, so the message extractor skips this line)
+        declare -f $(compgen -A function | grep -xE "T|say|_i18n_unescape") 2>/dev/null || true
+        echo 'log_message() { echo "$1"; }'
+        printf 'GITHUB_REPO=%q SERVER_A_USER_HOME=%q GITHUB_KEY_FILENAME=%q BACKUP_METADATA_FOLDER=%q\n' \
+            "$GITHUB_REPO" "$SERVER_A_USER_HOME" "${GITHUB_KEY_FILENAME:-lnd_backup_github_key}" "$BACKUP_METADATA_FOLDER"
+        cat -- "$SCRIPT_DIR/github-lib.sh"
+        printf '%s\n' "$1"
+    } | sudo -u "$SERVER_A_USER" -H bash -s
+}
+if [[ "$BACKUP_TO_GITHUB" == yes ]]; then
+    # shellcheck disable=SC1091
+    source "$SCRIPT_DIR/github-lib.sh"
+    echo
+    say "GitHub: make a new, empty, PRIVATE repository for the backups only (github.com/new), for"
+    say "example lnd-backups. Not this project's repository, and never a public one."
+    if [[ -n "$GITHUB_REPO" ]]; then
+        check_config_value GITHUB_REPO github_repo_problem
+    else
+        ask_config_value GITHUB_REPO "$(T "The repository, as owner/name: ")" github_repo_problem
+        save_config_value GITHUB_REPO "$ASKED_VALUE" || exit 1
+    fi
+    # A public repository answers anyone; a private one looks missing to anyone without access
+    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://api.github.com/repos/$GITHUB_REPO" || true)
+    if [[ "$code" == 200 ]]; then
+        log_message "$(T "❌ %s is a public repository: anyone could download the backups (encrypted, but still). Make it private on GitHub (Settings, Danger Zone), then run setup again." "$GITHUB_REPO")"
+        exit 1
+    fi
+    github_key=$(github_key_path)
+    refuse_links "$SERVER_A_USER_HOME/.ssh" "$github_key"
+    sudo -u "$SERVER_A_USER" mkdir -p -m 700 "$SERVER_A_USER_HOME/.ssh"
+    if ! sudo -u "$SERVER_A_USER" test -f "$github_key"; then
+        sudo -u "$SERVER_A_USER" ssh-keygen -q -t ed25519 -N "" -C "lnd-backup deploy key $(hostname)" -f "$github_key" ||
+            { log_message "$(T "❌ Could not make the deploy key %s" "$github_key")"; exit 1; }
+        log_message "$(T "✅ Deploy key made: %s" "$github_key")"
+    fi
+    printf '%s\n' "$GITHUB_HOST_KEY" | sudo -u "$SERVER_A_USER" tee "$(github_known_hosts)" >/dev/null
+    if github_as_backup_user 'github_git ls-remote "$(github_url)" >/dev/null 2>&1 && github_git_push_test'; then
+        log_message "$(T "✅ The deploy key can write to %s" "$GITHUB_REPO")"
+    else
+        echo
+        say "Add this deploy key to %s on GitHub: the repository's Settings, Deploy keys, Add deploy key." "$GITHUB_REPO"
+        say "Paste the line below, and tick \"Allow write access\" (the backups are written with it):"
+        echo
+        sudo -u "$SERVER_A_USER" cat -- "$github_key.pub"
+        echo
+        while :; do
+            read -r -p "$(T "Type yes once it is added (or no to stop): ")" answer || exit 1
+            [[ "$answer" == no ]] && { log_message "$(T "❌ Stopped: GitHub isn't set up. Run setup again to go on.")"; exit 1; }
+            [[ "$answer" == yes ]] || continue
+            if github_as_backup_user 'github_git ls-remote "$(github_url)" >/dev/null 2>&1'; then
+                if github_as_backup_user 'github_git_push_test'; then
+                    log_message "$(T "✅ The deploy key can write to %s" "$GITHUB_REPO")"
+                    break
+                fi
+                say "❌ The key can read %s but not write: tick \"Allow write access\" for it on GitHub." "$GITHUB_REPO"
+            else
+                say "❌ GitHub doesn't let this key into %s yet: check the repository name and the deploy key." "$GITHUB_REPO"
+            fi
+        done
+    fi
+fi
 
 say "=== Setup complete on Server A ==="
 
@@ -1115,16 +1228,18 @@ log_message "$(T "Permissions for %s set." "$SERVER_A_USER_HOME")"
 # Remove ACL for the SSH key
 log_message "$(T "Removing ACL for SSH private key at %s..." "$KEY_PATH")"
 refuse_links "$KEY_PATH" "$GPG_KEY_PATH" "$GPG_KEY_DIR"
-sudo setfacl -P -x u:"$MAIN_USER" "$KEY_PATH"
+# The private keys are the backup user's alone: the SSH key (Server B) and the deploy key (GitHub)
+for private_key in "$KEY_PATH" "$SERVER_A_USER_HOME/.ssh/${GITHUB_KEY_FILENAME:-lnd_backup_github_key}"; do
+    refuse_links "$private_key"
+    sudo test -f "$private_key" || continue
+    sudo setfacl -P -x u:"$MAIN_USER" "$private_key" 2>/dev/null || true
+    if ! sudo chmod 600 "$private_key"; then
+        log_message "$(T "❌ Failed to set permissions on %s" "$private_key")"
+    else
+        log_message "$(T "✅ Permissions for %s set." "$private_key")"
+    fi
+done
 log_message "$(T "ACL for SSH key removed.")"
-
-# Set permissions for the SSH private key
-log_message "$(T "Setting permissions for the private key...")"
-if ! sudo chmod 600 "$KEY_PATH"; then
-    log_message "$(T "❌ Failed to set permissions on %s" "$KEY_PATH")"
-else
-    log_message "$(T "✅ Permissions for %s set." "$KEY_PATH")"
-fi
 
 # Remove ACL for the GPG key
 log_message "$(T "Removing ACL for GPG private key at %s..." "$GPG_KEY_PATH")"
@@ -1193,6 +1308,7 @@ sudo setfacl -P -d -m u:"$SERVER_A_USER":rwx "$TMP_BACKUP_DIR"
 ###############################################################
 #              MOUNT ATTACHED_VOLUME 
 ###############################################################
+if [[ "$BACKUP_TO_VOLUME" == yes ]]; then
 
 # Everything below matches the exact UUID and mount point: a substring match could pick the
 # wrong disk or fstab line (and an empty UUID used to match all of them).
@@ -1345,6 +1461,8 @@ fi
 #              ⚡ LND Lightning Scripts ⚡ 
 ###############################################################
 
+fi
+
 # === Manual Step Warning: Storing LND Seed ===
 log_message "$(T "⚠️ WARNING: You are about to perform a manual step that involves storing a copy of your LND seed.")"
 log_message "$(T "To securely store the seed, follow these steps:")"
@@ -1367,7 +1485,7 @@ fi
 
 # === The backup service ===
 say "Last step: the backup service (rsync_gpg_backup.sh). It watches LND's channel backup and, after"
-say "every change, stores an encrypted, signed copy on the attached volume and on Server B."
+say "every change, stores an encrypted, signed copy at the destinations you chose."
 say "It explains what it does first. Later: lnd-manager /install, or rerun setup."
 echo ""
 

@@ -61,6 +61,21 @@ if ! source "$SCRIPT_DIR/i18n.sh"; then
 fi
 i18n_load
 
+# === Where the backups go (config: BACKUP_TO_*, lnd-manager: /destinations) ===
+TO_VOLUME="${BACKUP_TO_VOLUME:-yes}" TO_SERVER_B="${BACKUP_TO_SERVER_B:-yes}" TO_GITHUB="${BACKUP_TO_GITHUB:-no}"
+if [[ "$TO_VOLUME" != yes && "$TO_SERVER_B" != yes && "$TO_GITHUB" != yes ]]; then
+    say "❌ No backup destination is on (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB in config): lnd-manager /destinations" >&2
+    exit 1
+fi
+if [[ "$TO_GITHUB" == yes && -z "${GITHUB_REPO:-}" ]]; then
+    say "❌ BACKUP_TO_GITHUB is yes but GITHUB_REPO is empty: run setup (lnd-manager: /setup)" >&2
+    exit 1
+fi
+DESTINATIONS=()
+[[ "$TO_VOLUME" == yes ]] && DESTINATIONS+=("$(T "the attached volume (%s)" "$SECOND_BACKUP_DIR")")
+[[ "$TO_SERVER_B" == yes ]] && DESTINATIONS+=("$(T "Server B (%s)" "$REMOTE_SERVER")")
+[[ "$TO_GITHUB" == yes ]] && DESTINATIONS+=("$(T "GitHub (%s)" "$GITHUB_REPO")")
+
 # ==== Initiate the log file ===
 sudo touch "$LIGHTNING_BACKUP_LOG_FILE"
 sudo chown "$SERVER_A_USER":"$SERVER_A_USER" "$LIGHTNING_BACKUP_LOG_FILE"
@@ -192,8 +207,11 @@ if [[ -t 0 ]]; then
     say "  It runs all the time as the backup user (%s), not as root. When LND's channel backup" "$SERVER_A_USER"
     say "  changes (a channel opens or closes), it packs LND's files (channel.backup, the wallet,"
     say "  walletunlock.json, macaroons, TLS certificate), encrypts and signs them with the backup GPG key,"
-    say "  and copies the result to the attached volume"
-    say "  (%s) and to Server B (%s). It keeps the 10 newest there, plus one" "$SECOND_BACKUP_DIR" "$REMOTE_SERVER"
+    say "  and copies the result to each destination that is on:"
+    for d in "${DESTINATIONS[@]}"; do
+        echo "    - $d"
+    done
+    say "  Each keeps the 10 newest, plus one"
     say "  per day for 30 days and one per month for 12 months. Once an hour it checks for a change it"
     say "  missed; the files LND rewrites by itself all the time (wallet.db, macaroons.db) don't count."
     echo
@@ -216,7 +234,8 @@ fi
 # === Choose the safe folders (SAFE_BASES) ===
 # Asked before the installer creates, changes or deletes anything. The folders may not exist
 # yet on a first install, so every check works on the path text (realpath -m).
-SAFE_BASES_REQUIRED=("$TEST_INOTIFY_PARENT_FOLDER" "$ATTACHED_VOLUME" "$TMP_BACKUP_DIR" "$BACKUP_METADATA_FOLDER")
+SAFE_BASES_REQUIRED=("$TEST_INOTIFY_PARENT_FOLDER" "$TMP_BACKUP_DIR" "$BACKUP_METADATA_FOLDER")
+[[ "$TO_VOLUME" == yes ]] && SAFE_BASES_REQUIRED+=("$ATTACHED_VOLUME")
 
 # True if path $1 is $2 or inside it (both already resolved)
 path_is_within() {
@@ -374,7 +393,9 @@ else
 fi
 
 # === Ensure SAFE_BASES cover the configured paths ===
-for required_path in "$TMP_BACKUP_DIR" "$ATTACHED_VOLUME" "$BACKUP_METADATA_FOLDER" "$TEST_INOTIFY_PARENT_FOLDER"; do
+REQUIRED_PATHS=("$TMP_BACKUP_DIR" "$BACKUP_METADATA_FOLDER" "$TEST_INOTIFY_PARENT_FOLDER")
+[[ "$TO_VOLUME" == yes ]] && REQUIRED_PATHS+=("$ATTACHED_VOLUME")
+for required_path in "${REQUIRED_PATHS[@]}"; do
     if ! is_under_safe_bases "$required_path"; then
         log_message "$(T "❌ %s is not under any SAFE_BASES entry" "$required_path")"
         log_message "$(T "❌ Rerun the installer and include it in the safe folders")"
@@ -796,6 +817,7 @@ rc=$?
 log_message "❌ ERR line=$LINENO rc=$rc cmd=$BASH_COMMAND"
 ' ERR
 
+if [[ "$TO_VOLUME" == yes ]]; then
 # === Validate ATTACHED_VOLUME ===
 if [[ -z "$ATTACHED_VOLUME" || "$ATTACHED_VOLUME" == "/" ]]; then
     log_message "$(T "❌ Refusing to operate on invalid ATTACHED_VOLUME: %s" "$ATTACHED_VOLUME")"
@@ -820,6 +842,7 @@ if [[ ! -d "$SECOND_BACKUP_DIR" ]]; then
     sudo install -d -o "$SERVER_A_USER" -g "$SERVER_A_USER" -m 700 "$SECOND_BACKUP_DIR"
     log_message "$(T "📁 Created %s for %s" "$SECOND_BACKUP_DIR" "$SERVER_A_USER")"
 fi
+fi
 
 # === Stop Existing Service if Exists === #
 # Not at boot (lnd-update-boot.service): the service hasn't started yet, and a stop would cancel
@@ -834,7 +857,7 @@ fi
 # the service stopped.
 if [[ -t 0 ]]; then
     echo
-    say "⚠️  The existing backups can be deleted now: everything in %s" "$SECOND_BACKUP_DIR"
+    say "⚠️  The existing backups can be deleted now: everything in %s" "$( [[ "$TO_VOLUME" == yes ]] && echo "$SECOND_BACKUP_DIR" || echo "-")"
     say "   and in %s. The wallet safety backups in" "$TMP_BACKUP_DIR"
     say "   %s are kept. Server B's copies aren't touched." "${PRE_RECOVERY_DIR:-$(T "the pre-recovery folder")}"
     say "   Usually you keep them: they are your only copies of older wallet states."
@@ -863,7 +886,7 @@ if [[ "$CLEAR_DIRECTORIES" =~ ^[Yy]$ ]]; then
     # === Clear the backups on the attached volume ===
     # Only inside SECOND_BACKUP_DIR: the rest of the disk (its root belongs to root) isn't the
     # backups'. The wallet safety backups lnd-wallet.sh makes before changing the wallet are kept.
-	if [ -d "$SECOND_BACKUP_DIR" ]; then
+	if [[ "$TO_VOLUME" == yes ]] && [ -d "$SECOND_BACKUP_DIR" ]; then
 	    log_message "$(T "🧹 Clearing the backups in %s..." "$SECOND_BACKUP_DIR")"
 	    PRE_RECOVERY_REAL=""
 	    if [[ -n "${PRE_RECOVERY_DIR:-}" && -d "$PRE_RECOVERY_DIR" ]]; then
@@ -874,7 +897,7 @@ if [[ "$CLEAR_DIRECTORIES" =~ ^[Yy]$ ]]; then
 	        [[ -n "$PRE_RECOVERY_REAL" && "$(realpath -m "$f")" == "$PRE_RECOVERY_REAL" ]] && continue
 	        safe_delete "$f" || CLEAR_FAILED+=("$f")
 	    done < <(sudo find "$SECOND_BACKUP_DIR" -mindepth 1 -maxdepth 1 -print0)
-	else
+	elif [[ "$TO_VOLUME" == yes ]]; then
 	    log_message "$(T "⚠️ No backups folder on the attached volume: %s" "$SECOND_BACKUP_DIR")"
 	fi
 
@@ -978,6 +1001,11 @@ if ! source "$(dirname -- "$CONFIG_FILE")/i18n.sh"; then
     exit 1
 fi
 i18n_load "$(dirname -- "$CONFIG_FILE")/locale"
+# === Where the backups go (config: BACKUP_TO_*, lnd-manager: /destinations) ===
+TO_VOLUME="${BACKUP_TO_VOLUME:-yes}" TO_SERVER_B="${BACKUP_TO_SERVER_B:-yes}" TO_GITHUB="${BACKUP_TO_GITHUB:-no}"
+GITHUB_PENDING_FILE="${BACKUP_METADATA_FOLDER}/github_pending"
+# A backup waiting for a retry when there is no copy on the attached volume to retry from
+OUTBOX_DIR="${BACKUP_METADATA_FOLDER}/outbox"
 
 # === Logging Function ===
 log_message() {
@@ -1076,6 +1104,11 @@ update_pending_status() {
         set_status "milestones_pending_since?" "$(date +%s)"
     else
         set_status milestones_pending_since ""
+    fi
+    if [[ -f "${GITHUB_PENDING_FILE:-}" ]]; then
+        set_status "github_pending_since?" "$(date +%s)"
+    else
+        set_status github_pending_since ""
     fi
 }
 
@@ -1333,7 +1366,9 @@ safe_delete() {
 }
 
 # === Ensure SAFE_BASES cover the configured paths ===
-for required_path in "$TMP_BACKUP_DIR" "$ATTACHED_VOLUME" "$BACKUP_METADATA_FOLDER" "$TEST_INOTIFY_PARENT_FOLDER"; do
+REQUIRED_PATHS=("$TMP_BACKUP_DIR" "$BACKUP_METADATA_FOLDER" "$TEST_INOTIFY_PARENT_FOLDER")
+[[ "$TO_VOLUME" == yes ]] && REQUIRED_PATHS+=("$ATTACHED_VOLUME")
+for required_path in "${REQUIRED_PATHS[@]}"; do
     if ! is_under_safe_bases "$required_path"; then
         log_message "$(T "❌ %s is not under any SAFE_BASES entry" "$required_path")"
         log_message "$(T "❌ Rerun rsync_gpg_backup.sh and include it in the safe folders")"
@@ -1462,6 +1497,23 @@ rc=$?
 log_message "❌ ERR line=$LINENO rc=$rc cmd=$BASH_COMMAND"
 ' ERR
 
+# === The destinations: at least one on, and the GitHub code if GitHub is ===
+if [[ "$TO_VOLUME" != yes && "$TO_SERVER_B" != yes && "$TO_GITHUB" != yes ]]; then
+    log_message "$(T "❌ No backup destination is on (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB in config): lnd-manager /destinations")"
+    exit 1
+fi
+if [[ "$TO_GITHUB" == yes ]]; then
+    if ! source "$(dirname -- "$CONFIG_FILE")/github-lib.sh"; then
+        log_message "$(T "❌ Failed to load %s. Rerun rsync_gpg_backup.sh." "$(dirname -- "$CONFIG_FILE")/github-lib.sh")"
+        exit 1
+    fi
+    if [[ -z "${GITHUB_REPO:-}" ]]; then
+        log_message "$(T "❌ BACKUP_TO_GITHUB is yes but GITHUB_REPO is empty: run setup (lnd-manager: /setup)")"
+        exit 1
+    fi
+fi
+
+if [[ "$TO_VOLUME" == yes ]]; then
 # === Validate ATTACHED_VOLUME ===
 if [[ -z "$ATTACHED_VOLUME" || "$ATTACHED_VOLUME" == "/" ]]; then
     log_message "$(T "❌ Refusing to operate on invalid ATTACHED_VOLUME: %s" "$ATTACHED_VOLUME")"
@@ -1478,6 +1530,7 @@ fi
 if ! attached_volume_ok; then
     log_message "$(T "❌ The attached volume (UUID %s) is not mounted at %s" "$UUID" "$ATTACHED_VOLUME")"
     exit 1
+fi
 fi
 
 # === Remove working files left behind by a killed run ===
@@ -2124,6 +2177,9 @@ start_reconciliation_loop() {
             if ! retry_remote_pending; then
                 log_message "$(T "❌ remote_pending retry failed")"
             fi
+            if ! retry_github_pending; then
+                log_message "$(T "❌ github_pending retry failed")"
+            fi
 
             # Catch up on milestones a backup couldn't create
             if ! retry_milestones_pending; then
@@ -2279,6 +2335,12 @@ copy_to_remote_attempts() {
 # copy) when the remote copy fails, and removes it when a later remote copy succeeds.
 retry_remote_pending() {
     [[ -f "$REMOTE_PENDING_FILE" ]] || return 0
+    if [[ "$TO_SERVER_B" != yes ]]; then
+        # Turned off meanwhile: nothing to catch up
+        rm -f -- "$REMOTE_PENDING_FILE"
+        clean_outbox
+        return 0
+    fi
 
     local lock_fd pending
 
@@ -2303,6 +2365,7 @@ retry_remote_pending() {
     if copy_to_remote "$pending"; then
         rm -f -- "$REMOTE_PENDING_FILE"
         log_message "$(T "✅ Remote copy caught up, remote_pending cleared")"
+        clean_outbox
     else
         log_message "$(T "❌ Remote copy still failing, keeping remote_pending")"
         return 1
@@ -2378,6 +2441,56 @@ copy_milestones() {
         log_message "$(T "📌 Created %s milestone: %s" "$kind_name" "$(basename "$target")")"
     done
     set_status milestone_local_last_ok "$(date +%s)"
+}
+
+# Removes the backups in OUTBOX_DIR that no retry needs any more
+clean_outbox() {
+    local f keep=()
+    [[ -d "$OUTBOX_DIR" ]] || return 0
+    [[ -f "$REMOTE_PENDING_FILE" ]] && keep+=("$(<"$REMOTE_PENDING_FILE")")
+    [[ -f "$GITHUB_PENDING_FILE" ]] && keep+=("$(<"$GITHUB_PENDING_FILE")")
+    for f in "$OUTBOX_DIR"/*.gpg; do
+        [[ -f "$f" ]] || continue
+        [[ " ${keep[*]} " == *" $f "* ]] && continue
+        safe_delete "$f" || true
+    done
+}
+
+# === Retry a GitHub copy that failed ===
+# perform_backup writes GITHUB_PENDING_FILE (the path of the copy to retry from)
+retry_github_pending() {
+    [[ -f "$GITHUB_PENDING_FILE" ]] || return 0
+    local lock_fd pending
+    if [[ "$TO_GITHUB" != yes ]]; then
+        # Turned off meanwhile: nothing to catch up
+        rm -f -- "$GITHUB_PENDING_FILE"
+        clean_outbox
+        return 0
+    fi
+    exec {lock_fd}>"$FUNCTION_LOCK_FILE"
+    if ! flock -n "$lock_fd"; then
+        log_message "$(T "⏩ Backup running, will retry GitHub next time")"
+        exec {lock_fd}>&-
+        return 0
+    fi
+    trap "trap - RETURN; exec ${lock_fd}>&-" RETURN
+    pending=$(<"$GITHUB_PENDING_FILE")
+    if [[ -z "$pending" || ! -f "$pending" ]]; then
+        log_message "$(T "⚠️ github_pending points to a missing file (%s), removing marker" "${pending:-empty}")"
+        rm -f -- "$GITHUB_PENDING_FILE"
+        return 0
+    fi
+    log_message "$(T "🔁 Retrying the GitHub copy of %s" "$(basename -- "$pending")")"
+    if github_store "$pending" main; then
+        set_status github_last_ok "$(date +%s)"
+        rm -f -- "$GITHUB_PENDING_FILE"
+        clean_outbox
+        log_message "$(T "✅ GitHub copy caught up, github_pending cleared")"
+    else
+        set_status github_last_fail "$(date +%s)"
+        log_message "$(T "❌ GitHub copy still failing, keeping github_pending")"
+        return 1
+    fi
 }
 
 # === Retry milestones that a backup couldn't create ===
@@ -2983,52 +3096,77 @@ perform_backup() {
 	done
 	log_message "$(T "🧹 Unencrypted backup copies removed from %s" "$TMP_BACKUP_DIR")"
 
-	# Check if SECOND_BACKUP_DIR exists
-	if [ ! -d "$SECOND_BACKUP_DIR" ]; then
-	    # The disk's root belongs to root, so the installer makes this folder; if it's gone, the
-	    # disk was probably swapped or cleaned by hand
-	    log_message "$(T "❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume." "$SECOND_BACKUP_DIR")"
-	    return 1
-	fi
-
-	# === Rsync Encrypted Backup to SECOND_BACKUP_DIR ===
-	log_message "$(T "📦 Rsync encrypted backup to %s..." "$SECOND_BACKUP_DIR")"
-	set_job "backup: copying to the attached volume"
-	update_heartbeat
-
+	# === The destinations that are on, each on its own ===
 	LOCAL_OK=false
 	REMOTE_OK=false
-	SECOND_BACKUP_COPY="$SECOND_BACKUP_DIR/$(basename "$ENCRYPTED_FILE")"
+	GITHUB_OK=false
+	SECOND_BACKUP_COPY=""
+	RETRY_SOURCE=""
 
-	if rsync -av -- "$ENCRYPTED_FILE" "$SECOND_BACKUP_DIR/"; then
-	    log_message "$(T "✅ Rsync completed successfully to second backup directory.")"
-	    LOCAL_OK=true
-	    set_status local_last_ok "$(date +%s)"
-	    sleep 1
+	if [[ "$TO_VOLUME" == yes ]]; then
+	    log_message "$(T "📦 Rsync encrypted backup to %s..." "$SECOND_BACKUP_DIR")"
+	    set_job "backup: copying to the attached volume"
 	    update_heartbeat
-	else
-	    log_message "$(T "❌ Rsync failed to %s. Continuing backup process." "$SECOND_BACKUP_DIR")"
-	    set_status local_last_fail "$(date +%s)"
+	    SECOND_BACKUP_COPY="$SECOND_BACKUP_DIR/$(basename "$ENCRYPTED_FILE")"
+	    if [ ! -d "$SECOND_BACKUP_DIR" ]; then
+	        # The disk's root belongs to root, so the installer makes this folder; if it's gone,
+	        # the disk was probably swapped or cleaned by hand
+	        log_message "$(T "❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume." "$SECOND_BACKUP_DIR")"
+	        set_status local_last_fail "$(date +%s)"
+	    elif rsync -av -- "$ENCRYPTED_FILE" "$SECOND_BACKUP_DIR/"; then
+	        log_message "$(T "✅ Rsync completed successfully to second backup directory.")"
+	        LOCAL_OK=true
+	        RETRY_SOURCE="$SECOND_BACKUP_COPY"
+	        set_status local_last_ok "$(date +%s)"
+	        update_heartbeat
+	    else
+	        log_message "$(T "❌ Rsync failed to %s. Continuing backup process." "$SECOND_BACKUP_DIR")"
+	        set_status local_last_fail "$(date +%s)"
+	    fi
 	fi
 
-	# === Rsync Encrypted Backup to Remote Backup Location with Retry Logic ===
-	set_job "backup: copying to Server B"
-	if copy_to_remote "$ENCRYPTED_FILE"; then
-	    REMOTE_OK=true
-	    log_message "$(T "🎉 RSYNC STAGE CONFIRMED SUCCESS")"
-
-	    # The remote now has the newest backup, so an older pending copy no longer matters
-	    if [[ -f "$REMOTE_PENDING_FILE" ]]; then
-	        rm -f -- "$REMOTE_PENDING_FILE"
-	        log_message "$(T "🧾 Cleared remote_pending")"
+	if [[ "$TO_SERVER_B" == yes ]]; then
+	    set_job "backup: copying to Server B"
+	    if copy_to_remote "$ENCRYPTED_FILE"; then
+	        REMOTE_OK=true
+	        log_message "$(T "🎉 RSYNC STAGE CONFIRMED SUCCESS")"
+	        # The remote now has the newest backup, so an older pending copy no longer matters
+	        if [[ -f "$REMOTE_PENDING_FILE" ]]; then
+	            rm -f -- "$REMOTE_PENDING_FILE"
+	            log_message "$(T "🧾 Cleared remote_pending")"
+	        fi
 	    fi
-	elif $LOCAL_OK; then
-	    # Keep the attached-volume copy. remote_pending is written after the hash commit.
-	    log_message "$(T "🚨 Remote copy failed. Continuing with the attached-volume copy only.")"
-	else
-	    # Neither copy exists, so don't commit the hashes. The next event retries the whole backup.
-	    log_message "$(T "❌ Both the attached-volume and the remote copy failed. Not committing hashes.")"
+	fi
+
+	if [[ "$TO_GITHUB" == yes ]]; then
+	    set_job "backup: copying to GitHub"
+	    update_heartbeat
+	    if github_store "$ENCRYPTED_FILE" main; then
+	        GITHUB_OK=true
+	        set_status github_last_ok "$(date +%s)"
+	        rm -f -- "$GITHUB_PENDING_FILE"
+	    else
+	        set_status github_last_fail "$(date +%s)"
+	    fi
+	    update_heartbeat
+	fi
+
+	if ! $LOCAL_OK && ! $REMOTE_OK && ! $GITHUB_OK; then
+	    # No copy anywhere, so don't commit the hashes. The next event retries the whole backup.
+	    log_message "$(T "❌ The backup reached none of its destinations. Not committing hashes.")"
 	    return 1
+	fi
+	# A destination that failed is retried by the hourly check, from the attached volume's copy,
+	# or, without one, from a copy kept for that in OUTBOX_DIR
+	if { [[ "$TO_SERVER_B" == yes ]] && ! $REMOTE_OK; } || { [[ "$TO_GITHUB" == yes ]] && ! $GITHUB_OK; }; then
+	    if [[ -z "$RETRY_SOURCE" ]]; then
+	        RETRY_SOURCE="$OUTBOX_DIR/$(basename "$ENCRYPTED_FILE")"
+	        if ! mkdir -p "$OUTBOX_DIR" || ! cp -- "$ENCRYPTED_FILE" "$RETRY_SOURCE"; then
+	            log_message "$(T "❌ Could not keep a copy for the retry in %s" "$OUTBOX_DIR")"
+	            RETRY_SOURCE=""
+	        fi
+	    fi
+	    log_message "$(T "🚨 Not every destination has it yet; the hourly check tries again.")"
 	fi
 
 	log_message "$(T "🔍 Proceeding to post-rsync validation")"
@@ -3086,19 +3224,29 @@ perform_backup() {
 	    log_message "$(T "⚠️ Failed to save snapshot fingerprint to %s" "$LAST_SNAPSHOT_HASH_FILE")"
 	fi
 
-	# Remote copy failed but the attached volume has it: let the hourly check retry the remote copy
-	if ! $REMOTE_OK; then
-	    if printf '%s\n' "$SECOND_BACKUP_COPY" > "$REMOTE_PENDING_FILE"; then
-	        log_message "$(T "🚨 Marked for remote retry in %s: %s" "$REMOTE_PENDING_FILE" "$SECOND_BACKUP_COPY")"
+	# A destination that failed: the hourly check retries it from RETRY_SOURCE
+	if [[ "$TO_SERVER_B" == yes ]] && ! $REMOTE_OK && [[ -n "$RETRY_SOURCE" ]]; then
+	    if printf '%s\n' "$RETRY_SOURCE" > "$REMOTE_PENDING_FILE"; then
+	        log_message "$(T "🚨 Marked for remote retry in %s: %s" "$REMOTE_PENDING_FILE" "$RETRY_SOURCE")"
 	    else
 	        log_message "$(T "❌ Failed to write %s" "$REMOTE_PENDING_FILE")"
 	    fi
 	fi
+	if [[ "$TO_GITHUB" == yes ]] && ! $GITHUB_OK && [[ -n "$RETRY_SOURCE" ]]; then
+	    if printf '%s\n' "$RETRY_SOURCE" > "$GITHUB_PENDING_FILE"; then
+	        log_message "$(T "🚨 Marked for a GitHub retry: %s" "$RETRY_SOURCE")"
+	    else
+	        log_message "$(T "❌ Failed to write %s" "$GITHUB_PENDING_FILE")"
+	    fi
+	fi
+	clean_outbox
 
 	# =========================================================
 	# 🟢 MILESTONE PHASE
 	# =========================================================
 
+	# The attached volume's milestones and rotation: only when it is on and has this backup
+	if [[ "$TO_VOLUME" == yes ]] && $LOCAL_OK; then
 	# The backup is complete at this point. A milestone failure is only a warning;
 	# the hourly check retries it from the attached-volume copy.
 	set_job "backup: milestones"
@@ -3199,6 +3347,7 @@ perform_backup() {
 	shopt -u nullglob
 	
 	log_message "$(T "🧹 Local milestone cleanup complete")"
+	fi
 
 	# Clean up old hash files
 	find "$COMMIT_HASHES_FOLDER" -name 'last_hash_*' -mtime +30 -print0 |
@@ -3224,8 +3373,10 @@ if [[ -n "${NOTIFY_SOCKET:-}" ]]; then
 fi
 
 # === If No Backups Exist, Perform an Initial Backup ===
-if [ ! -d "$SECOND_BACKUP_DIR" ] || ! find "$SECOND_BACKUP_DIR" -maxdepth 1 -type f -name 'encrypted_backup_*' | grep -q .; then
-    log_message "$(T "⚡ %s is empty or an error occurred while checking. Performing initial backup..." "$SECOND_BACKUP_DIR")"
+# With the attached volume: when it holds none. Without it: when no backup was ever made here.
+if { [[ "$TO_VOLUME" == yes ]] && { [ ! -d "$SECOND_BACKUP_DIR" ] || ! find "$SECOND_BACKUP_DIR" -maxdepth 1 -type f -name 'encrypted_backup_*' | grep -q .; }; } ||
+   { [[ "$TO_VOLUME" != yes ]] && [[ ! -s "$LAST_SNAPSHOT_HASH_FILE" ]]; }; then
+    log_message "$(T "⚡ No backup yet (%s). Performing initial backup..." "$( [[ "$TO_VOLUME" == yes ]] && echo "$SECOND_BACKUP_DIR" || echo "$LAST_SNAPSHOT_HASH_FILE")")"
     
     # Perform the backup
     if ! run_backup; then

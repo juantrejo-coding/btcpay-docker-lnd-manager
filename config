@@ -40,6 +40,22 @@ KEY_FILENAME=""
 KEY_PATH="$SERVER_A_USER_HOME/.ssh/$KEY_FILENAME"
 PUB_KEY_FILE="$KEY_PATH.pub"
 
+# Where the backups go. Each one is on ("yes") or off ("no"); at least one must be on, and the
+# dashboard warns while no copy leaves this server (lnd-manager: /destinations turns them on and off).
+#   BACKUP_TO_VOLUME    the attached volume (UUID, ATTACHED_VOLUME below)
+#   BACKUP_TO_SERVER_B  Server B, through its backup gate (REMOTE_SERVER, SERVER_B_USER)
+#   BACKUP_TO_GITHUB    a private GitHub repository of yours (GITHUB_REPO), written with a deploy
+#                       key: an SSH key for that one repository. Weaker than Server B: whoever
+#                       has the key (a broken-into Server A) could also delete the copies there.
+BACKUP_TO_VOLUME="yes"
+BACKUP_TO_SERVER_B="yes"
+BACKUP_TO_GITHUB="no"
+# The private repository, as owner/name (made by you on GitHub, empty, private). Left empty while
+# BACKUP_TO_GITHUB is yes, setup asks.
+GITHUB_REPO=""
+# The deploy key, in SERVER_A_USER's ~/.ssh
+GITHUB_KEY_FILENAME="lnd_backup_github_key"
+
 # Remote server configuration
 # MAIN_USER, SERVER_A_USER, SERVER_B_USER, REMOTE_SERVER, REMOTE_SSH_PORT,
 # SERVER_B_KNOWN_HOST_FINGERPRINT and UUID can be left empty: setup_script.sh then asks for them

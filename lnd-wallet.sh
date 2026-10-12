@@ -376,6 +376,9 @@ SAFETY_BACKUP_NAME=""
 
 on_exit() {
     local code=$?
+    if [[ -n "${GITHUB_DIR:-}" ]]; then
+        sudo -u "$SERVER_A_USER" rm -rf -- "$GITHUB_DIR" 2>/dev/null || true
+    fi
     docker rm -f "$LND_INIT" >/dev/null 2>&1 || true
     rm -f "$LND_DIR/$SCB_STAGING_REL" 2>/dev/null || true
     remove_work_path "$SECRET_DIR" "$BULK_DIR" || true
@@ -444,6 +447,41 @@ REMOTE_OK=false
 if [[ -n "${REMOTE_SERVER:-}" && -n "${SERVER_B_USER:-${REMOTE_USER:-}}" ]] && [[ "$(remote_ssh ping 2>/dev/null)" == "ok" ]]; then
     REMOTE_OK=true
 fi
+
+# GitHub (github-lib.sh): everything there runs as the backup user, who holds the deploy key.
+# Restoring reads it whenever it is set up, also while BACKUP_TO_GITHUB is off.
+github_wallet() {
+    {
+        declare -p I18N 2>/dev/null || true
+        # The message functions (named through compgen, so the message extractor skips this line)
+        declare -f $(compgen -A function | grep -xE "T|say|_i18n_unescape") 2>/dev/null || true
+        echo 'log_message() { echo "$1"; }'
+        printf 'GITHUB_REPO=%q SERVER_A_USER_HOME=%q GITHUB_KEY_FILENAME=%q BACKUP_METADATA_FOLDER=%q\n' \
+            "$GITHUB_REPO" "$SERVER_A_USER_HOME" "${GITHUB_KEY_FILENAME:-lnd_backup_github_key}" "$BACKUP_METADATA_FOLDER"
+        cat -- "$SCRIPT_DIR/github-lib.sh"
+        printf '%s\n' "$1"
+    } | sudo -u "$SERVER_A_USER" -H bash -s
+}
+GITHUB_SET_UP=false
+if [[ -n "${GITHUB_REPO:-}" ]] && sudo -u "$SERVER_A_USER" test -f "$SERVER_A_USER_HOME/.ssh/${GITHUB_KEY_FILENAME:-lnd_backup_github_key}"; then
+    GITHUB_SET_UP=true
+fi
+# What is on GitHub, fetched once (as the backup user, into a folder of its own)
+GITHUB_DIR=""
+GITHUB_FETCHED=false
+github_fetch_once() {
+    $GITHUB_SET_UP || return 1
+    if ! $GITHUB_FETCHED; then
+        GITHUB_FETCHED=true
+        GITHUB_DIR=$(sudo -u "$SERVER_A_USER" mktemp -d) || return 1
+        if ! github_wallet "github_fetch_all $(printf '%q' "$GITHUB_DIR/c")" >/dev/null 2>&1; then
+            log_message "$(T "⚠️ The GitHub repository %s can't be reached, so it isn't searched." "$GITHUB_REPO")"
+            sudo -u "$SERVER_A_USER" rm -rf -- "$GITHUB_DIR"
+            GITHUB_DIR=""
+        fi
+    fi
+    [[ -n "$GITHUB_DIR" ]]
+}
 
 # The disk with config's UUID mounted exactly at ATTACHED_VOLUME, which is not a symlink.
 # mountpoint -q follows symlinks and doesn't look at which disk it is.
@@ -633,13 +671,26 @@ list_backups() {
                     done
             done
         fi
+        if github_fetch_once; then
+            # The same areas as on Server B, read as the backup user
+            for entry in "${remote_dirs[@]}"; do
+                dir="${entry#* }"
+                sudo -u "$SERVER_A_USER" find "$GITHUB_DIR/c/$dir" -maxdepth 1 -type f -name '*.gpg' -printf '%f\n' 2>/dev/null |
+                    while IFS= read -r f; do
+                        backup_name_ok "$f" || continue
+                        epoch=$(backup_epoch "$f") || continue
+                        (( epoch <= now + 300 )) || continue
+                        printf '%s %s 2github %s\n' "${entry%% *}" "$epoch" "$GITHUB_DIR/c/$dir/$f"
+                    done
+            done
+        fi
     } | sort -k1,1n -k2,2nr -k3,3
 }
 
 # Copies a backup here. Usage: fetch_backup <where> <path> <dest>
 fetch_backup() {
     local where="$1" path="$2" dest="$3"
-    if [[ "$where" == "0attached" ]]; then
+    if [[ "$where" == "0attached" || "$where" == "2github" ]]; then
         # As the backup user, who owns these folders: root would follow a planted symlink and
         # copy whatever it points to. Root writes dest, in its own work folder.
         # shellcheck disable=SC2024
@@ -650,8 +701,13 @@ fetch_backup() {
     fi
 }
 
-where_name() {
-    [[ "$1" == "0attached" ]] && say "attached volume" || say "Server B"
+# Where a backup is, as a whole phrase ("on GitHub"), so each language can say it its own way
+where_on() {
+    case "$1" in
+        0attached) say "on the attached volume" ;;
+        2github) say "on GitHub" ;;
+        *) say "on Server B" ;;
+    esac
 }
 
 age_text() {
@@ -671,9 +727,9 @@ BACKUP_LABEL=""
 find_latest_backup() {
     local rank epoch where path n=0 work size pass dir
     local -a skipped=() candidates=()
-    log_message "$(T "🔎 Looking for the latest backup on the attached volume and Server B...")"
-    attached_ok || log_message "$(T "⚠️ The attached volume is not mounted, so only Server B is searched.")"
-    $REMOTE_OK || log_message "$(T "⚠️ Server B can't be reached, so only the attached volume is searched.")"
+    log_message "$(T "🔎 Looking for the latest backup on the attached volume, Server B and GitHub...")"
+    attached_ok || log_message "$(T "⚠️ The attached volume is not mounted, so it isn't searched.")"
+    $REMOTE_OK || log_message "$(T "⚠️ Server B can't be reached, so it isn't searched.")"
     mapfile -t candidates < <(list_backups main)
 
     for pass in verified legacy; do
@@ -684,14 +740,14 @@ find_latest_backup() {
             work="$BULK_DIR/candidate.$n"
             mkdir -p "$work"
             if ! fetch_backup "$where" "$path" "$work/backup.gpg" 2>/dev/null; then
-                [[ "$pass" == verified ]] && skipped+=("$(T "%s on %s: could not be copied" "$(basename "$path")" "$(where_name "$where")")")
+                [[ "$pass" == verified ]] && skipped+=("$(T "%s %s: could not be copied" "$(basename "$path")" "$(where_on "$where")")")
                 remove_work_path "$work"
                 continue
             fi
             size=$(stat -c %s "$work/backup.gpg")
             dir="$(dir_for_size "$size")/backup.$n"
             if ! unpack_backup "$work/backup.gpg" "$dir" || ! check_manifest "$dir" backup "$(basename "$path")"; then
-                [[ "$pass" == verified ]] && skipped+=("$(T "%s on %s: %s" "$(basename "$path")" "$(where_name "$where")" "$DECRYPT_ERROR")")
+                [[ "$pass" == verified ]] && skipped+=("$(T "%s %s: %s" "$(basename "$path")" "$(where_on "$where")" "$DECRYPT_ERROR")")
                 remove_work_path "$work" "$dir"
                 continue
             fi
@@ -701,7 +757,7 @@ find_latest_backup() {
                 continue
             fi
             BACKUP_FILES="$dir/files"
-            BACKUP_LABEL=$(T "%s on the %s (%s)" "$(basename "$path")" "$(where_name "$where")" "$(age_text "$epoch")")
+            BACKUP_LABEL=$(T "%s %s (%s)" "$(basename "$path")" "$(where_on "$where")" "$(age_text "$epoch")")
             if [[ "$rank" == "1" ]]; then
                 BACKUP_LABEL+=$(T ", a milestone: no regular backup could be used")
             fi
@@ -847,7 +903,9 @@ make_safety_backup() {
     remove_work_path "$BULK_DIR/verify"
     local_sum=$(sha256sum "$BULK_DIR/$name" | cut -d' ' -f1)
 
-    if attached_ok; then
+    if [[ "${BACKUP_TO_VOLUME:-yes}" != yes ]]; then
+        :
+    elif attached_ok; then
         # Written by the backup user, who owns the attached volume: root writing, changing owners
         # or modes there would follow symlinks the backup user can plant
         if sudo -u "$SERVER_A_USER" sh -c 'umask 077 && mkdir -p -- "$1" && cat > "$1/$2.tmp"' _ \
@@ -864,7 +922,9 @@ make_safety_backup() {
         log_message "$(T "⚠️ The attached volume is not mounted, so the safety backup is not stored there")"
     fi
 
-    if $REMOTE_OK; then
+    if [[ "${BACKUP_TO_SERVER_B:-yes}" != yes ]]; then
+        :
+    elif $REMOTE_OK; then
         # The gate stores it under a new name only (never overwrites); downloaded back and checked
         # here rather than taken on Server B's word
         if remote_put pre-recovery "$name" "$BULK_DIR/$name" "$local_sum" &&
@@ -877,6 +937,20 @@ make_safety_backup() {
         fi
     else
         log_message "$(T "⚠️ Server B's backup gate can't be reached, so the safety backup is not stored there")"
+    fi
+
+    if [[ "${BACKUP_TO_GITHUB:-no}" == yes ]] && $GITHUB_SET_UP; then
+        # Handed to the backup user, who stores it with its deploy key
+        local gh_tmp
+        gh_tmp=$(sudo -u "$SERVER_A_USER" mktemp -d) &&
+            sudo -u "$SERVER_A_USER" sh -c 'cat > "$1"' _ "$gh_tmp/$name" < "$BULK_DIR/$name"
+        if [[ -n "$gh_tmp" ]] && github_wallet "github_store $(printf '%q' "$gh_tmp/$name") pre-recovery"; then
+            log_message "$(T "✅ Safety backup stored and checked on GitHub: pre-recovery/%s" "$name")"
+            stored=$((stored + 1))
+        else
+            log_message "$(T "⚠️ Could not store the safety backup on GitHub")"
+        fi
+        [[ -n "$gh_tmp" ]] && sudo -u "$SERVER_A_USER" rm -rf -- "$gh_tmp"
     fi
     rm -f "$BULK_DIR/$name"
 
@@ -1440,18 +1514,18 @@ if [[ "$CHOICE" == "5" ]]; then
         read -r _ epoch where path <<< "$line"
         name=$(basename "$path")
         if [[ -n "${SAFETY_ALSO[$name]+set}" ]]; then
-            SAFETY_ALSO[$name]=$(T " (also on Server B)")
+            SAFETY_ALSO[$name]+=$(T " (also %s)" "$(where_on "$where")")
             continue
         fi
         SAFETY_ALSO[$name]=""
         SAFETY_LIST+=("$line")
     done
-    (( ${#SAFETY_LIST[@]} > 0 )) || die "$(T "No safety backups found in %s or on Server B." "$PRE_RECOVERY_LOCAL")"
+    (( ${#SAFETY_LIST[@]} > 0 )) || die "$(T "No safety backups found in %s, on Server B or on GitHub." "$PRE_RECOVERY_LOCAL")"
     say "Safety backups, newest first:"
     for i in "${!SAFETY_LIST[@]}"; do
         read -r _ epoch where path <<< "${SAFETY_LIST[$i]}"
         name=$(basename "$path")
-        say "  %s) %s on the %s%s (%s)" "$((i + 1))" "$name" "$(where_name "$where")" "${SAFETY_ALSO[$name]}" "$(age_text "$epoch")"
+        say "  %s) %s %s%s (%s)" "$((i + 1))" "$name" "$(where_on "$where")" "${SAFETY_ALSO[$name]}" "$(age_text "$epoch")"
     done
     while true; do
         read -rp "$(T "Which one (Enter for 1): ")" pick

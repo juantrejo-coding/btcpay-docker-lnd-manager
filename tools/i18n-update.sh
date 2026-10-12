@@ -19,7 +19,7 @@ if [[ "${1:-}" == --new ]]; then
     [[ ! -e "locale/$NEW_LANGUAGE.po" ]] || { echo "❌ locale/$NEW_LANGUAGE.po exists already" >&2; exit 1; }
 fi
 
-BASH_FILES=(setup_script.sh config-lib.sh rsync_gpg_backup.sh lnd-wallet.sh chain-tower.sh lnd-update.sh update-lib.sh
+BASH_FILES=(setup_script.sh config-lib.sh rsync_gpg_backup.sh lnd-wallet.sh chain-tower.sh lnd-update.sh update-lib.sh github-lib.sh destinations.sh
             install-scripts.sh serverb-scripts.sh serverb-lib.sh serverb-setup.sh server-b-install.sh serverb/*.sh serverb/serverb-update)
 PYTHON_FILES=(lnd-manager.py serverb/serverb-dashboard.py serverb/serverb-control)
 

@@ -27,8 +27,9 @@ Il y a trois éléments :
 - **Serveur B** : un second serveur, situé ailleurs.
 
 Un service de sauvegarde sur le serveur A surveille la sauvegarde des canaux de LND. Après chaque
-changement, il en fait une copie chiffrée et signée avec votre clé GPG. Une copie va sur le volume
-attaché et une autre sur le serveur B.
+changement, il en fait une copie chiffrée et signée avec votre clé GPG. Les copies vont vers les
+destinations que vous choisissez, chacune activée ou non : le volume attaché, le serveur B, un dépôt
+GitHub privé (voir [Où vont les sauvegardes](#où-vont-les-sauvegardes)).
 
 La clé du serveur A peut seulement stocker, lister et récupérer des sauvegardes sur le serveur B, et lui transmettre ses réglages.
 Elle ne peut ni s'y connecter ni y lancer quoi que ce soit d'autre : une intrusion sur le
@@ -101,6 +102,9 @@ Le tableau de bord du serveur B :
    couvre :
    - **L'utilisateur de sauvegarde**, un compte distinct qui effectue le travail de sauvegarde. La
      configuration le crée.
+   - **Où vont les sauvegardes** : le volume attaché, le serveur B et GitHub, chacun activé ou non
+     (voir [Où vont les sauvegardes](#où-vont-les-sauvegardes)). Les étapes ci-dessous ne
+     concernent que ceux qui sont activés.
    - **Le volume attaché**. Choisissez le disque dans la liste ; la configuration le monte de
      façon sûre.
    - **Le serveur B** : son adresse, son port SSH et l'utilisateur qui conservera les sauvegardes.
@@ -147,6 +151,41 @@ qu'elle fait avant de s'exécuter.
 Les sauvegardes ne sont faites que lorsque la sauvegarde des canaux de LND change (par exemple
 quand un canal s'ouvre ou se ferme). Sur un nœud calme, il est normal de passer des jours sans
 nouvelle sauvegarde.
+
+## Où vont les sauvegardes
+
+Chaque sauvegarde va vers toutes les destinations activées. Activez-les et désactivez-les dans le
+tableau de bord : `/destinations` les affiche, `/destination volume`, `/destination serverb` et
+`/destination github` en activent ou désactivent une. Au moins une reste activée, et le tableau de
+bord vous avertit tant qu'aucune copie ne quitte le serveur A.
+
+| Destination | Ce que c'est | Une intrusion sur le serveur A peut-elle y supprimer les copies ? |
+|---|---|---|
+| **Le volume attaché** | Un disque supplémentaire sur le serveur A. Le plus rapide pour restaurer. | Oui : il est sur le serveur A. |
+| **Serveur B** | Votre second serveur, par sa passerelle de sauvegarde. | Non : la passerelle ne supprime ni n'écrase jamais rien. |
+| **GitHub** | Un dépôt privé à vous. Gratuit. | Oui : GitHub ne peut pas l'empêcher sur un dépôt privé gratuit. |
+
+Chacune conserve les 10 sauvegardes les plus récentes, la première de chaque jour pendant 30 jours
+et de chaque mois pendant 12 mois, ainsi que les sauvegardes de sécurité que fait `lnd-wallet`.
+Désactiver une destination conserve les copies qui s'y trouvent déjà, et la restauration cherche
+toujours partout. Une destination en échec est réessayée toutes les heures.
+
+**GitHub**, étape par étape :
+1. Sur github.com, créez un nouveau dépôt réservé aux sauvegardes, par exemple `lnd-backups`. Il
+   doit être **privé**, et vide. Pas le dépôt de ce projet.
+2. Activez GitHub (`/destination github`, ou répondez oui dans la configuration), et tapez le dépôt
+   sous la forme `owner/name`. La configuration vérifie qu'il n'est pas public.
+3. La configuration crée une **clé de déploiement** (deploy key) pour l'utilisateur de sauvegarde
+   et l'affiche : une clé SSH qui n'accède qu'à ce seul dépôt. Sur GitHub, ouvrez
+   **Settings → Deploy keys → Add deploy key** dans le dépôt, collez-la et cochez
+   **Allow write access**. Aucun mot de passe GitHub ni jeton de compte n'est placé sur le serveur.
+4. La configuration vérifie que la clé peut écrire, puis le service de sauvegarde y envoie chaque
+   sauvegarde.
+
+Le dépôt ne conserve que les sauvegardes actuelles : chaque envoi remplace son historique, les
+anciennes sauvegardes disparaissent donc vraiment et le dépôt reste petit (GitHub demande que les
+dépôts restent sous 1 Go). Les sauvegardes sont chiffrées avec votre clé GPG, GitHub ne peut donc
+pas les lire ; gardez cette clé hors de GitHub.
 
 ## Si vous perdez le portefeuille
 
