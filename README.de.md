@@ -114,7 +114,9 @@ Das Dashboard auf Server B:
    - **Den SSH-Schlüssel**, mit dem Server A Server B erreicht. Das Setup erstellt ihn.
    - **Den GPG-Schlüssel**, der die Backups verschlüsselt. Fügen Sie einen vorhandenen ein, oder
      lassen Sie das Setup einen erstellen. **Bewahren Sie den privaten Schlüssel an einem sicheren
-     Ort auf, getrennt von diesem Server: Ohne ihn kann niemand die Backups öffnen.**
+     Ort auf, getrennt von diesem Server: Ohne ihn kann niemand die Backups öffnen.** Ein vom Setup
+     erstellter Schlüssel läuft nie ab; hat Ihrer ein Ablaufdatum, bietet das Setup an, es zu
+     entfernen (an diesem Tag könnte der Dienst keine Backups mehr erstellen).
    - Die Bestätigung, dass Ihr LND-Seed aufgeschrieben ist.
    - **Den Backup-Dienst**, die letzte Frage. Antworten Sie `y`.
 

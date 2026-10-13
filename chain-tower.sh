@@ -368,9 +368,10 @@ cmd_copy() {
     unset 'ssh_arr[${#ssh_arr[@]}-1]'
     gid=$(id -g "$SERVER_A_USER") || die "$(T "There is no user %s (SERVER_A_USER in config)" "$SERVER_A_USER")"
     rsh=$(printf '%q ' setpriv --inh-caps=-all --ambient-caps=-all -- "${ssh_arr[@]}" -o BatchMode=yes)
-    [[ "$(sudo -u "$SERVER_A_USER" "${ssh_arr[@]}" -n -o BatchMode=yes "$remote" ping 2>/dev/null)" == ok ]] ||
+    # Server B's answers: a time limit and a few KiB at most
+    [[ "$(sudo -u "$SERVER_A_USER" timeout 60 "${ssh_arr[@]}" -n -o BatchMode=yes "$remote" ping 2>/dev/null | head -c 4096)" == ok ]] ||
         die "$(T "Server B's backup gate doesn't answer. Run setup first (lnd-manager: /setup).")"
-    space=$(sudo -u "$SERVER_A_USER" "${ssh_arr[@]}" -n -o BatchMode=yes "$remote" chain-space 2>/dev/null || true)
+    space=$(sudo -u "$SERVER_A_USER" timeout 60 "${ssh_arr[@]}" -n -o BatchMode=yes "$remote" chain-space 2>/dev/null | head -c 4096 || true)
     [[ "$space" =~ ^home=([0-9]+)\ import=([0-9]+)\ same=([01])\ incoming=([01])$ ]] ||
         die "$(T "Server B's backup gate is older and can't say how much space it has: update it there first (step 1 of serverb-setup.sh, or /update scripts)")"
     home_kb=${BASH_REMATCH[1]} import_kb=${BASH_REMATCH[2]} same=${BASH_REMATCH[3]} incoming=${BASH_REMATCH[4]}

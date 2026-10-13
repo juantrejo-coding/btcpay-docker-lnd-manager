@@ -433,7 +433,7 @@ remote_ssh_stdin() {
 # A gate older than that refuses the sha256 ("too many words"): then the old form.
 remote_put() {
     local out rc=0
-    out=$(remote_ssh_stdin "put $1 $2 $4" < "$3" 2>&1 >/dev/null) || rc=$?
+    out=$(remote_ssh_stdin "put $1 $2 $4" < "$3" 2>&1 >/dev/null | head -c 65536) || rc=$?
     if (( rc != 0 )) && [[ "$out" == *"too many words"* ]]; then
         remote_ssh_stdin "put $1 $2" < "$3" > /dev/null
         return
@@ -473,7 +473,8 @@ github_fetch_once() {
     $GITHUB_SET_UP || return 1
     if ! $GITHUB_FETCHED; then
         GITHUB_FETCHED=true
-        GITHUB_DIR=$(sudo -u "$SERVER_A_USER" mktemp -d) || return 1
+        # On disk, not in /tmp (memory on some systems): the repository can be up to 3 GB
+        GITHUB_DIR=$(sudo -u "$SERVER_A_USER" mktemp -d -p /var/tmp lnd-github.XXXXXX) || return 1
         if ! github_wallet "github_fetch_all $(printf '%q' "$GITHUB_DIR/c")" >/dev/null 2>&1; then
             log_message "$(T "⚠️ The GitHub repository %s can't be reached, so it isn't searched." "$GITHUB_REPO")"
             sudo -u "$SERVER_A_USER" rm -rf -- "$GITHUB_DIR"
@@ -499,15 +500,38 @@ gpg_as_backup_user() {
 # Usage: decrypt_bundle <file.gpg> <dir>. Leaves <dir>/backup_compressed.tar.gz, checked against its
 # checksum and signed with GPG_FINGERPRINT. On failure, DECRYPT_ERROR says why.
 DECRYPT_ERROR=""
+NO_SECKEY_SEEN=false
 # gpg's status lines (file $1) say it is signed with the backup key. Only gpg's own status lines
-# count (they share the stream with its messages), and GOODSIG too: an expired or revoked key
-# gives EXPKEYSIG/REVKEYSIG instead.
+# count (they share the stream with its messages). GOODSIG, or EXPKEYSIG: a good signature by a
+# key that has expired since (every backup would be refused the day the key expires, also those
+# made while it was valid). A revoked key (REVKEYSIG) or a bad signature is refused.
+KEY_EXPIRED_SEEN=false
 gpg_signed_ok() {
-    if ! awk -v fp="$GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fp || $NF == fp) {found = 1} END {exit !found}' "$1" ||
-       ! grep -q '^\[GNUPG:\] GOODSIG ' "$1"; then
+    if ! awk -v fp="$GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fp || $NF == fp) {found = 1} END {exit !found}' "$1"; then
         DECRYPT_ERROR=$(T "it is not signed with the backup key %s" "$GPG_FINGERPRINT")
         return 1
     fi
+    grep -q '^\[GNUPG:\] GOODSIG ' "$1" && return 0
+    if grep -q '^\[GNUPG:\] EXPKEYSIG ' "$1" && ! grep -q '^\[GNUPG:\] REVKEYSIG ' "$1"; then
+        KEY_EXPIRED_SEEN=true
+        return 0
+    fi
+    DECRYPT_ERROR=$(T "it is not signed with the backup key %s" "$GPG_FINGERPRINT")
+    return 1
+}
+
+# Once, if a backup was signed by the backup key that has expired since: it is still good, but
+# the backup service can't make new backups with it
+warn_key_expired() {
+    $KEY_EXPIRED_SEEN || return 0
+    [[ -z "${KEY_EXPIRED_WARNED:-}" ]] || return 0
+    KEY_EXPIRED_WARNED=1
+    echo
+    say "⚠️  The backup GPG key %s has expired. Backups signed with it are still good and are used, but" "$GPG_FINGERPRINT"
+    say "   the backup service can't make new ones. Remove the expiry (as root):"
+    say "   sudo -u %s gpg --homedir %s --quick-set-expire %s 0 '*'" "$SERVER_A_USER" "$GPG_KEY_DIR" "$GPG_FINGERPRINT"
+    say "   sudo -u %s gpg --homedir %s --quick-set-expire %s 0" "$SERVER_A_USER" "$GPG_KEY_DIR" "$GPG_FINGERPRINT"
+    say "   and save the key again where you keep it (its copy elsewhere still has the old date)."
 }
 
 # Only the signed manifest of a backup, with no decrypted copy kept: streamed from where it is,
@@ -534,7 +558,12 @@ decrypt_bundle() {
     mkdir -p "$dir"
     # Status lines go to stderr with the messages: sudo closes any other file descriptor
     if ! gpg_as_backup_user --status-fd 2 --decrypt < "$file" > "$dir/bundle.tar" 2> "$dir/gpg.status"; then
-        DECRYPT_ERROR=$(T "GPG could not decrypt it (%s)" "$(grep -v '^\[GNUPG:\]' "$dir/gpg.status" | tail -n 1)")
+        if grep -q '^\[GNUPG:\] NO_SECKEY ' "$dir/gpg.status" && ! grep -q '^\[GNUPG:\] DECRYPTION_OKAY' "$dir/gpg.status"; then
+            NO_SECKEY_SEEN=true
+            DECRYPT_ERROR=$(T "it is encrypted to a GPG key this server doesn't have")
+        else
+            DECRYPT_ERROR=$(T "GPG could not decrypt it (%s)" "$(grep -v '^\[GNUPG:\]' "$dir/gpg.status" | tail -n 1)")
+        fi
         return 1
     fi
     gpg_signed_ok "$dir/gpg.status" || return 1
@@ -691,7 +720,7 @@ list_backups() {
             # On Server B a "path" is <area>/<name>, which fetch_backup turns into get <area> <name>
             for entry in "${remote_dirs[@]}"; do
                 dir="${entry#* }"
-                remote_ssh "list $dir" 2>/dev/null |
+                remote_ssh "list $dir" 2>/dev/null | head -c 1048576 |
                     while IFS= read -r f; do
                         backup_name_ok "$f" || continue
                         epoch=$(backup_epoch "$f") || continue
@@ -725,8 +754,15 @@ fetch_backup() {
         # shellcheck disable=SC2024
         sudo -u "$SERVER_A_USER" cat -- "$path" > "$dest"
     else
-        # Can be a whole LND volume (a safety backup), so the longer timeout
-        remote_ssh_stdin "get ${path%%/*} ${path#*/}" < /dev/null > "$dest"
+        # Can be a whole LND volume (a safety backup), so the longer timeout. Never more than the
+        # gate takes (20 GiB a backup, its MAX_BYTES): a hostile Server B can't fill this
+        # server's disk, where LND and bitcoind run
+        local limit=$(( 20 * 1024 * 1024 * 1024 ))
+        remote_ssh_stdin "get ${path%%/*} ${path#*/}" < /dev/null | head -c "$(( limit + 1 ))" > "$dest" || return 1
+        if [[ -f "$dest" ]] && (( $(stat -c %s -- "$dest") > limit )); then
+            rm -f -- "$dest"
+            return 1
+        fi
     fi
 }
 
@@ -850,10 +886,20 @@ unsearched_places() {
     echo "${places[*]}" | sed 's/,/, /g'
 }
 
+# When backups were found but none decrypts for lack of the key (a new server with a new key)
+explain_no_seckey() {
+    $NO_SECKEY_SEEN || return 0
+    echo
+    say "⚠️  The backups are encrypted to a GPG key this server doesn't have: this server's key (%s) isn't" "${GPG_FINGERPRINT:-?}"
+    say "   the one they were made with. A new server needs the old key: run setup and paste it when asked"
+    say "   (first delete the new key and empty GPG_FINGERPRINT in config), then run this again."
+}
+
 # Said right after the backup chosen is named: it is older than the newest backup there is, so
 # channels opened since aren't in it
 BACKUP_OLDER_BY=0
 warn_if_older() {
+    warn_key_expired
     (( BACKUP_OLDER_BY > 0 )) || return 0
     say "⚠️  This backup is %s older than the newest one found, which couldn't be used (listed above)." "$(duration_text "$BACKUP_OLDER_BY")"
     say "   Channels opened after it aren't in its channel.backup: their funds stay with the peer until"
@@ -1014,7 +1060,7 @@ make_safety_backup() {
         # The gate stores it under a new name only (never overwrites); downloaded back and checked
         # here rather than taken on Server B's word
         if remote_put pre-recovery "$name" "$BULK_DIR/$name" "$local_sum" &&
-           remote_sum=$(remote_ssh_stdin "get pre-recovery $name" < /dev/null | sha256sum | cut -d' ' -f1) &&
+           remote_sum=$(remote_ssh_stdin "get pre-recovery $name" < /dev/null | head -c "$(( $(stat -c %s -- "$BULK_DIR/$name") + 1 ))" | sha256sum | cut -d' ' -f1) &&
            [[ "$remote_sum" == "$local_sum" ]]; then
             log_message "$(T "✅ Safety backup stored and checked on Server B: pre-recovery/%s" "$name")"
             stored=$((stored + 1))
@@ -1676,6 +1722,7 @@ if [[ "$CHOICE" == "5" ]]; then
         die "$(T "%s is refused: %s" "$(basename "$path")" "$DECRYPT_ERROR")"
     rm -f "$BULK_DIR/undo.gpg"
     log_message "$(T "✅ %s decrypted and checked" "$(basename "$path")")"
+    warn_key_expired
 
     SAFE_NODE="$MANIFEST_NODE" SAFE_TIME="$MANIFEST_TIME" SAFE_STATE="$MANIFEST_STATE" SAFE_CHANNELS="$MANIFEST_CHANNELS"
     SAFE_EPOCH=$(date -d "$SAFE_TIME" +%s 2>/dev/null || echo "$epoch")
@@ -1805,6 +1852,7 @@ if [[ "$CHOICE" == "4" ]]; then
         warn_if_older
     else
         log_message "$(T "⚠️ No backup could be used")"
+        explain_no_seckey
     fi
     collect_channel_backups
     (( ${#SCB_CANDIDATES[@]} > 0 )) || die "$(T "No channel.backup found, neither in a backup nor on this server.")"
@@ -1839,6 +1887,7 @@ if [[ "$CHOICE" == "2" || "$CHOICE" == "3" ]]; then
         fi
     else
         log_message "$(T "⚠️ No backup could be used")"
+        explain_no_seckey
     fi
 
     if unlock_file=$(backup_unlock_file 2>/dev/null) &&

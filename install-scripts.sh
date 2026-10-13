@@ -187,6 +187,17 @@ OnUnitActiveSec=5min
 
 [Install]
 WantedBy=timers.target"
+# lnd-wallet.sh's work folders a power cut left behind (decrypted backups, the LND volume archived
+# for a safety backup: the seed and password are in it): removed at boot. The next lnd-wallet run
+# removes them too, but that may be much later.
+TMPFILES_CONF="/etc/tmpfiles.d/btcpay-docker-lnd-manager.conf"
+tmpfiles_content="# btcpay-docker-lnd-manager (install-scripts.sh): lnd-wallet.sh's leftover work folders, at boot only
+R! /var/tmp/lnd-wallet.*
+R! /var/tmp/lnd-github.*"
+if ! cmp -s <(printf '%s\n' "$tmpfiles_content") "$TMPFILES_CONF" 2>/dev/null; then
+    printf '%s\n' "$tmpfiles_content" > "$TMPFILES_CONF.new" && chmod 644 "$TMPFILES_CONF.new" &&
+        mv -f "$TMPFILES_CONF.new" "$TMPFILES_CONF" && changed+=("${TMPFILES_CONF##*/}")
+fi
 if command -v systemctl >/dev/null && [[ -d /run/systemd/system ]]; then
     systemctl daemon-reload
     systemctl enable --quiet lnd-update-boot.service

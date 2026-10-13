@@ -691,6 +691,22 @@ def collect(config):
         problems.append(_("Server B has a backup this server didn't send (%s): another LND with this seed may "
                           "be running. Two nodes with the same channels can lose all the funds in them: stop "
                           "the other one now (/foreign ok once you know it is safe)") % status["foreign_backup_name"][:80])
+    # Set again by each refused upload (the hourly retry too): shown while that goes on
+    clock_ahead = num(status, "remote_clock_ahead")
+    if clock_ahead is not None and now - clock_ahead < 7200 and destination_on(config, "BACKUP_TO_SERVER_B"):
+        problems.append(_("Server B refuses the backups as dated in the future: this server's clock is ahead of "
+                          "Server B's. Check the time on both (timedatectl)"))
+    expires = num(status, "gpg_key_expires")
+    if expires is not None and expires - now < 30 * 86400:
+        day = datetime.datetime.fromtimestamp(expires).strftime("%Y-%m-%d")
+        fix = "sudo -u %s gpg --quick-set-expire %s 0" % (config.get("SERVER_A_USER") or "?",
+                                                         config.get("GPG_FINGERPRINT") or "?")
+        if expires <= now:
+            problems.append(_("The backup GPG key expired on %s: no new backup can be made. Remove the expiry: "
+                              "%s (then again with '*' at the end)") % (day, fix))
+        else:
+            problems.append(_("The backup GPG key expires on %s: from then no backup can be made. Remove the "
+                              "expiry: %s (then again with '*' at the end)") % (day, fix))
     if not destination_on(config, "BACKUP_TO_SERVER_B") and not destination_on(config, "BACKUP_TO_GITHUB"):
         problems.append(_("No copy leaves this server (only the attached volume is on): /destinations"))
 

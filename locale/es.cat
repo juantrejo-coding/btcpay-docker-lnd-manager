@@ -29,6 +29,7 @@
    (%s)	   (%s)
    (--force installs the older version anyway)	   (--force instala la versión más antigua de todos modos)
    (/chain prune first, if BTCPay's chain isn't pruned). When it has finished, run this	   (antes /chain prune, si la blockchain de BTCPay no está podada). Cuando haya terminado, ejecute esto
+   (first delete the new key and empty GPG_FINGERPRINT in config), then run this again.	   (antes borre la clave nueva y vacíe GPG_FINGERPRINT en config), y después vuelva a ejecutar esto.
    1. serverb-user-setup.sh        then on Server A: lnd-manager /setup (it installs the backup gate)	   1. serverb-user-setup.sh        luego en el Servidor A: lnd-manager /setup (instala la compuerta)
    1. serverb.conf only. On Server B you get the scripts with git clone and check their	   1. Solo serverb.conf. En el Servidor B usted obtiene los scripts con git clone y verifica
    2. serverb-bitcoind-setup.sh	   2. serverb-bitcoind-setup.sh
@@ -67,6 +68,7 @@
    Progress: the Server B dashboard, or journalctl -u bitcoind.	   Progreso: el panel del Servidor B, o journalctl -u bitcoind.
    Putting older channel state back and starting LND can broadcast it, and then the peers can take	   Volver a poner un estado de canales más antiguo e iniciar LND puede difundirlo, y entonces los pares pueden quedarse con
    Removed the old install folder %s	   Se eliminó la carpeta de instalación antigua %s
+   Removing the expiry changes only the date (gpg may ask for the key's passphrase).	   Quitar la caducidad solo cambia la fecha (gpg puede pedir la contraseña de la clave).
    Restored channels:	   Canales restaurados:
    Scan progress: %s	   Progreso de la búsqueda: %s
    Server A's address:    %s (only it may reach the watchtower)	   Dirección del Servidor A:    %s (solo él puede conectarse a la watchtower)
@@ -99,6 +101,7 @@
    all. Every other incoming port is then closed: if this server offers anything else, say no	   todos. Los demás puertos de entrada quedan cerrados: si este servidor ofrece algo más, conteste no
    and add ufw rules for it yourself first.	   y agregue primero usted mismo reglas de ufw para eso.
    and in %s. The wallet safety backups in	   y en %s. Las copias de resguardo de la billetera en
+   and save the key again where you keep it (its copy elsewhere still has the old date).	   y vuelva a guardar la clave donde la tenga (esa copia todavía lleva la fecha antigua).
    another SERVER_B_USER on Server A.	   otro SERVER_B_USER en el Servidor A.
    be verified. Only use it if you know it is the one you want.	   su billetera. Úsela solo si sabe que es la que quiere.
    below is this server's own address, which behind NAT is a private one: check it.	   de abajo es la dirección propia de este servidor, que detrás de NAT es privada: revísela.
@@ -141,12 +144,16 @@
    sha256sum serverb-install.sh     must be %s	   sha256sum serverb-install.sh     debe ser %s
    sudo -u %s cat %s > serverb-install.sh	   sudo -u %s cat %s > serverb-install.sh
    sudo -u %s cat ~%s/serverb-setup/serverb-install.sh > serverb-install.sh	   sudo -u %s cat ~%s/serverb-setup/serverb-install.sh > serverb-install.sh
+   sudo -u %s gpg --homedir %s --quick-set-expire %s 0	   sudo -u %s gpg --homedir %s --quick-set-expire %s 0
+   sudo -u %s gpg --homedir %s --quick-set-expire %s 0 '*'	   sudo -u %s gpg --homedir %s --quick-set-expire %s 0 '*'
    sudo ./serverb-setup.sh %s	   sudo ./serverb-setup.sh %s
    sudo bash serverb-install.sh	   sudo bash serverb-install.sh
    that are already closing. Wait until they have finished, then run this script again.	   que ya se están cerrando. Espere a que terminen y luego ejecute este script de nuevo.
    the Server B dashboard (/status), or: sudo -u lndtower lncli --lnddir=%s --rpcserver=%s --macaroonpath=%s/readonly.macaroon tower info	   el panel del Servidor B (/status), o: sudo -u lndtower lncli --lnddir=%s --rpcserver=%s --macaroonpath=%s/readonly.macaroon tower info
+   the backup service can't make new ones. Remove the expiry (as root):	   el servicio de copias no puede hacer nuevas. Quite la caducidad (como root):
    the backup service is stopped, the disk unmounted from the old place, the /etc/fstab line	   se detiene el servicio de copias de seguridad, el disco se desmonta del lugar anterior, la línea de
    the key may then only store new backups, list and fetch them, and Server B rotates them	   así la clave solo podrá guardar copias nuevas, listarlas y descargarlas, y el Servidor B las rota
+   the one they were made with. A new server needs the old key: run setup and paste it when asked	   la que se usó para hacerlas. Un servidor nuevo necesita la clave antigua: ejecute la configuración y péguela cuando se lo pida
    the script starts BTCPay again at the end. The backup service pauses too.	   el script vuelve a iniciar BTCPay al final. El servicio de copias de seguridad también se pausa.
    then sudo ./install-scripts.sh again removes %s.	   después, sudo ./install-scripts.sh otra vez elimina %s.
    this LND's current data (channel.db) can sweep them. channel.backup doesn't cover channels	   los datos actuales de este LND (channel.db) pueden recuperarlos. channel.backup no cubre canales
@@ -583,6 +590,7 @@ REMOTE_SERVER is not set in config.	REMOTE_SERVER no está definido en config.
 REMOTE_SSH_PORT is not set in config.	REMOTE_SSH_PORT no está definido en config.
 Reads bitcoind's sync and the watchtower's state again. Read only.	Vuelve a leer la sincronización de bitcoind y el estado de la watchtower. Solo lectura.
 Refusing to empty %s outside a wallet setup	No se vacía %s fuera de una configuración de billetera
+Remove the expiry now? Type yes: 	¿Quitar la caducidad ahora? Escriba yes: 
 Removing %s from the docker group...	Quitando a %s del grupo docker...
 Removing ACL for GPG private key at %s...	Quitando la ACL de la clave privada GPG en %s...
 Removing ACL for SSH private key at %s...	Quitando la ACL de la clave privada SSH en %s...
@@ -649,6 +657,7 @@ Server B has a backup this server didn't send (%s): another LND with this seed m
 Server B has no ~%s/chain-incoming: serverb-bitcoind-setup.sh makes it when you choose to copy the blockchain there	El Servidor B no tiene ~%s/chain-incoming: serverb-bitcoind-setup.sh lo crea cuando usted elige copiar allí la blockchain
 Server B is behind: its last copy is older than the attached volume's	El Servidor B está atrasado: su última copia es más antigua que la del volumen adjunto
 Server B is off (BACKUP_TO_SERVER_B)	El Servidor B está desactivado (BACKUP_TO_SERVER_B)
+Server B refuses the backups as dated in the future: this server's clock is ahead of Server B's. Check the time on both (timedatectl)	El Servidor B rechaza las copias por estar fechadas en el futuro: el reloj de este servidor va por delante del del Servidor B. Revise la hora en ambos (timedatectl)
 Server B scripts from Server A (version %s)	Scripts del Servidor B creados en el Servidor A (versión %s)
 Server B sees Server A connect from %s.	El Servidor B ve que el Servidor A se conecta desde %s.
 Server B setup checklist	Lista de pasos de configuración del Servidor B
@@ -711,6 +720,8 @@ The Server B dashboard runs as an admin account of its own; serverb-dashboard-se
 The address Server A's node uses to reach the watchtower on Server B (usually Server B's address).	Dirección con la que el nodo del Servidor A llega a la watchtower (normalmente, la del Servidor B).
 The attached volume (UUID %s) is attached	El volumen adjunto (UUID %s) está conectado
 The attached volume is off (BACKUP_TO_VOLUME)	El volumen adjunto está desactivado (BACKUP_TO_VOLUME)
+The backup GPG key expired on %s: no new backup can be made. Remove the expiry: %s (then again with '*' at the end)	La clave GPG de las copias caducó el %s: no se puede hacer ninguna copia nueva. Quite la caducidad: %s (y otra vez con '*' al final)
+The backup GPG key expires on %s: from then no backup can be made. Remove the expiry: %s (then again with '*' at the end)	La clave GPG de las copias caduca el %s: desde entonces no se podrá hacer ninguna copia. Quite la caducidad: %s (y otra vez con '*' al final)
 The backup holds the wallet's seed and password (walletunlock.json).	La copia de seguridad contiene la semilla y la contraseña de la billetera (walletunlock.json).
 The backup service installer failed (details in %s). Run it by hand: sudo %s/rsync_gpg_backup.sh	Falló el instalador del servicio de copias de seguridad (detalles en %s). Ejecútelo a mano: sudo %s/rsync_gpg_backup.sh
 The bitcoind that prunes the copy didn't answer	El bitcoind que poda la copia no respondió
@@ -919,6 +930,7 @@ install-scripts.sh of %s failed; the backup service wasn't touched	install-scrip
 it does not hold backup_compressed.tar.gz and its checksum	no contiene backup_compressed.tar.gz y su suma de verificación
 it holds links or special files, which the service never backs up	contiene enlaces o archivos especiales, que el servicio nunca respalda
 it is %s: /start, and /log if it stops again	su estado es %s: /start, y /log si se detiene de nuevo
+it is encrypted to a GPG key this server doesn't have	está cifrada para una clave GPG que este servidor no tiene
 it is not signed with the backup key %s	no está firmada con la clave de las copias de seguridad %s
 its "Filled in on Server A" settings at the top. Then run each with sudo bash, in this order:	al inicio sus ajustes "Completado en el Servidor A". Luego ejecute cada uno con sudo bash, en este orden:
 its archive could not be unpacked	no se pudo desempaquetar su archivo comprimido
@@ -1152,6 +1164,9 @@ your LND seed	su semilla de LND
 ⚠️  Only the attached volume: no copy leaves this server. If this server is lost, the backups are	⚠️  Solo el volumen adjunto: ninguna copia sale de este servidor. Si este servidor se pierde, las copias de seguridad
 ⚠️  Restoring channels asks every channel peer to close its channel. Your share comes back	⚠️  Restaurar los canales pide al par de cada canal que lo cierre. Su parte de los fondos vuelve
 ⚠️  Server B still gives this key a full shell: anyone who got %s here could delete	⚠️  El Servidor B todavía da a esta clave una shell completa: quien obtuviera %s aquí podría borrar
+⚠️  The GPG key %s expires on %s. From that day the backup service can't make backups.	⚠️  La clave GPG %s caduca el %s. Desde ese día el servicio de copias no puede hacer copias.
+⚠️  The backup GPG key %s has expired. Backups signed with it are still good and are used, but	⚠️  La clave GPG de las copias %s ha caducado. Las copias firmadas con ella siguen siendo buenas y se usan, pero
+⚠️  The backups are encrypted to a GPG key this server doesn't have: this server's key (%s) isn't	⚠️  Las copias están cifradas para una clave GPG que este servidor no tiene: la clave de este servidor (%s) no es
 ⚠️  The current wallet couldn't be read, so it's unknown what it holds. The safety backup keeps	⚠️  No se pudo leer la billetera actual, así que no se sabe qué contiene. La copia de resguardo guarda
 ⚠️  The current wallet has %s open channels. The seed alone doesn't bring back money in	⚠️  La billetera actual tiene %s canales abiertos. La semilla sola no recupera el dinero que está en
 ⚠️  The current wallet still holds funds or channels. After this, they are only reachable	⚠️  La billetera actual aún tiene fondos o canales. Después de esto, solo se podrá acceder a ellos
@@ -1195,6 +1210,7 @@ your LND seed	su semilla de LND
 ⚠️ Ensure the correct key is imported for user: %s	⚠️ Asegúrese de que la clave correcta esté importada para el usuario: %s
 ⚠️ Failed to save snapshot fingerprint to %s	⚠️ No se pudo guardar la huella de la instantánea en %s
 ⚠️ Failed to stop service (may not exist or already stopped)	⚠️ No se pudo detener el servicio (puede que no exista o que ya esté detenido)
+⚠️ Failed to write %s	⚠️ No se pudo escribir %s
 ⚠️ File flapping: %s (changes: %s)	⚠️ Archivo que cambia sin parar: %s (cambios: %s)
 ⚠️ File missing (or inaccessible) in snapshot: %s	⚠️ Falta un archivo (o no es accesible) en la instantánea: %s
 ⚠️ File missing: %s	⚠️ Falta el archivo: %s
@@ -1236,13 +1252,16 @@ your LND seed	su semilla de LND
 ⚠️ Stopped before the wallet was touched. Starting BTCPay and the backup service again...	⚠️ Se detuvo antes de tocar la billetera. Iniciando de nuevo BTCPay y el servicio de copias de seguridad...
 ⚠️ Target not found: %s	⚠️ No se encontró el destino: %s
 ⚠️ Temporary backup directory does not exist: %s	⚠️ La carpeta temporal de copias no existe: %s
+⚠️ The GPG key keeps its expiry; lnd-manager warns 30 days ahead. Later: sudo -u %s gpg --quick-set-expire %s 0, then again with '*' at the end.	⚠️ La clave GPG conserva su caducidad; lnd-manager avisa 30 días antes. Más tarde: sudo -u %s gpg --quick-set-expire %s 0, y otra vez con '*' al final.
 ⚠️ The GitHub repository %s can't be reached, so it isn't searched.	⚠️ No hay conexión con el repositorio de GitHub %s, así que no se busca en él.
 ⚠️ The attached volume is not mounted, so it isn't searched.	⚠️ El volumen adjunto no está montado, así que no se busca en él.
 ⚠️ The attached volume is not mounted, so the safety backup is not stored there	⚠️ El volumen adjunto no está montado, así que la copia de resguardo no se guarda allí
 ⚠️ The backup service is still stopped. When LND is fine, rerun %s.	⚠️ El servicio de copias de seguridad sigue detenido. Cuando LND esté bien, vuelva a ejecutar %s.
 ⚠️ The backup's macaroons don't open with this password. Making new ones (apps need pairing again).	⚠️ Los macaroons de la copia de seguridad no se abren con esta contraseña. Se crean nuevos (hay que volver a vincular las apps).
+⚠️ The clock isn't synchronized and is behind the newest backup made here (%s): this one is named just after it. Check the time: timedatectl	⚠️ El reloj no está sincronizado y va por detrás de la copia más reciente hecha aquí (%s): esta se nombra justo después de ella. Revise la hora: timedatectl
 ⚠️ The hourly check had stopped: starting it again	⚠️ La revisión horaria se había detenido: se vuelve a iniciar
 ⚠️ The install goes on; delete them by hand if you need them gone.	⚠️ La instalación continúa; elimínelos a mano si necesita que no estén.
+⚠️ The newest backup made here is named after now (%s): the clock was ahead then. Named by the clock, which is synchronized.	⚠️ La copia más reciente hecha aquí tiene un nombre posterior a ahora (%s): el reloj iba adelantado entonces. Se nombra según el reloj, que está sincronizado.
 ⚠️ The old wallet is in the safety backup %s.	⚠️ La billetera anterior está en la copia de resguardo %s.
 ⚠️ The wallet is done, but the backup service is NOT running. Rerun %s.	⚠️ La billetera está lista, pero el servicio de copias de seguridad NO está en marcha. Vuelva a ejecutar %s.
 ⚠️ This clone's Server B scripts differ from Server A's version. Best: the same version on	⚠️ Los scripts del Servidor B de este clon difieren de la versión del Servidor A. Lo mejor: la misma versión en
@@ -1286,6 +1305,7 @@ your LND seed	su semilla de LND
 ✅ %s: done	✅ %s: hecho
 ✅ 'jq' is already installed.	✅ 'jq' ya está instalado.
 ✅ ATTACHED_VOLUME space check passed: %s KB available	✅ Revisión de espacio de ATTACHED_VOLUME correcta: %s KB disponibles
+✅ Accepted %s: the warning goes with the next check	✅ Aceptada %s: el aviso desaparece con la próxima comprobación
 ✅ All snapshot files exist	✅ Existen todos los archivos de la instantánea
 ✅ BTCPay runs with: %s	✅ BTCPay funciona con: %s
 ✅ BTCPay stack stopped successfully.	✅ Los contenedores de BTCPay se detuvieron correctamente.
@@ -1382,6 +1402,7 @@ your LND seed	su semilla de LND
 ✅ Sudoers updated and validated for %s	✅ Sudoers actualizado y validado para %s
 ✅ System user %s created	✅ Usuario del sistema %s creado
 ✅ TMP space check passed (home FS): %s KB available	✅ Revisión de espacio de TMP correcta (sistema de archivos de home): %s KB disponibles
+✅ The GPG key no longer expires. Save it again where you keep it: that copy still has the old date.	✅ La clave GPG ya no caduca. Vuelva a guardarla donde la tenga: esa copia todavía lleva la fecha antigua.
 ✅ The copy is in %s; ~%s/chain-incoming is gone (Server A can't write here now)	✅ La copia está en %s; ~%s/chain-incoming ya no existe (el Servidor A ya no puede escribir aquí)
 ✅ The deploy key can write to %s	✅ La deploy key puede escribir en %s
 ✅ The tower's wallet is made; it unlocks by itself from now on	✅ La billetera de la torre está creada; desde ahora se desbloquea sola
@@ -1612,6 +1633,7 @@ your LND seed	su semilla de LND
 ❌ Sending %s failed: %s	❌ Falló el envío de %s: %s
 ❌ Server A's public key (%s) isn't there yet. Run setup first (lnd-manager: /setup):	❌ Falta la clave pública del Servidor A (%s). Ejecute primero la configuración (lnd-manager: /setup):
 ❌ Server B answered without its backup gate. Install it there: server-b-install.sh	❌ El Servidor B respondió sin su compuerta de copias. Instálela allí: server-b-install.sh
+❌ Server B refused %s as dated in the future: this server's clock is ahead of Server B's. Check the time on both (timedatectl).	❌ El Servidor B rechazó %s por estar fechada en el futuro: el reloj de este servidor va por delante del del Servidor B. Revise la hora en ambos (timedatectl).
 ❌ Server B stored %s with another sha256 (%s, here %s): send it again	❌ El Servidor B guardó %s con otro sha256 (%s, aquí %s): envíelo de nuevo
 ❌ Server B's backup gate didn't answer	❌ La compuerta de copias del Servidor B no respondió
 ❌ Server B's checksum doesn't match this copy	❌ La suma de verificación del Servidor B no coincide con esta copia

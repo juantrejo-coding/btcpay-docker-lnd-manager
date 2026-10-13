@@ -1010,6 +1010,9 @@ OUTBOX_DIR="${BACKUP_METADATA_FOLDER}/outbox"
 # another node with the same seed sends some too (check_foreign_backups)
 UPLOADED_NAMES_FILE="${BACKUP_METADATA_FOLDER}/uploaded_to_server_b"
 # Names on Server B accepted as not another node's (lnd-manager: /foreign ok)
+# The time in the newest backup's name (epoch): the next one is never named before it while the
+# clock isn't synchronized
+LAST_NAME_TIME_FILE="${BACKUP_METADATA_FOLDER}/last_backup_name_time"
 FOREIGN_OK_FILE="${BACKUP_METADATA_FOLDER}/foreign_backups_ok"
 
 # === Logging Function ===
@@ -1125,6 +1128,11 @@ SSH_DEBUG_LOG="$BACKUP_METADATA_FOLDER/ssh_debug.log"
 SSH_TIMEOUT="${SSH_TIMEOUT:-120}"
 STALL_CONTEXT_LOG="$BACKUP_METADATA_FOLDER/stall_context.log"
 
+# One ssh call to Server B with a time limit, its answer cut at 64 KiB
+ssh_capped() {
+    timeout "$SSH_TIMEOUT" "${SSH_COMMAND_ARR[@]}" -o BatchMode=yes -v "$1" | head -c 65536
+}
+
 # Usage: run_ssh_debug <remote_cmd> [label] [expected_rc...]
 # Exit codes listed as expected (e.g. 1 for "test -f": file not there yet) are
 # answers, not failures, so they're returned without the ❌ log line.
@@ -1151,8 +1159,9 @@ run_ssh_debug() {
     # BatchMode: fail at once if the key is refused instead of trying a password prompt.
     # timeout and heartbeats: a hung or hostile Server B would otherwise hold the call open until
     # the watchdog kills the service, again and again, which stops local backups too.
-    run_with_heartbeat - timeout "$SSH_TIMEOUT" "${SSH_COMMAND_ARR[@]}" -o BatchMode=yes -v "$remote_cmd" \
-        2> >(tee -a "$SSH_DEBUG_LOG" >"$err_file") || rc=$?
+    # Both bounded (Server B writes them): 64 KiB of answer, 1 MiB of ssh -v and error output
+    run_with_heartbeat - ssh_capped "$remote_cmd" \
+        2> >(head -c 1048576 | tee -a "$SSH_DEBUG_LOG" >"$err_file") || rc=$?
 
     dt=$(( $(date +%s) - t0 ))
     log_message "$(T "🔍 SSH[%s] took %ss (rc=%s)" "$label" "${dt}" "$rc")"
@@ -2186,6 +2195,7 @@ start_reconciliation_loop() {
                 log_message "$(T "❌ github_pending retry failed")"
             fi
             check_foreign_backups || true
+            record_key_expiry || true
 
             # Catch up on milestones a backup couldn't create
             if ! retry_milestones_pending; then
@@ -2273,7 +2283,10 @@ PUT_WITH_SUM=true
 put_to_gate() {
     local cmd="put main $(basename -- "$1")"
     $PUT_WITH_SUM && cmd+=" $2"
-    timeout "$RSYNC_TIMEOUT" "${SSH_COMMAND_ARR[0]}" -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "$cmd" < "$1"
+    # The gate answers a line or two: more than 64 KiB isn't kept (a hostile Server B can't fill
+    # this server's disk through the answer)
+    timeout "$RSYNC_TIMEOUT" "${SSH_COMMAND_ARR[0]}" -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "$cmd" < "$1" 2>&1 |
+        head -c 65536
 }
 
 copy_to_remote_attempts() {
@@ -2308,18 +2321,26 @@ copy_to_remote_attempts() {
             continue
         fi
         stored_sum=$(grep -m1 -oE '^[0-9a-f]{64}$' "$output" || true)
+        # The gate refuses names more than 5 minutes ahead of its clock: retrying doesn't help
+        if (( rc != 0 )) && grep -q 'name dated in the future' "$output"; then
+            log_message "$(T "❌ Server B refused %s as dated in the future: this server's clock is ahead of Server B's. Check the time on both (timedatectl)." "$name")"
+            set_status remote_clock_ahead "$(date +%s)"
+            rm -f "$output"
+            return 1
+        fi
 
         # An earlier attempt may have got there before its answer was lost: the gate never
         # overwrites, so check the copy that is there
         if (( rc != 0 )) && grep -q 'already exists' "$output"; then
-            stored_sum=$("${SSH_COMMAND_ARR[0]}" -n -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "get main $name" 2>/dev/null |
-                sha256sum | cut -d' ' -f1) || stored_sum=""
+            stored_sum=$(timeout "$RSYNC_TIMEOUT" "${SSH_COMMAND_ARR[0]}" -n -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "get main $name" 2>/dev/null |
+                head -c $(( $(stat -c %s -- "$file") + 1 )) | sha256sum | cut -d' ' -f1) || stored_sum=""
             [[ "$stored_sum" == "$local_sum" ]] && rc=0
         fi
 
         if (( rc == 0 )) && [[ "$stored_sum" == "$local_sum" ]]; then
             duration=$(( $(date +%s) - start_time ))
             log_message "$(T "✅ Stored on Server B and checked (sha256) in %ss (attempt %s/%s)" "${duration}" "$i" "$RETRY_COUNT")"
+            set_status remote_clock_ahead ""
             rm -f "$output"
             return 0
         fi
@@ -2511,6 +2532,18 @@ retry_github_pending() {
     fi
 }
 
+# === The backup key's expiry date ===
+# The day it passes, gpg won't encrypt to the key and every backup fails: recorded for the
+# dashboard, which warns 30 days ahead. The earliest date of the key and its encryption subkeys.
+record_key_expiry() {
+    local expiry
+    expiry=$(gpg --with-colons --list-keys "$GPG_FINGERPRINT" 2>/dev/null |
+        awk -F: '($1 == "pub" || ($1 == "sub" && $12 ~ /e/)) && $2 != "r" && $7 ~ /^[0-9]+$/ {
+                     if (min == "" || $7 < min) min = $7 }
+                 END { print min }') || expiry=""
+    set_status gpg_key_expires "$expiry"
+}
+
 # === Another node with this seed? ===
 # Backups on Server B that this server didn't send, newer than the first one it did send: some
 # other LND with this wallet is running and backing up (an old server that came back, a copy).
@@ -2522,7 +2555,10 @@ check_foreign_backups() {
     first=$(head -n 1 -- "$UPLOADED_NAMES_FILE")
     stamp="${first#encrypted_backup_}"
     first_epoch=$(date -d "${stamp%.gpg}" +%s 2>/dev/null) || return 0
-    names=$("${SSH_COMMAND_ARR[0]}" -n -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "list main" 2>/dev/null) || return 0
+    # Bounded: a Server B that keeps answering (keep-alives only catch a dead link) or sends
+    # without end would stop the hourly check or fill this server's memory
+    names=$(timeout "$SSH_TIMEOUT" "${SSH_COMMAND_ARR[0]}" -n -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "list main" 2>/dev/null |
+            head -c 1048576) || return 0
     while IFS= read -r name; do
         [[ "$name" =~ ^encrypted_backup_[0-9T:+-]+\.gpg$ ]] || continue
         grep -qxF -- "$name" "$UPLOADED_NAMES_FILE" && continue
@@ -2919,7 +2955,28 @@ perform_backup() {
     # === Define Timestamp for Backup in TMP Directory ===
     # In UTC: the same on both servers and through daylight-saving changes (older backups carry the
     # local offset; everything orders them by their real time, not the name's text)
-    TIMESTAMP=$(date -u --iso-8601=seconds)
+    # Never before the newest backup made here while the clock isn't synchronized: a clock behind
+    # (a Raspberry Pi has no clock battery: after a power cut it starts at the last saved time)
+    # would rank this one, the newest state, below older ones, and Server B's rotation would
+    # delete it first. A synchronized clock is trusted: then the newest name came from a clock
+    # that was ahead, and following it would name every backup in the future.
+    local name_epoch last_epoch synced
+    name_epoch=$(date +%s)
+    last_epoch=$(head -n 1 -- "$LAST_NAME_TIME_FILE" 2>/dev/null || true)
+    [[ "$last_epoch" =~ ^[0-9]+$ ]] || last_epoch=0
+    if (( name_epoch <= last_epoch )); then
+        synced=$(timedatectl show -p NTPSynchronized --value 2>/dev/null || true)
+        if [[ "$synced" == yes && name_epoch -lt last_epoch ]]; then
+            log_message "$(T "⚠️ The newest backup made here is named after now (%s): the clock was ahead then. Named by the clock, which is synchronized." "$(date -u -d "@$last_epoch" --iso-8601=seconds)")"
+        else
+            (( name_epoch < last_epoch )) &&
+                log_message "$(T "⚠️ The clock isn't synchronized and is behind the newest backup made here (%s): this one is named just after it. Check the time: timedatectl" "$(date -u -d "@$last_epoch" --iso-8601=seconds)")"
+            name_epoch=$(( last_epoch + 1 ))
+        fi
+    fi
+    TIMESTAMP=$(date -u -d "@$name_epoch" --iso-8601=seconds)
+    printf '%s\n' "$name_epoch" > "$LAST_NAME_TIME_FILE" 2>/dev/null ||
+        log_message "$(T "⚠️ Failed to write %s" "$LAST_NAME_TIME_FILE")"
     TIMESTAMPED_BACKUP="${TMP_BACKUP_DIR}/backup_${TIMESTAMP}"
     if ! mkdir -p "$TIMESTAMPED_BACKUP"; then
         log_message "$(T "❌ Failed to create timestamped backup directory: %s" "$TIMESTAMPED_BACKUP")"

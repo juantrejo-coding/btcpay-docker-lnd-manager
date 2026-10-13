@@ -110,7 +110,9 @@ El panel del Servidor B:
    - **La clave SSH** que usa el Servidor A para llegar al Servidor B. La configuración la crea.
    - **La clave GPG** que cifra las copias. Pegue una que ya tenga, o deje que la configuración
      cree una. **Guarde la clave privada en un lugar seguro, fuera de este servidor: sin ella
-     nadie puede abrir las copias.**
+     nadie puede abrir las copias.** Una clave creada por la configuración nunca caduca; si la suya
+     tiene fecha de caducidad, la configuración ofrece quitarla (ese día el servicio ya no podría
+     hacer copias).
    - La confirmación de que tiene anotada su semilla de LND.
    - **El servicio de copias de seguridad**, la última pregunta. Responda `y`.
 

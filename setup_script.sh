@@ -700,7 +700,7 @@ view_private_key() {
 server_b_mode() {
     local ssh_cmd=(sudo -u "$SERVER_A_USER" ssh -n -o BatchMode=yes -o ConnectTimeout=5 -i "$KEY_PATH"
                    -p "$REMOTE_SSH_PORT" "$SERVER_B_USER@$REMOTE_SERVER")
-    if [[ "$("${ssh_cmd[@]}" ping 2>/dev/null)" == "ok" ]]; then
+    if [[ "$(timeout 60 "${ssh_cmd[@]}" ping 2>/dev/null | head -c 4096)" == "ok" ]]; then
         echo gate
     elif [[ "$("${ssh_cmd[@]}" 'echo shell-ok' 2>/dev/null)" == "shell-ok" ]]; then
         echo shell
@@ -1112,8 +1112,12 @@ if ! sudo -u "$SERVER_A_USER" gpg --list-secret-keys "$GPG_KEY_NAME" > /dev/null
             log_message "$(T "🛠️ Generating new GPG key...")"
             sudo -u "$SERVER_A_USER" gpg --batch --gen-key <<-EOF
 %no-protection
-Key-Type: RSA
-Key-Length: 2048
+Key-Type: eddsa
+Key-Curve: ed25519
+Key-Usage: sign
+Subkey-Type: ecdh
+Subkey-Curve: cv25519
+Subkey-Usage: encrypt
 Name-Real: Backup
 Name-Email: $GPG_KEY_NAME
 Expire-Date: 0
@@ -1248,6 +1252,31 @@ if printf '%s:6:\n' "$GPG_FPR" | sudo -u "$SERVER_A_USER" gpg --batch --import-o
 else
     log_message "$(T "❌ Setting GPG key trust failed.")"
     exit 1
+fi
+
+# === An expiry date on the key ===
+# The day it passes, gpg won't encrypt to the key, so every backup fails. Keys made here never
+# expire; one pasted in may. The earliest date of the key and its encryption subkeys counts.
+gpg_key_expiry() {
+    sudo -u "$SERVER_A_USER" gpg --with-colons --list-keys "$GPG_FPR" 2>/dev/null |
+        awk -F: '($1 == "pub" || ($1 == "sub" && $12 ~ /e/)) && $2 != "r" && $7 ~ /^[0-9]+$/ {
+                     if (min == "" || $7 < min) min = $7 }
+                 END { print min }'
+}
+key_expiry=$(gpg_key_expiry)
+if [[ -n "$key_expiry" ]]; then
+    echo
+    say "⚠️  The GPG key %s expires on %s. From that day the backup service can't make backups." "$GPG_FPR" "$(date -d "@$key_expiry" +%Y-%m-%d)"
+    say "   Removing the expiry changes only the date (gpg may ask for the key's passphrase)."
+    read -r -p "$(T "Remove the expiry now? Type yes: ")" answer || answer=""
+    if [[ "$answer" == yes ]] &&
+       sudo -u "$SERVER_A_USER" gpg --pinentry-mode loopback --quick-set-expire "$GPG_FPR" 0 &&
+       sudo -u "$SERVER_A_USER" gpg --pinentry-mode loopback --quick-set-expire "$GPG_FPR" 0 '*' &&
+       [[ -z "$(gpg_key_expiry)" ]]; then
+        log_message "$(T "✅ The GPG key no longer expires. Save it again where you keep it: that copy still has the old date.")"
+    else
+        log_message "$(T "⚠️ The GPG key keeps its expiry; lnd-manager warns 30 days ahead. Later: sudo -u %s gpg --quick-set-expire %s 0, then again with '*' at the end." "$SERVER_A_USER" "$GPG_FPR")"
+    fi
 fi
 
 

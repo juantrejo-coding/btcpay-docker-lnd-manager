@@ -57,8 +57,10 @@ fi
 [[ "$pending" =~ ^-?[0-9]+$ ]] || pending=-1
 
 status=$(printf 'server-a-status 1\nlnd=%s\nhtlcs=%s\npending_channels=%s\n' "$state" "$htlcs" "$pending")
-error=$(printf '%s\n' "$status" | runuser -u "$SERVER_A_USER" -- ssh -o BatchMode=yes -o ConnectTimeout=15 \
-            -i "$KEY_PATH" -p "${REMOTE_SSH_PORT:-22}" "$SERVER_B_USER@$REMOTE_SERVER" put-status 2>&1 >/dev/null)
+# A time limit, and Server B's answer cut at 4 KiB (pipefail, set above, keeps ssh's exit code)
+error=$(printf '%s\n' "$status" | timeout 60 runuser -u "$SERVER_A_USER" -- ssh -o BatchMode=yes -o ConnectTimeout=15 \
+            -i "$KEY_PATH" -p "${REMOTE_SSH_PORT:-22}" "$SERVER_B_USER@$REMOTE_SERVER" put-status 2>&1 >/dev/null |
+            head -c 4096)
 rc=$?
 # A refusal or an unreachable Server B is said once an hour, not every 5 minutes
 NOTE=/run/server-a-status.error

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: btcpay-docker-lnd-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 22:40-0400\n"
+"POT-Creation-Date: 2026-10-13 02:03-0400\n"
 "PO-Revision-Date: 2026-10-06 20:18-0400\n"
 "Last-Translator: Automatically generated\n"
 "Language-Team: none\n"
@@ -81,7 +81,7 @@ msgstr "✅ BTCPay funciona con: %s"
 msgid "⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline for %s."
 msgstr "⚠️  Se detendrá BTCPay: la tienda no podrá recibir pagos y Lightning estará fuera de línea durante %s."
 
-#: chain-tower.sh:200 lnd-wallet.sh:1061
+#: chain-tower.sh:200 lnd-wallet.sh:1107
 msgid "Type 'STOP BTCPAY' to stop it: "
 msgstr "Escriba 'STOP BTCPAY' para detenerlo: "
 
@@ -133,7 +133,7 @@ msgstr "antiguas que buscar. Lightning necesita los bloques desde la apertura de
 msgid "Choose 1-4 (Enter for 3, q to stop): "
 msgstr "Elija 1-4 (Enter = 3, q = salir): "
 
-#: chain-tower.sh:241 lnd-wallet.sh:785 lnd-wallet.sh:1759
+#: chain-tower.sh:241 lnd-wallet.sh:821 lnd-wallet.sh:1806
 #: serverb/serverb-dashboard-setup.sh:52 serverb/serverb-import-chain.sh:41
 #: serverb/serverb-user-setup.sh:85 serverb/serverb-user-setup.sh:91
 msgid "Stopped: nothing was changed."
@@ -183,251 +183,251 @@ msgstr "No hay blockchain en %s (BITCOIND_DIR en config)"
 msgid "There is no user %s (SERVER_A_USER in config)"
 msgstr "No existe el usuario %s (SERVER_A_USER en config)"
 
-#: chain-tower.sh:372
+#: chain-tower.sh:373
 msgid "Server B's backup gate doesn't answer. Run setup first (lnd-manager: /setup)."
 msgstr "La compuerta de copias del Servidor B no responde. Ejecute primero la configuración (lnd-manager: /setup)."
 
-#: chain-tower.sh:375
+#: chain-tower.sh:376
 msgid "Server B's backup gate is older and can't say how much space it has: update it there first (step 1 of serverb-setup.sh, or /update scripts)"
 msgstr "La compuerta de copias del Servidor B es más antigua y no puede indicar cuánto espacio tiene: actualícela allí primero (paso 1 de serverb-setup.sh, o /update scripts)"
 
-#: chain-tower.sh:378
+#: chain-tower.sh:379
 msgid "Server B has no ~%s/chain-incoming: serverb-bitcoind-setup.sh makes it when you choose to copy the blockchain there"
 msgstr "El Servidor B no tiene ~%s/chain-incoming: serverb-bitcoind-setup.sh lo crea cuando usted elige copiar allí la blockchain"
 
-#: chain-tower.sh:391
+#: chain-tower.sh:392
 msgid "BTCPay's blockchain: %s GB (prune=%s), of which the chainstate (which can't be pruned) is %s GB."
 msgstr "Blockchain de BTCPay: %s GB (prune=%s), de los cuales el chainstate (que no se puede podar) ocupa %s GB."
 
-#: chain-tower.sh:394
+#: chain-tower.sh:395
 msgid "⚠️  It isn't pruned: all of it would be copied (hundreds of GB). Prune it first: /chain prune."
 msgstr "⚠️  No está podada: se copiaría completa (cientos de GB). Pódela primero: /chain prune."
 
-#: chain-tower.sh:395 chain-tower.sh:404 chain-tower.sh:460
+#: chain-tower.sh:396 chain-tower.sh:405 chain-tower.sh:461
 msgid "Stopped: nothing was copied."
 msgstr "Detenido: no se copió nada."
 
-#: chain-tower.sh:395
+#: chain-tower.sh:396
 msgid "Type 'COPY ALL' to copy it unpruned anyway: "
 msgstr "Escriba 'COPY ALL' para copiarla sin podar de todos modos: "
 
-#: chain-tower.sh:398
+#: chain-tower.sh:399
 msgid "Where should the blockchain be pruned to Server B's size (%s MB) for the watchtower?"
 msgstr "¿Dónde se debe podar la blockchain al tamaño del Servidor B (%s MB) para la watchtower?"
 
-#: chain-tower.sh:399
+#: chain-tower.sh:400
 msgid "  1. On Server A: a pruned copy is made beside BTCPay's, and only that is sent (about %s GB)."
 msgstr "  1. En el Servidor A: se crea una copia podada junto a la de BTCPay y solo se envía esa (unos %s GB)."
 
-#: chain-tower.sh:400
+#: chain-tower.sh:401
 msgid "     BTCPay's own blockchain isn't changed. Needs about %s GB free here meanwhile."
 msgstr "     La blockchain propia de BTCPay no cambia. Necesita unos %s GB libres aquí mientras tanto."
 
-#: chain-tower.sh:401
+#: chain-tower.sh:402
 msgid "  2. On Server B: BTCPay's whole pruned blockchain is sent (%s GB), and Server B prunes it"
 msgstr "  2. En el Servidor B: se envía toda la blockchain podada de BTCPay (%s GB) y el Servidor B la poda"
 
-#: chain-tower.sh:402
+#: chain-tower.sh:403
 msgid "     after the import. Nothing extra on this server; more to send, more room on Server B."
 msgstr "     tras la importación. Nada extra en este servidor; más que enviar y más espacio en el Servidor B."
 
-#: chain-tower.sh:404 serverb-scripts.sh:209 setup_script.sh:833
+#: chain-tower.sh:405 serverb-scripts.sh:209 setup_script.sh:833
 msgid "Choose 1 or 2: "
 msgstr "Elija 1 o 2: "
 
-#: chain-tower.sh:422
+#: chain-tower.sh:423
 msgid "❌ Not enough space on Server A for the pruned copy: %s GB needed in %s, %s GB free."
 msgstr "❌ No hay espacio suficiente en el Servidor A para la copia podada: se necesitan %s GB en %s, hay %s GB libres."
 
-#: chain-tower.sh:424
+#: chain-tower.sh:425
 msgid "   Free some space, or choose 2 (pruned on Server B)."
 msgstr "   Libere espacio o elija 2 (podada en el Servidor B)."
 
-#: chain-tower.sh:436
+#: chain-tower.sh:437
 msgid "❌ Not enough space on Server B: the copy needs %s GB in ~%s (with 5 GB kept free), %s GB free there."
 msgstr "❌ No hay espacio suficiente en el Servidor B: la copia necesita %s GB en ~%s (dejando 5 GB libres), allí hay %s GB libres."
 
-#: chain-tower.sh:438
+#: chain-tower.sh:439
 msgid "   The import moves it to /var/lib, another disk there: %s GB needed, %s GB free."
 msgstr "   La importación la mueve a /var/lib, que allí es otro disco: se necesitan %s GB, hay %s GB libres."
 
-#: chain-tower.sh:440
+#: chain-tower.sh:441
 msgid "   Choose 1 (pruned on Server A) to send less, or free space on Server B."
 msgstr "   Elija 1 (podada en el Servidor A) para enviar menos, o libere espacio en el Servidor B."
 
-#: chain-tower.sh:444
+#: chain-tower.sh:445
 msgid "✅ Room enough: Server B has %s GB free for %s GB."
 msgstr "✅ Espacio suficiente: el Servidor B tiene %s GB libres para %s GB."
 
-#: chain-tower.sh:447 chain-tower.sh:452
+#: chain-tower.sh:448 chain-tower.sh:453
 msgid "Two passes, so BTCPay is down only for the second:"
 msgstr "Dos pasadas, para que BTCPay esté detenido solo durante la segunda:"
 
-#: chain-tower.sh:448
+#: chain-tower.sh:449
 msgid "  1. while BTCPay runs: the pruned copy is made here (the chainstate copied, about %s GB)."
 msgstr "  1. con BTCPay en marcha: se crea aquí la copia podada (se copia el chainstate, unos %s GB)."
 
-#: chain-tower.sh:449 chain-tower.sh:455
+#: chain-tower.sh:450 chain-tower.sh:456
 msgid "  2. BTCPay stopped (you type STOP BTCPAY): only what changed meanwhile, usually minutes."
 msgstr "  2. con BTCPay detenido (usted escribe STOP BTCPAY): solo lo que cambió entretanto, unos minutos."
 
-#: chain-tower.sh:450
+#: chain-tower.sh:451
 msgid "     Then BTCPay starts again, the copy is pruned and sent to Server B, and deleted here."
 msgstr "     Luego BTCPay se inicia de nuevo, la copia se poda, se envía al Servidor B y se borra aquí."
 
-#: chain-tower.sh:453
+#: chain-tower.sh:454
 msgid "  1. while BTCPay runs: almost everything (%s GB). This can take hours; BTCPay keeps working."
 msgstr "  1. con BTCPay en marcha: casi todo (%s GB). Puede tardar horas; BTCPay sigue funcionando."
 
-#: chain-tower.sh:454
+#: chain-tower.sh:455
 msgid "     If the connection drops, run /chain copy again: it goes on where it stopped."
 msgstr "     Si se corta la conexión, ejecute /chain copy de nuevo: continúa donde se quedó."
 
-#: chain-tower.sh:456
+#: chain-tower.sh:457
 msgid "     Then BTCPay starts again."
 msgstr "     Luego BTCPay se inicia de nuevo."
 
-#: chain-tower.sh:458
+#: chain-tower.sh:459
 msgid "Server B's gate takes it only into ~%s/chain-incoming (serverb-bitcoind-setup.sh makes it)."
 msgstr "La compuerta del Servidor B solo la acepta en ~%s/chain-incoming (la crea serverb-bitcoind-setup.sh)."
 
-#: chain-tower.sh:459
+#: chain-tower.sh:460
 msgid "Afterwards, on Server B: sudo bash serverb-import-chain.sh"
 msgstr "Después, en el Servidor B: sudo bash serverb-import-chain.sh"
 
-#: chain-tower.sh:460
+#: chain-tower.sh:461
 msgid "Start the copy? Type yes: "
 msgstr "¿Iniciar la copia? Escriba yes: "
 
-#: chain-tower.sh:470
+#: chain-tower.sh:471
 msgid "📦 Pass 1 of 2: making the pruned copy in %s while BTCPay runs..."
 msgstr "📦 Pasada 1 de 2: creando la copia podada en %s con BTCPay en marcha..."
 
-#: chain-tower.sh:473
+#: chain-tower.sh:474
 msgid "Making the copy failed, so BTCPay was not stopped. Free space in %s, then run /chain copy again."
 msgstr "La creación de la copia falló, así que BTCPay no se detuvo. Libere espacio en %s y ejecute /chain copy de nuevo."
 
-#: chain-tower.sh:476
+#: chain-tower.sh:477
 msgid "📤 Pass 1 of 2: copying while BTCPay runs..."
 msgstr "📤 Pasada 1 de 2: copiando con BTCPay en marcha..."
 
-#: chain-tower.sh:482
+#: chain-tower.sh:483
 msgid "⚠️ Pass 1 ended with code %s (files changing while BTCPay runs, expected). Going on to pass 2, which copies the rest."
 msgstr "⚠️ La pasada 1 terminó con código %s (archivos que cambian con BTCPay en marcha, es lo esperado). Se sigue con la pasada 2, que copia el resto."
 
-#: chain-tower.sh:483
+#: chain-tower.sh:484
 msgid "Pass 1 failed (rsync exit code %s), so BTCPay was not stopped. Fix what the lines above say, then run /chain copy again."
 msgstr "La pasada 1 falló (código de salida de rsync %s), así que BTCPay no se detuvo. Corrija lo que indican las líneas de arriba y ejecute /chain copy de nuevo."
 
-#: chain-tower.sh:486
+#: chain-tower.sh:487
 msgid "a few minutes, while the rest of the blockchain is copied"
 msgstr "unos minutos, mientras se copia el resto de la blockchain"
 
-#: chain-tower.sh:489
+#: chain-tower.sh:490
 msgid "🛑 Stopping BTCPay (btcpay-down.sh)..."
 msgstr "🛑 Deteniendo BTCPay (btcpay-down.sh)..."
 
-#: chain-tower.sh:490
+#: chain-tower.sh:491
 msgid "btcpay-down.sh failed"
 msgstr "btcpay-down.sh falló"
 
-#: chain-tower.sh:492
+#: chain-tower.sh:493
 msgid "📦 Pass 2 of 2: the rest, with BTCPay stopped..."
 msgstr "📦 Pasada 2 de 2: el resto, con BTCPay detenido..."
 
-#: chain-tower.sh:493
+#: chain-tower.sh:494
 msgid "Making the copy failed. BTCPay is started again; run /chain copy again later."
 msgstr "La creación de la copia falló. BTCPay se inicia de nuevo; ejecute /chain copy de nuevo más tarde."
 
-#: chain-tower.sh:494
+#: chain-tower.sh:495
 msgid "🚀 Starting BTCPay again..."
 msgstr "🚀 Iniciando BTCPay de nuevo..."
 
-#: chain-tower.sh:495
+#: chain-tower.sh:496
 msgid "❌ btcpay-up.sh failed: run %s/btcpay-up.sh by hand"
 msgstr "❌ btcpay-up.sh falló: ejecute %s/btcpay-up.sh a mano"
 
-#: chain-tower.sh:499
+#: chain-tower.sh:500
 msgid "📤 Sending the pruned copy (%s GB) to Server B..."
 msgstr "📤 Enviando la copia podada (%s GB) al Servidor B..."
 
-#: chain-tower.sh:500
+#: chain-tower.sh:501
 msgid "Sending the copy failed. Run /chain copy again later (BTCPay keeps running)."
 msgstr "El envío de la copia falló. Ejecute /chain copy de nuevo más tarde (BTCPay sigue en marcha)."
 
-#: chain-tower.sh:502
+#: chain-tower.sh:503
 msgid "📤 Pass 2 of 2: copying the rest with BTCPay stopped..."
 msgstr "📤 Pasada 2 de 2: copiando el resto con BTCPay detenido..."
 
-#: chain-tower.sh:503
+#: chain-tower.sh:504
 msgid "Pass 2 failed. BTCPay is started again; run /chain copy again later."
 msgstr "La pasada 2 falló. BTCPay se inicia de nuevo; ejecute /chain copy otra vez más tarde."
 
-#: chain-tower.sh:505
+#: chain-tower.sh:506
 msgid "✅ Blockchain copied to Server B. Next, on Server B: sudo bash serverb-import-chain.sh"
 msgstr "✅ Blockchain copiada al Servidor B. Ahora, en el Servidor B: sudo bash serverb-import-chain.sh"
 
-#: chain-tower.sh:510
+#: chain-tower.sh:511
 msgid "WATCHTOWER_PUBKEY in config isn't a public key (66 hex characters)"
 msgstr "WATCHTOWER_PUBKEY en config no es una clave pública (66 caracteres hexadecimales)"
 
-#: chain-tower.sh:511
+#: chain-tower.sh:512
 msgid "WATCHTOWER_IP in config isn't set"
 msgstr "WATCHTOWER_IP no está definido en config"
 
-#: chain-tower.sh:512
+#: chain-tower.sh:513
 msgid "WATCHTOWER_PORT in config isn't a port"
 msgstr "WATCHTOWER_PORT en config no es un puerto"
 
-#: chain-tower.sh:516
+#: chain-tower.sh:517
 msgid "BTCPay's LND has its watchtower client off. BTCPay's opt-lnd-wtclient fragment turns it on"
 msgstr "El LND de BTCPay tiene el cliente de watchtower desactivado. El fragmento opt-lnd-wtclient de BTCPay"
 
-#: chain-tower.sh:517
+#: chain-tower.sh:518
 msgid "(wtclient.active=1); btcpay-setup.sh applies it and restarts LND."
 msgstr "lo activa (wtclient.active=1); btcpay-setup.sh lo aplica y reinicia LND."
 
-#: chain-tower.sh:518
+#: chain-tower.sh:519
 msgid "a few minutes, while btcpay-setup.sh turns on the watchtower client"
 msgstr "unos minutos, mientras btcpay-setup.sh activa el cliente de watchtower"
 
-#: chain-tower.sh:522
+#: chain-tower.sh:523
 msgid "⏳ Waiting for LND..."
 msgstr "⏳ Esperando a LND..."
 
-#: chain-tower.sh:523
+#: chain-tower.sh:524
 msgid "LND doesn't answer (docker logs %s)"
 msgstr "LND no responde (docker logs %s)"
 
-#: chain-tower.sh:526
+#: chain-tower.sh:527
 msgid "⏳ LND is still catching up with the chain; the watchtower client waits for that (up to 10 minutes here)..."
 msgstr "⏳ LND aún se sincroniza con la blockchain; el cliente de watchtower lo espera (aquí hasta 10 minutos)..."
 
-#: chain-tower.sh:528
+#: chain-tower.sh:529
 msgid "➕ Adding the watchtower %s..."
 msgstr "➕ Agregando la watchtower %s..."
 
-#: chain-tower.sh:536
+#: chain-tower.sh:537
 msgid "LND's watchtower client didn't answer within 10 minutes (LND not synced to the chain yet?). The client is on; run /tower add again later."
 msgstr "El cliente de watchtower de LND no respondió en 10 minutos (¿LND aún no está sincronizado con la blockchain?). El cliente está activado; ejecute /tower add de nuevo más tarde."
 
-#: chain-tower.sh:537
+#: chain-tower.sh:538
 msgid "lncli wtclient add failed"
 msgstr "lncli wtclient add falló"
 
-#: chain-tower.sh:539
+#: chain-tower.sh:540
 msgid "✅ The watchtower is added. LND sends it encrypted channel updates from now on."
 msgstr "✅ La watchtower está agregada. Desde ahora LND le envía actualizaciones cifradas de los canales."
 
-#: chain-tower.sh:547
+#: chain-tower.sh:548
 msgid "The watchtower client isn't on, LND isn't running, or LND is still catching up with the chain:"
 msgstr "El cliente de watchtower está desactivado, LND no está en ejecución o aún se sincroniza con la blockchain:"
 
-#: chain-tower.sh:551
+#: chain-tower.sh:552
 msgid "Towers:"
 msgstr "Torres:"
 
-#: chain-tower.sh:553
+#: chain-tower.sh:554
 msgid "Statistics:"
 msgstr "Estadísticas:"
 
@@ -587,27 +587,27 @@ msgstr "❌ La clave de GitHub es una deploy key de otro repositorio (%s), no de
 msgid "❌ The GitHub key is added to the GitHub account %s, not as a deploy key of %s: it could write to every repository of that account. Remove it there (Settings, SSH keys) and add it to the repository's Deploy keys."
 msgstr "❌ La clave de GitHub está añadida a la cuenta de GitHub %s, no como deploy key de %s: podría escribir en todos los repositorios de esa cuenta. Quítela de allí (Settings, SSH keys) y añádala a las Deploy keys del repositorio."
 
-#: github-lib.sh:139
+#: github-lib.sh:189
 msgid "❌ %s is %s MB: GitHub takes files up to 100 MB, so it isn't stored there"
 msgstr "❌ %s ocupa %s MB: GitHub acepta archivos de hasta 100 MB, así que no se guarda allí"
 
-#: github-lib.sh:146
+#: github-lib.sh:196
 msgid "❌ Could not reach the GitHub repository %s with its deploy key"
 msgstr "❌ No se pudo acceder al repositorio de GitHub %s con su deploy key"
 
-#: github-lib.sh:151
+#: github-lib.sh:200
 msgid "❌ The GitHub repository holds %s safety backups already: delete old ones there first"
 msgstr "❌ El repositorio de GitHub ya tiene %s copias de resguardo: borre primero allí las antiguas"
 
-#: github-lib.sh:189
+#: github-lib.sh:244
 msgid "❌ Pushing to the GitHub repository %s failed (is the deploy key allowed to write?)"
 msgstr "❌ Falló el envío (push) al repositorio de GitHub %s (¿la deploy key tiene permiso de escritura?)"
 
-#: github-lib.sh:195
+#: github-lib.sh:252
 msgid "❌ GitHub doesn't show the backup just pushed: not counted as stored"
 msgstr "❌ GitHub no muestra la copia recién enviada: no se cuenta como guardada"
 
-#: github-lib.sh:203
+#: github-lib.sh:259
 msgid "✅ Stored on GitHub (%s) and checked: GitHub shows commit %s"
 msgstr "✅ Guardada en GitHub (%s) y comprobada: GitHub muestra el commit %s"
 
@@ -651,39 +651,39 @@ msgstr "   Primero lleve esta carpeta a esa versión: git fetch --tags && git ch
 msgid "   (--force installs the older version anyway)"
 msgstr "   (--force instala la versión más antigua de todos modos)"
 
-#: install-scripts.sh:204
+#: install-scripts.sh:215
 msgid "✅ Installed into %s (changed: %s)"
 msgstr "✅ Instalado en %s (cambió: %s)"
 
-#: install-scripts.sh:206
+#: install-scripts.sh:217
 msgid "✅ %s is up to date"
 msgstr "✅ %s está al día"
 
-#: install-scripts.sh:208
+#: install-scripts.sh:219
 msgid "   Wallet: sudo lnd-wallet [new|restore|channels|channels-only|undo]   Dashboard: lnd-manager"
 msgstr "   Billetera: sudo lnd-wallet [new|restore|channels|channels-only|undo]   Panel: lnd-manager"
 
-#: install-scripts.sh:209
+#: install-scripts.sh:220
 msgid "   Version: %s   Updates: sudo lnd-update"
 msgstr "   Versión: %s   Actualizaciones: sudo lnd-update"
 
-#: install-scripts.sh:212
+#: install-scripts.sh:223
 msgid "   The backup service uses the installed copy: rerun %s/rsync_gpg_backup.sh to apply the changes."
 msgstr "   El servicio de copias usa la copia instalada: vuelva a ejecutar %s/rsync_gpg_backup.sh para aplicar los cambios."
 
-#: install-scripts.sh:221
+#: install-scripts.sh:232
 msgid "   The backup service still reads %s/config: rerun %s/rsync_gpg_backup.sh,"
 msgstr "   El servicio de copias todavía lee %s/config: vuelva a ejecutar %s/rsync_gpg_backup.sh;"
 
-#: install-scripts.sh:222
+#: install-scripts.sh:233
 msgid "   then sudo ./install-scripts.sh again removes %s."
 msgstr "   después, sudo ./install-scripts.sh otra vez elimina %s."
 
-#: install-scripts.sh:228
+#: install-scripts.sh:239
 msgid "   Removed the old install folder %s"
 msgstr "   Se eliminó la carpeta de instalación antigua %s"
 
-#: install-scripts.sh:230
+#: install-scripts.sh:241
 msgid "   %s holds files this project didn't put there; left as it is"
 msgstr "   %s contiene archivos que este proyecto no puso allí; se deja como está"
 
@@ -1363,125 +1363,140 @@ msgstr "El Servidor B tiene una copia de seguridad que este servidor no envió (
 
 #: lnd-manager.py:695
 #, python-format
+msgid "Server B refuses the backups as dated in the future: this server's clock is ahead of Server B's. Check the time on both (timedatectl)"
+msgstr "El Servidor B rechaza las copias por estar fechadas en el futuro: el reloj de este servidor va por delante del del Servidor B. Revise la hora en ambos (timedatectl)"
+
+#: lnd-manager.py:703
+#, python-format
+msgid "The backup GPG key expired on %s: no new backup can be made. Remove the expiry: %s (then again with '*' at the end)"
+msgstr "La clave GPG de las copias caducó el %s: no se puede hacer ninguna copia nueva. Quite la caducidad: %s (y otra vez con '*' al final)"
+
+#: lnd-manager.py:706
+#, python-format
+msgid "The backup GPG key expires on %s: from then no backup can be made. Remove the expiry: %s (then again with '*' at the end)"
+msgstr "La clave GPG de las copias caduca el %s: desde entonces no se podrá hacer ninguna copia. Quite la caducidad: %s (y otra vez con '*' al final)"
+
+#: lnd-manager.py:709
+#, python-format
 msgid "No copy leaves this server (only the attached volume is on): /destinations"
 msgstr "Ninguna copia sale de este servidor (solo el volumen adjunto está activado): /destinations"
 
-#: lnd-manager.py:701
+#: lnd-manager.py:715
 #, python-format
 msgid "The hourly check hasn't run for %s"
 msgstr "La revisión horaria no se ejecuta desde hace %s"
 
-#: lnd-manager.py:729
+#: lnd-manager.py:743
 #, python-format
 msgid " for %s"
 msgstr " desde hace %s"
 
-#: lnd-manager.py:730
+#: lnd-manager.py:744
 #, python-format
 msgid ", restarts: %s"
 msgstr ", reinicios: %s"
 
-#: lnd-manager.py:742 serverb/serverb-dashboard.py:344
+#: lnd-manager.py:756 serverb/serverb-dashboard.py:344
 #, python-format
 msgid "Setup: %d of %d steps done. Next: %s (/checklist)"
 msgstr "Configuración: %d de %d pasos hechos. Siguiente: %s (/checklist)"
 
-#: lnd-manager.py:745
+#: lnd-manager.py:759
 #, python-format
 msgid "Service: "
 msgstr "Servicio: "
 
-#: lnd-manager.py:748
+#: lnd-manager.py:762
 #, python-format
 msgid "/wallet attach to go back to it"
 msgstr "/wallet attach para volver a ella"
 
-#: lnd-manager.py:748
+#: lnd-manager.py:762
 #, python-format
 msgid "in another terminal (not in tmux)"
 msgstr "en otra terminal (no en tmux)"
 
-#: lnd-manager.py:749
+#: lnd-manager.py:763
 #, python-format
 msgid "Wallet operation running: %s, since %s, %s"
 msgstr "Operación de billetera en curso: %s, desde %s, %s"
 
-#: lnd-manager.py:755
+#: lnd-manager.py:769
 #, python-format
 msgid ", since "
 msgstr ", desde "
 
-#: lnd-manager.py:755
+#: lnd-manager.py:769
 #, python-format
 msgid "Job: %s%s"
 msgstr "Tarea: %s%s"
 
-#: lnd-manager.py:759
+#: lnd-manager.py:773
 #, python-format
 msgid "Last file change: %s  %s"
 msgstr "Último cambio de archivo: %s  %s"
 
-#: lnd-manager.py:762
+#: lnd-manager.py:776
 #, python-format
 msgid "Last file change: none since the status file was created"
 msgstr "Último cambio de archivo: ninguno desde que se creó el archivo de estado"
 
-#: lnd-manager.py:768
+#: lnd-manager.py:782
 #, python-format
 msgid "Backups"
 msgstr "Copias"
 
-#: lnd-manager.py:768
+#: lnd-manager.py:782
 #, python-format
 msgid "Last failure"
 msgstr "Último fallo"
 
-#: lnd-manager.py:768
+#: lnd-manager.py:782
 #, python-format
 msgid "Last success"
 msgstr "Último éxito"
 
-#: lnd-manager.py:775
+#: lnd-manager.py:789
 #, python-format
 msgid "Hourly check"
 msgstr "Revisión horaria"
 
-#: lnd-manager.py:782
+#: lnd-manager.py:796
 #, python-format
 msgid "   retry pending since %s"
 msgstr "   reintento pendiente desde %s"
 
-#: lnd-manager.py:786 serverb/serverb-dashboard.py:620
+#: lnd-manager.py:800 serverb/serverb-dashboard.py:620
 #, python-format
 msgid "Problems"
 msgstr "Problemas"
 
-#: lnd-manager.py:790
+#: lnd-manager.py:804
 #, python-format
 msgid "  none"
 msgstr "  ninguno"
 
-#: lnd-manager.py:791
+#: lnd-manager.py:805
 #, python-format
 msgid "Errors in the last 24h: %d"
 msgstr "Errores en las últimas 24h: %d"
 
-#: lnd-manager.py:800
+#: lnd-manager.py:814
 #, python-format
 msgid "Log:"
 msgstr "Registro:"
 
-#: lnd-manager.py:808
+#: lnd-manager.py:822
 #, python-format
 msgid " / commands  s start/stop  r restart  c check now  l log  w wallet  q quit"
 msgstr " / comandos  s inic/det  r reiniciar  c revisar  l reg.  w billetera  q salir"
 
-#: lnd-manager.py:822 serverb/serverb-dashboard.py:546
+#: lnd-manager.py:836 serverb/serverb-dashboard.py:546
 #, python-format
 msgid "Could not run it: %s"
 msgstr "No se pudo ejecutar: %s"
 
-#: lnd-manager.py:825 serverb/serverb-dashboard.py:548
+#: lnd-manager.py:839 serverb/serverb-dashboard.py:548
 #, python-format
 msgid ""
 "\n"
@@ -1490,174 +1505,179 @@ msgstr ""
 "\n"
 "Código de salida %d. Presione Enter para volver al panel."
 
-#: lnd-manager.py:866
+#: lnd-manager.py:880
 #, python-format
 msgid "The service isn't running, so there is no check to run"
 msgstr "El servicio no está en marcha, así que no hay revisión que hacer"
 
-#: lnd-manager.py:879
+#: lnd-manager.py:893
 #, python-format
 msgid "Back from the log"
 msgstr "De vuelta del registro"
 
-#: lnd-manager.py:885 lnd-manager.py:890 lnd-manager.py:895 lnd-manager.py:912
-#: lnd-manager.py:930
+#: lnd-manager.py:899 lnd-manager.py:904 lnd-manager.py:909 lnd-manager.py:926
+#: lnd-manager.py:944
 #, python-format
 msgid "not set"
 msgstr "sin definir"
 
-#: lnd-manager.py:885
+#: lnd-manager.py:899
 #, python-format
 msgid "setup_script.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr "No se encontró setup_script.sh en BACKUP_SCRIPTS_FOLDER (%s)"
 
-#: lnd-manager.py:890 lnd-manager.py:912 lnd-manager.py:930
+#: lnd-manager.py:904 lnd-manager.py:926 lnd-manager.py:944
 #, python-format
 msgid "serverb-scripts.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr "No se encontró serverb-scripts.sh en BACKUP_SCRIPTS_FOLDER (%s)"
 
-#: lnd-manager.py:895
+#: lnd-manager.py:909
 #, python-format
 msgid "destinations.sh not found in BACKUP_SCRIPTS_FOLDER (%s)"
 msgstr "No se encontró destinations.sh en BACKUP_SCRIPTS_FOLDER (%s)"
 
-#: lnd-manager.py:903
+#: lnd-manager.py:917
 #, python-format
 msgid "No backup from elsewhere is shown, so there is nothing to accept"
 msgstr "No se muestra ninguna copia de otro lugar, así que no hay nada que aceptar"
 
-#: lnd-manager.py:905
+#: lnd-manager.py:919
 #, python-format
 msgid "SERVER_A_USER or BACKUP_METADATA_FOLDER is empty in config"
 msgstr "SERVER_A_USER o BACKUP_METADATA_FOLDER está vacío en config"
 
-#: lnd-manager.py:919 serverb/serverb-dashboard.py:491
+#: lnd-manager.py:933 serverb/serverb-dashboard.py:491
 #: serverb/serverb-dashboard.py:584
 #, python-format
 msgid "Support"
 msgstr "Apoyo"
 
-#: lnd-manager.py:922 serverb/serverb-dashboard.py:581
+#: lnd-manager.py:936 serverb/serverb-dashboard.py:581
 #, python-format
 msgid "Checklist"
 msgstr "Lista de pasos"
 
-#: lnd-manager.py:936
+#: lnd-manager.py:950
 #, python-format
 msgid "No wallet operation is running"
 msgstr "No hay ninguna operación de billetera en curso"
 
-#: lnd-manager.py:938
+#: lnd-manager.py:952
 #, python-format
 msgid "The wallet operation runs in another terminal, not in tmux: nothing to attach to"
 msgstr "La operación de billetera se ejecuta en otra terminal, no en tmux: no hay a qué conectarse"
 
-#: lnd-manager.py:943
+#: lnd-manager.py:957
 #, python-format
 msgid "A wallet operation is already running: wait for it, or /wallet attach"
 msgstr "Ya hay una operación de billetera en curso: espere a que termine, o /wallet attach"
 
-#: lnd-manager.py:949
+#: lnd-manager.py:963
 #, python-format
 msgid "Run: "
 msgstr "¿Ejecutar: "
 
-#: lnd-manager.py:967
+#: lnd-manager.py:981
+#, python-format
+msgid "✅ Accepted %s: the warning goes with the next check"
+msgstr "✅ Aceptada %s: el aviso desaparece con la próxima comprobación"
+
+#: lnd-manager.py:983
 #, python-format
 msgid "✅ %s: done"
 msgstr "✅ %s: hecho"
 
-#: lnd-manager.py:969
+#: lnd-manager.py:985
 #, python-format
 msgid "⚠️ %s: still running in tmux. /%s attach to go back to it"
 msgstr "⚠️ %s: sigue en curso en tmux. /%s attach para volver a ella"
 
-#: lnd-manager.py:972
+#: lnd-manager.py:988
 #, python-format
 msgid "⚠️ %s: not started, an earlier wallet operation was still open"
 msgstr "⚠️ %s: no se inició, una operación de billetera anterior seguía abierta"
 
-#: lnd-manager.py:973
+#: lnd-manager.py:989
 #, python-format
 msgid "❌ %s: exit code %d"
 msgstr "❌ %s: código de salida %d"
 
-#: lnd-manager.py:978
+#: lnd-manager.py:994
 #, python-format
 msgid "(placeholder: SUPPORT_BTC_ADDRESS in config)"
 msgstr "(valor provisional: SUPPORT_BTC_ADDRESS en config)"
 
-#: lnd-manager.py:979
+#: lnd-manager.py:995
 #, python-format
 msgid "(placeholder: SUPPORT_URL in config)"
 msgstr "(valor provisional: SUPPORT_URL en config)"
 
-#: lnd-manager.py:983 serverb/serverb-dashboard.py:405
+#: lnd-manager.py:999 serverb/serverb-dashboard.py:405
 #, python-format
 msgid "If it keeps your node safe, please support its development:"
 msgstr "Si mantiene su nodo seguro, por favor apoye su desarrollo:"
 
-#: lnd-manager.py:984 serverb/serverb-dashboard.py:406
+#: lnd-manager.py:1000 serverb/serverb-dashboard.py:406
 #, python-format
 msgid "  Bitcoin:  "
 msgstr "  Bitcoin:  "
 
-#: lnd-manager.py:985 serverb/serverb-dashboard.py:407
+#: lnd-manager.py:1001 serverb/serverb-dashboard.py:407
 #, python-format
 msgid "  Project:  "
 msgstr "  Proyecto:  "
 
-#: lnd-manager.py:987
+#: lnd-manager.py:1003
 #, python-format
 msgid "License (the full text is in LICENSE, next to the scripts)"
 msgstr "Licencia (el texto completo está en LICENSE, junto a los scripts)"
 
-#: lnd-manager.py:988 serverb/serverb-dashboard.py:410
+#: lnd-manager.py:1004 serverb/serverb-dashboard.py:410
 #, python-format
 msgid "  Free for personal and business use up to USD 1,000,000 annual sales income."
 msgstr "  Gratis para uso personal y comercial hasta USD 1,000,000 de ingresos anuales por ventas."
 
-#: lnd-manager.py:989 serverb/serverb-dashboard.py:411
+#: lnd-manager.py:1005 serverb/serverb-dashboard.py:411
 #, python-format
 msgid "  Above that: a one-time USD 50 payment in bitcoin to the donation address."
 msgstr "  Por encima de eso: un pago único de USD 50 en bitcoin a la dirección de donación."
 
-#: lnd-manager.py:990 serverb/serverb-dashboard.py:412
+#: lnd-manager.py:1006 serverb/serverb-dashboard.py:412
 #, python-format
 msgid "  Used in another commercial node service or tool: a one-time USD 500 payment."
 msgstr "  Si se usa en otro servicio o herramienta comercial de nodos: un pago único de USD 500."
 
-#: lnd-manager.py:991 serverb/serverb-dashboard.py:413
+#: lnd-manager.py:1007 serverb/serverb-dashboard.py:413
 #, python-format
 msgid "  A commercial user that doesn't pay agrees to pay 10 percent of those sales instead."
 msgstr "  Un usuario comercial que no paga acepta pagar en su lugar el 10 por ciento de esas ventas."
 
-#: lnd-manager.py:992 serverb/serverb-dashboard.py:414
+#: lnd-manager.py:1008 serverb/serverb-dashboard.py:414
 #, python-format
 msgid "  Keep your bitcoin payment receipt (transaction ID) as proof."
 msgstr "  Guarde el comprobante de su pago en bitcoin (ID de la transacción) como prueba."
 
-#: lnd-manager.py:994 serverb/serverb-dashboard.py:416
+#: lnd-manager.py:1010 serverb/serverb-dashboard.py:416
 #, python-format
 msgid "No warranty: use it at your own risk."
 msgstr "Sin garantía: úselo bajo su propio riesgo."
 
-#: lnd-manager.py:1011
+#: lnd-manager.py:1027
 #, python-format
 msgid " q back   Up/Down scroll"
 msgstr " q volver   ↑/↓ desplazar"
 
-#: lnd-manager.py:1169
+#: lnd-manager.py:1185
 #, python-format
 msgid "Log"
 msgstr "Registro"
 
-#: lnd-manager.py:1233 serverb/serverb-dashboard.py:660
+#: lnd-manager.py:1249 serverb/serverb-dashboard.py:660
 #, python-format
 msgid " no matching command"
 msgstr " ningún comando coincide"
 
-#: lnd-manager.py:1251 serverb/serverb-dashboard.py:752
+#: lnd-manager.py:1267 serverb/serverb-dashboard.py:752
 #, python-format
 msgid "Not a terminal. Use --once for a text status."
 msgstr "No es una terminal. Use --once para ver el estado en texto."
@@ -1930,1107 +1950,1143 @@ msgstr "⚠️   docker logs --tail 50 %s"
 msgid "⚠️ The backup service is still stopped. When LND is fine, rerun %s."
 msgstr "⚠️ El servicio de copias de seguridad sigue detenido. Cuando LND esté bien, vuelva a ejecutar %s."
 
-#: lnd-wallet.sh:478
+#: lnd-wallet.sh:479
 msgid "⚠️ The GitHub repository %s can't be reached, so it isn't searched."
 msgstr "⚠️ No hay conexión con el repositorio de GitHub %s, así que no se busca en él."
 
-#: lnd-wallet.sh:508
+#: lnd-wallet.sh:511 lnd-wallet.sh:519
 msgid "it is not signed with the backup key %s"
 msgstr "no está firmada con la clave de las copias de seguridad %s"
 
-#: lnd-wallet.sh:522 lnd-wallet.sh:527
+#: lnd-wallet.sh:530
+msgid "⚠️  The backup GPG key %s has expired. Backups signed with it are still good and are used, but"
+msgstr "⚠️  La clave GPG de las copias %s ha caducado. Las copias firmadas con ella siguen siendo buenas y se usan, pero"
+
+#: lnd-wallet.sh:531
+msgid "   the backup service can't make new ones. Remove the expiry (as root):"
+msgstr "   el servicio de copias no puede hacer nuevas. Quite la caducidad (como root):"
+
+#: lnd-wallet.sh:532
+msgid "   sudo -u %s gpg --homedir %s --quick-set-expire %s 0 '*'"
+msgstr "   sudo -u %s gpg --homedir %s --quick-set-expire %s 0 '*'"
+
+#: lnd-wallet.sh:533
+msgid "   sudo -u %s gpg --homedir %s --quick-set-expire %s 0"
+msgstr "   sudo -u %s gpg --homedir %s --quick-set-expire %s 0"
+
+#: lnd-wallet.sh:534
+msgid "   and save the key again where you keep it (its copy elsewhere still has the old date)."
+msgstr "   y vuelva a guardar la clave donde la tenga (esa copia todavía lleva la fecha antigua)."
+
+#: lnd-wallet.sh:546 lnd-wallet.sh:551
 msgid "its signed manifest couldn't be read"
 msgstr "no se pudo leer su manifiesto firmado"
 
-#: lnd-wallet.sh:537
+#: lnd-wallet.sh:563
+msgid "it is encrypted to a GPG key this server doesn't have"
+msgstr "está cifrada para una clave GPG que este servidor no tiene"
+
+#: lnd-wallet.sh:565
 msgid "GPG could not decrypt it (%s)"
 msgstr "GPG no pudo descifrarla (%s)"
 
-#: lnd-wallet.sh:542
+#: lnd-wallet.sh:571
 msgid "it does not hold backup_compressed.tar.gz and its checksum"
 msgstr "no contiene backup_compressed.tar.gz y su suma de verificación"
 
-#: lnd-wallet.sh:549
+#: lnd-wallet.sh:578
 msgid "its checksum does not match (the file is damaged)"
 msgstr "su suma de verificación no coincide (el archivo está dañado)"
 
-#: lnd-wallet.sh:561
+#: lnd-wallet.sh:590
 msgid "its archive could not be unpacked"
 msgstr "no se pudo desempaquetar su archivo comprimido"
 
-#: lnd-wallet.sh:568
+#: lnd-wallet.sh:597
 msgid "it holds links or special files, which the service never backs up"
 msgstr "contiene enlaces o archivos especiales, que el servicio nunca respalda"
 
-#: lnd-wallet.sh:600
+#: lnd-wallet.sh:629
 msgid "its signed manifest says it is a '%s' backup, not '%s'"
 msgstr "su manifiesto firmado dice que es una copia '%s', no '%s'"
 
-#: lnd-wallet.sh:604
+#: lnd-wallet.sh:633
 msgid "its signed manifest has no valid time"
 msgstr "su manifiesto firmado no tiene una hora válida"
 
-#: lnd-wallet.sh:617
+#: lnd-wallet.sh:646
 msgid "its name doesn't match the time in its signed manifest (%s): it was renamed"
 msgstr "su nombre no coincide con la hora de su manifiesto firmado (%s): fue renombrada"
 
-#: lnd-wallet.sh:736
+#: lnd-wallet.sh:772
 msgid "on the attached volume"
 msgstr "en el volumen adjunto"
 
-#: lnd-wallet.sh:737
+#: lnd-wallet.sh:773
 msgid "on GitHub"
 msgstr "en GitHub"
 
-#: lnd-wallet.sh:738
+#: lnd-wallet.sh:774
 msgid "on Server B"
 msgstr "en el Servidor B"
 
-#: lnd-wallet.sh:769
+#: lnd-wallet.sh:805
 msgid "🔎 Looking for the latest backup on the attached volume, Server B and GitHub..."
 msgstr "🔎 Buscando la última copia de seguridad en el volumen adjunto, el Servidor B y GitHub..."
 
-#: lnd-wallet.sh:770
+#: lnd-wallet.sh:806
 msgid "⚠️ The attached volume is not mounted, so it isn't searched."
 msgstr "⚠️ El volumen adjunto no está montado, así que no se busca en él."
 
-#: lnd-wallet.sh:771
+#: lnd-wallet.sh:807
 msgid "⚠️ Server B can't be reached, so it isn't searched."
 msgstr "⚠️ No hay conexión con el Servidor B, así que no se busca en él."
 
-#: lnd-wallet.sh:782
+#: lnd-wallet.sh:818
 msgid "⚠️  Not searched: %s. A newer backup may be there, with channels the others don't have."
 msgstr "⚠️  No se buscó en: %s. Puede haber allí una copia de seguridad más reciente, con canales que las demás no tienen."
 
-#: lnd-wallet.sh:783
+#: lnd-wallet.sh:819
 msgid "   Best: make it reachable (mount the disk, check Server B's address and SSH), then run this again."
 msgstr "   Lo mejor: hágalo accesible (monte el disco, revise la dirección y el SSH del Servidor B) y vuelva a ejecutar esto."
 
-#: lnd-wallet.sh:784
+#: lnd-wallet.sh:820
 msgid "Type yes to look only in the places that answered: "
 msgstr "Escriba yes para buscar solo en los lugares que respondieron: "
 
-#: lnd-wallet.sh:802
+#: lnd-wallet.sh:838
 msgid "%s %s: could not be copied"
 msgstr "%s %s: no se pudo copiar"
 
-#: lnd-wallet.sh:809
+#: lnd-wallet.sh:845
 msgid "%s %s: %s"
 msgstr "%s %s: %s"
 
-#: lnd-wallet.sh:820
+#: lnd-wallet.sh:856
 msgid "%s %s (%s)"
 msgstr "%s %s (%s)"
 
-#: lnd-wallet.sh:822
+#: lnd-wallet.sh:858
 msgid ", a milestone: no regular backup could be used"
 msgstr ", un hito: no se pudo usar ninguna copia normal"
 
-#: lnd-wallet.sh:825
+#: lnd-wallet.sh:861
 msgid "; ⚠️ made before backups carried a signed date, so its date is not verified"
 msgstr "; ⚠️ hecha antes de que las copias llevaran una fecha firmada, así que su fecha no está verificada"
 
-#: lnd-wallet.sh:833
+#: lnd-wallet.sh:869
 msgid "⚠️ Skipped %s"
 msgstr "⚠️ Se omitió %s"
 
-#: lnd-wallet.sh:845
+#: lnd-wallet.sh:881
 msgid "the attached volume"
 msgstr "volumen adjunto"
 
-#: lnd-wallet.sh:846
+#: lnd-wallet.sh:882
 msgid "Server B"
 msgstr "Servidor B"
 
-#: lnd-wallet.sh:847
+#: lnd-wallet.sh:883
 msgid "GitHub"
 msgstr "GitHub"
 
-#: lnd-wallet.sh:858
+#: lnd-wallet.sh:893
+msgid "⚠️  The backups are encrypted to a GPG key this server doesn't have: this server's key (%s) isn't"
+msgstr "⚠️  Las copias están cifradas para una clave GPG que este servidor no tiene: la clave de este servidor (%s) no es"
+
+#: lnd-wallet.sh:894
+msgid "   the one they were made with. A new server needs the old key: run setup and paste it when asked"
+msgstr "   la que se usó para hacerlas. Un servidor nuevo necesita la clave antigua: ejecute la configuración y péguela cuando se lo pida"
+
+#: lnd-wallet.sh:895
+msgid "   (first delete the new key and empty GPG_FINGERPRINT in config), then run this again."
+msgstr "   (antes borre la clave nueva y vacíe GPG_FINGERPRINT en config), y después vuelva a ejecutar esto."
+
+#: lnd-wallet.sh:904
 msgid "⚠️  This backup is %s older than the newest one found, which couldn't be used (listed above)."
 msgstr "⚠️  Esta copia de seguridad es %s más antigua que la más reciente encontrada, que no se pudo usar (ver arriba)."
 
-#: lnd-wallet.sh:859
+#: lnd-wallet.sh:905
 msgid "   Channels opened after it aren't in its channel.backup: their funds stay with the peer until"
 msgstr "   Los canales abiertos después de ella no están en su channel.backup: sus fondos quedan con el par hasta"
 
-#: lnd-wallet.sh:860
+#: lnd-wallet.sh:906
 msgid "   it closes them. This server's own channel.backup is tried too, if it still has one."
 msgstr "   que este los cierre. También se prueba el propio channel.backup de este servidor, si todavía tiene uno."
 
-#: lnd-wallet.sh:910
+#: lnd-wallet.sh:956
 msgid "There is no wallet in %s, so nothing to check."
 msgstr "No hay billetera en %s, así que no hay nada que revisar."
 
-#: lnd-wallet.sh:915
+#: lnd-wallet.sh:961
 msgid "⚠️ LND container '%s' is stopped. Starting BTCPay to read the current wallet..."
 msgstr "⚠️ El contenedor de LND '%s' está detenido. Iniciando BTCPay para leer la billetera actual..."
 
-#: lnd-wallet.sh:916
+#: lnd-wallet.sh:962
 msgid "⚠️ btcpay-up.sh failed"
 msgstr "⚠️ btcpay-up.sh falló"
 
-#: lnd-wallet.sh:919
+#: lnd-wallet.sh:965
 msgid "⏳ Waiting for the current LND to answer (up to 3 minutes)..."
 msgstr "⏳ Esperando a que responda el LND actual (hasta 3 minutos)..."
 
-#: lnd-wallet.sh:925
+#: lnd-wallet.sh:971
 msgid "Couldn't read the current wallet: LND isn't answering (state: %s)."
 msgstr "No se pudo leer la billetera actual: LND no responde (estado: %s)."
 
-#: lnd-wallet.sh:941
+#: lnd-wallet.sh:987
 msgid "Node ID:           %s"
 msgstr "ID del nodo:       %s"
 
-#: lnd-wallet.sh:942
+#: lnd-wallet.sh:988
 msgid "On-chain:          %s sat confirmed, %s sat unconfirmed"
 msgstr "On-chain:          %s sat confirmados, %s sat sin confirmar"
 
-#: lnd-wallet.sh:943
+#: lnd-wallet.sh:989
 msgid "Open channels:     %s (your share: %s sat)"
 msgstr "Canales abiertos:  %s (su parte: %s sat)"
 
-#: lnd-wallet.sh:944
+#: lnd-wallet.sh:990
 msgid "Opening/closing:   %s channels, %s sat waiting in closes (limbo)"
 msgstr "Abriendo/cerrando: %s canales, %s sat esperando en cierres (fondos en limbo)"
 
-#: lnd-wallet.sh:946
+#: lnd-wallet.sh:992
 msgid "⚠️ LND is not synced to the chain, so these numbers may be out of date."
 msgstr "⚠️ LND no está sincronizado con la cadena, así que estas cifras pueden estar desactualizadas."
 
-#: lnd-wallet.sh:961
+#: lnd-wallet.sh:1007
 msgid "ℹ️ The LND volume is missing or empty, so there is nothing to save in a safety backup."
 msgstr "ℹ️ El volumen de LND no existe o está vacío, así que no hay nada que guardar en una copia de resguardo."
 
-#: lnd-wallet.sh:969
+#: lnd-wallet.sh:1015
 msgid "Not enough free space in /var/tmp for the safety backup (LND volume: %s bytes)"
 msgstr "No hay suficiente espacio libre en /var/tmp para la copia de resguardo (volumen de LND: %s bytes)"
 
-#: lnd-wallet.sh:971
+#: lnd-wallet.sh:1017
 msgid "💾 Making the safety backup of the current LND volume (%s)..."
 msgstr "💾 Haciendo la copia de resguardo del volumen actual de LND (%s)..."
 
-#: lnd-wallet.sh:973
+#: lnd-wallet.sh:1019
 msgid "Could not archive %s for the safety backup"
 msgstr "No se pudo empaquetar %s para la copia de resguardo"
 
-#: lnd-wallet.sh:983
+#: lnd-wallet.sh:1029
 msgid "GPG could not encrypt the safety backup"
 msgstr "GPG no pudo cifrar la copia de resguardo"
 
-#: lnd-wallet.sh:987
+#: lnd-wallet.sh:1033
 msgid "The safety backup failed its check: %s"
 msgstr "La copia de resguardo no pasó la verificación: %s"
 
-#: lnd-wallet.sh:1001
+#: lnd-wallet.sh:1047
 msgid "✅ Safety backup stored and checked: %s/%s"
 msgstr "✅ Copia de resguardo guardada y verificada: %s/%s"
 
-#: lnd-wallet.sh:1005
+#: lnd-wallet.sh:1051
 msgid "⚠️ Could not store the safety backup on the attached volume"
 msgstr "⚠️ No se pudo guardar la copia de resguardo en el volumen adjunto"
 
-#: lnd-wallet.sh:1008
+#: lnd-wallet.sh:1054
 msgid "⚠️ The attached volume is not mounted, so the safety backup is not stored there"
 msgstr "⚠️ El volumen adjunto no está montado, así que la copia de resguardo no se guarda allí"
 
-#: lnd-wallet.sh:1019
+#: lnd-wallet.sh:1065
 msgid "✅ Safety backup stored and checked on Server B: pre-recovery/%s"
 msgstr "✅ Copia de resguardo guardada y verificada en el Servidor B: pre-recovery/%s"
 
-#: lnd-wallet.sh:1022
+#: lnd-wallet.sh:1068
 msgid "⚠️ Could not store the safety backup on Server B"
 msgstr "⚠️ No se pudo guardar la copia de resguardo en el Servidor B"
 
-#: lnd-wallet.sh:1025
+#: lnd-wallet.sh:1071
 msgid "⚠️ Server B's backup gate can't be reached, so the safety backup is not stored there"
 msgstr "⚠️ No hay conexión con la compuerta de copias del Servidor B, así que la copia de resguardo no se guarda allí"
 
-#: lnd-wallet.sh:1034
+#: lnd-wallet.sh:1080
 msgid "✅ Safety backup stored and checked on GitHub: pre-recovery/%s"
 msgstr "✅ Copia de resguardo guardada y comprobada en GitHub: pre-recovery/%s"
 
-#: lnd-wallet.sh:1037
+#: lnd-wallet.sh:1083
 msgid "⚠️ Could not store the safety backup on GitHub"
 msgstr "⚠️ No se pudo guardar la copia de resguardo en GitHub"
 
-#: lnd-wallet.sh:1043
+#: lnd-wallet.sh:1089
 msgid "The safety backup could not be stored anywhere. Nothing has been deleted."
 msgstr "La copia de resguardo no se pudo guardar en ningún lugar. No se ha borrado nada."
 
-#: lnd-wallet.sh:1052
+#: lnd-wallet.sh:1098
 msgid "a few minutes, plus the scan for old funds, which can take minutes to hours"
 msgstr "unos minutos, más la búsqueda de fondos anteriores, que puede tardar de minutos a horas"
 
-#: lnd-wallet.sh:1053
+#: lnd-wallet.sh:1099
 msgid "a few minutes, for the safety backup"
 msgstr "unos minutos, por la copia de resguardo"
 
-#: lnd-wallet.sh:1054
+#: lnd-wallet.sh:1100
 msgid "a few minutes"
 msgstr "unos minutos"
 
-#: lnd-wallet.sh:1057
+#: lnd-wallet.sh:1103
 msgid "⚠️  BTCPay will be stopped: the store can't take payments and Lightning is offline until"
 msgstr "⚠️  Se detendrá BTCPay: la tienda no podrá recibir pagos y Lightning estará fuera de línea hasta"
 
-#: lnd-wallet.sh:1058
+#: lnd-wallet.sh:1104
 msgid "   this finishes (%s)."
 msgstr "   que esto termine (%s)."
 
-#: lnd-wallet.sh:1059
+#: lnd-wallet.sh:1105
 msgid "   %s is disabled meanwhile, so a reboot can't start BTCPay too early;"
 msgstr "   %s queda desactivado mientras tanto, para que un reinicio no inicie BTCPay antes de tiempo;"
 
-#: lnd-wallet.sh:1060
+#: lnd-wallet.sh:1106
 msgid "   the script starts BTCPay again at the end. The backup service pauses too."
 msgstr "   el script vuelve a iniciar BTCPay al final. El servicio de copias de seguridad también se pausa."
 
-#: lnd-wallet.sh:1062
+#: lnd-wallet.sh:1108
 msgid "Aborted by user: BTCPay was not stopped and nothing was changed."
 msgstr "Cancelado por el usuario: BTCPay no se detuvo y no se cambió nada."
 
-#: lnd-wallet.sh:1074
+#: lnd-wallet.sh:1120
 msgid "🛑 Stopping the backup service (it would otherwise back up the new wallet and rotate the old one's backups out)..."
 msgstr "🛑 Deteniendo el servicio de copias de seguridad (si no, respaldaría la billetera nueva y borraría por rotación las copias de la anterior)..."
 
-#: lnd-wallet.sh:1084
+#: lnd-wallet.sh:1130
 msgid "🔒 %s disabled until the script finishes"
 msgstr "🔒 %s desactivado hasta que termine el script"
 
-#: lnd-wallet.sh:1087
+#: lnd-wallet.sh:1133
 msgid "ℹ️ %s was left disabled by an earlier run that stopped partway; it is enabled again at the end"
 msgstr "ℹ️ %s quedó desactivado por una ejecución anterior que se detuvo a medias; se vuelve a activar al final"
 
-#: lnd-wallet.sh:1090
+#: lnd-wallet.sh:1136
 msgid "🛑 Stopping all BTCPay Server containers using btcpay-down.sh..."
 msgstr "🛑 Deteniendo todos los contenedores de BTCPay Server con btcpay-down.sh..."
 
-#: lnd-wallet.sh:1092
+#: lnd-wallet.sh:1138
 msgid "✅ BTCPay stack stopped successfully."
 msgstr "✅ Los contenedores de BTCPay se detuvieron correctamente."
 
-#: lnd-wallet.sh:1094
+#: lnd-wallet.sh:1140
 msgid "Failed to stop BTCPay stack via btcpay-down.sh"
 msgstr "No se pudieron detener los contenedores de BTCPay con btcpay-down.sh"
 
-#: lnd-wallet.sh:1122
+#: lnd-wallet.sh:1168
 msgid "🧹 Deleting the old LND volume '%s'..."
 msgstr "🧹 Borrando el volumen anterior de LND '%s'..."
 
-#: lnd-wallet.sh:1128
+#: lnd-wallet.sh:1174
 msgid "⚠️ Containers using the volume still exist. Stopping and removing them..."
 msgstr "⚠️ Aún hay contenedores que usan el volumen. Deteniéndolos y eliminándolos..."
 
-#: lnd-wallet.sh:1134
+#: lnd-wallet.sh:1180
 msgid "Still unable to remove volume '%s'."
 msgstr "Aún no se puede eliminar el volumen '%s'."
 
-#: lnd-wallet.sh:1138
+#: lnd-wallet.sh:1184
 msgid "Could not create volume '%s'"
 msgstr "No se pudo crear el volumen '%s'"
 
-#: lnd-wallet.sh:1144
+#: lnd-wallet.sh:1190
 msgid "LND_DIR in config (%s) is not the volume's folder (%s)"
 msgstr "LND_DIR en la configuración (%s) no es la carpeta del volumen (%s)"
 
-#: lnd-wallet.sh:1145
+#: lnd-wallet.sh:1191
 msgid "✅ Empty volume '%s' created"
 msgstr "✅ Volumen vacío '%s' creado"
 
-#: lnd-wallet.sh:1150
+#: lnd-wallet.sh:1196
 msgid "Refusing to empty %s outside a wallet setup"
 msgstr "No se vacía %s fuera de una configuración de billetera"
 
-#: lnd-wallet.sh:1171
+#: lnd-wallet.sh:1217
 msgid "ℹ️ Using fee estimates flag: %s"
 msgstr "ℹ️ Usando la opción de estimación de comisiones: %s"
 
-#: lnd-wallet.sh:1176
+#: lnd-wallet.sh:1222
 msgid "🚀 Starting temporary LND container..."
 msgstr "🚀 Iniciando el contenedor temporal de LND..."
 
-#: lnd-wallet.sh:1194
+#: lnd-wallet.sh:1240
 msgid "⏳ Waiting for LND to be ready for wallet creation (up to 180s)..."
 msgstr "⏳ Esperando a que LND esté listo para crear la billetera (hasta 180 s)..."
 
-#: lnd-wallet.sh:1197
+#: lnd-wallet.sh:1243
 msgid "Temporary LND did not get ready for wallet creation"
 msgstr "El LND temporal no quedó listo para crear la billetera"
 
-#: lnd-wallet.sh:1200
+#: lnd-wallet.sh:1246
 msgid "The LND image %s has no curl, which the wallet setup needs"
 msgstr "La imagen de LND %s no tiene curl, que se necesita para configurar la billetera"
 
-#: lnd-wallet.sh:1201
+#: lnd-wallet.sh:1247
 msgid "✅ LND is ready for wallet creation"
 msgstr "✅ LND está listo para crear la billetera"
 
-#: lnd-wallet.sh:1239
+#: lnd-wallet.sh:1285
 msgid "   LND says: %s"
 msgstr "   LND dice: %s"
 
-#: lnd-wallet.sh:1240
+#: lnd-wallet.sh:1286
 msgid "❌ LND refused the wallet (a seed word, the seed passphrase or the password; LND's reason is shown above, not logged)"
 msgstr "❌ LND rechazó la billetera (una palabra de la semilla, la frase de contraseña de la semilla o la contraseña; el motivo de LND está arriba, no en el registro)"
 
-#: lnd-wallet.sh:1244
+#: lnd-wallet.sh:1290
 msgid "⏳ Waiting for LND RPC to be available after wallet creation (up to 180s)..."
 msgstr "⏳ Esperando a que el RPC de LND esté disponible después de crear la billetera (hasta 180 s)..."
 
-#: lnd-wallet.sh:1247
+#: lnd-wallet.sh:1293
 msgid "✅ Wallet created in the temporary LND"
 msgstr "✅ Billetera creada en el LND temporal"
 
-#: lnd-wallet.sh:1256
+#: lnd-wallet.sh:1302
 msgid "Temporary LND stopped after wallet creation"
 msgstr "El LND temporal se detuvo después de crear la billetera"
 
-#: lnd-wallet.sh:1261
+#: lnd-wallet.sh:1307
 msgid "Timed out waiting for the temporary LND after wallet creation"
 msgstr "Se agotó el tiempo de espera del LND temporal después de crear la billetera"
 
-#: lnd-wallet.sh:1268
+#: lnd-wallet.sh:1314
 msgid "Wallet password (at least 8 characters): "
 msgstr "Contraseña de la billetera (al menos 8 caracteres): "
 
-#: lnd-wallet.sh:1270
+#: lnd-wallet.sh:1316
 msgid "The password must have at least 8 characters."
 msgstr "La contraseña debe tener al menos 8 caracteres."
 
-#: lnd-wallet.sh:1273
+#: lnd-wallet.sh:1319
 msgid "Same password again: "
 msgstr "Repita la contraseña: "
 
-#: lnd-wallet.sh:1275
+#: lnd-wallet.sh:1321
 msgid "The passwords don't match."
 msgstr "Las contraseñas no coinciden."
 
-#: lnd-wallet.sh:1288
+#: lnd-wallet.sh:1334
 msgid "Seed (24 words, separated by spaces, hidden while typed): "
 msgstr "Semilla (24 palabras, separadas por espacios, ocultas al escribir): "
 
-#: lnd-wallet.sh:1295
+#: lnd-wallet.sh:1341
 msgid "That's %s words, not 24."
 msgstr "Son %s palabras, no 24."
 
-#: lnd-wallet.sh:1301 lnd-wallet.sh:1856
+#: lnd-wallet.sh:1347 lnd-wallet.sh:1905
 msgid "Seed passphrase, only if you set one when the seed was made (Enter for none): "
 msgstr "Frase de contraseña de la semilla, solo si puso una al crear la semilla (Enter si no tiene): "
 
-#: lnd-wallet.sh:1303 lnd-wallet.sh:1857
+#: lnd-wallet.sh:1349 lnd-wallet.sh:1906
 msgid "Addresses to look ahead when scanning for old funds (Enter for %s): "
 msgstr "Cantidad de direcciones a revisar en la búsqueda de fondos anteriores (Enter para %s): "
 
-#: lnd-wallet.sh:1309
+#: lnd-wallet.sh:1355
 msgid "Not a number, using %s."
 msgstr "No es un número; se usa %s."
 
-#: lnd-wallet.sh:1332
+#: lnd-wallet.sh:1378
 msgid "⚠️ %s goes through a symlink, so it is left alone"
 msgstr "⚠️ %s pasa por un enlace simbólico, así que no se toca"
 
-#: lnd-wallet.sh:1362
+#: lnd-wallet.sh:1408
 msgid "⚠️ This server's channel.backup is not a plain file (a symlink?), so it is not used"
 msgstr "⚠️ El channel.backup de este servidor no es un archivo normal (¿un enlace simbólico?), así que no se usa"
 
-#: lnd-wallet.sh:1367
+#: lnd-wallet.sh:1413
 msgid "channel.backup from the backup (the same as on this server)"
 msgstr "channel.backup de la copia de seguridad (igual al de este servidor)"
 
-#: lnd-wallet.sh:1369
+#: lnd-wallet.sh:1415
 msgid "ℹ️ This server's channel.backup is newer than the backup's: a channel opened or closed after the last backup."
 msgstr "ℹ️ El channel.backup de este servidor es más reciente que el de la copia: un canal se abrió o cerró después de la última copia."
 
-#: lnd-wallet.sh:1371 lnd-wallet.sh:1378
+#: lnd-wallet.sh:1417 lnd-wallet.sh:1424
 msgid "channel.backup from the backup"
 msgstr "channel.backup de la copia de seguridad"
 
-#: lnd-wallet.sh:1371
+#: lnd-wallet.sh:1417
 msgid "channel.backup from this server (newer than the backup)"
 msgstr "channel.backup de este servidor (más reciente que la copia de seguridad)"
 
-#: lnd-wallet.sh:1374
+#: lnd-wallet.sh:1420
 msgid "channel.backup from the backup (newer than this server's)"
 msgstr "channel.backup de la copia de seguridad (más reciente que el de este servidor)"
 
-#: lnd-wallet.sh:1374 lnd-wallet.sh:1381
+#: lnd-wallet.sh:1420 lnd-wallet.sh:1427
 msgid "channel.backup from this server"
 msgstr "channel.backup de este servidor"
 
-#: lnd-wallet.sh:1411
+#: lnd-wallet.sh:1457
 msgid "✅ %s belongs to this wallet: %s channels"
 msgstr "✅ %s pertenece a esta billetera: %s canales"
 
-#: lnd-wallet.sh:1423
+#: lnd-wallet.sh:1469
 msgid "⚠️ %s doesn't open with this wallet: %s"
 msgstr "⚠️ %s no se abre con esta billetera: %s"
 
-#: lnd-wallet.sh:1430
+#: lnd-wallet.sh:1476
 msgid "➡️ All %s channel.backup files are restored: %s channels together"
 msgstr "➡️ Se restauran los %s archivos channel.backup: %s canales en total"
 
-#: lnd-wallet.sh:1439
+#: lnd-wallet.sh:1485
 msgid "🔎 Scanning for old funds. This can take minutes to hours, depending on the seed's age."
 msgstr "🔎 Buscando fondos anteriores. Puede tardar de minutos a horas, según la antigüedad de la semilla."
 
-#: lnd-wallet.sh:1440
+#: lnd-wallet.sh:1486
 msgid "   Progress is shown every 30 seconds. Type skip and Enter to stop waiting."
 msgstr "   El progreso se muestra cada 30 segundos. Escriba skip y presione Enter para dejar de esperar."
 
-#: lnd-wallet.sh:1446
+#: lnd-wallet.sh:1492
 msgid "✅ Scan for old funds finished"
 msgstr "✅ Búsqueda de fondos anteriores terminada"
 
-#: lnd-wallet.sh:1450
+#: lnd-wallet.sh:1496
 msgid "The temporary LND stopped during the scan"
 msgstr "El LND temporal se detuvo durante la búsqueda"
 
-#: lnd-wallet.sh:1451
+#: lnd-wallet.sh:1497
 msgid "   Scan progress: %s"
 msgstr "   Progreso de la búsqueda: %s"
 
-#: lnd-wallet.sh:1453
+#: lnd-wallet.sh:1499
 msgid "Without the finished scan, old funds may not show up in the wallet."
 msgstr "Si la búsqueda no termina, puede que los fondos anteriores no aparezcan en la billetera."
 
-#: lnd-wallet.sh:1454
+#: lnd-wallet.sh:1500
 msgid "To scan again later, run this script again and choose the same restore."
 msgstr "Para buscar de nuevo más tarde, ejecute este script otra vez y elija la misma restauración."
 
-#: lnd-wallet.sh:1455
+#: lnd-wallet.sh:1501
 msgid "Type 'SKIP THE SCAN' to hand over to BTCPay now: "
 msgstr "Escriba 'SKIP THE SCAN' para pasar la billetera a BTCPay ahora: "
 
-#: lnd-wallet.sh:1456
+#: lnd-wallet.sh:1502
 msgid "⚠️ Scan for old funds skipped at %s"
 msgstr "⚠️ Búsqueda de fondos anteriores omitida al %s"
 
-#: lnd-wallet.sh:1470
+#: lnd-wallet.sh:1516
 msgid "✅ walletunlock.json written (BTCPay unlocks the wallet with it)"
 msgstr "✅ walletunlock.json escrito (BTCPay desbloquea la billetera con él)"
 
-#: lnd-wallet.sh:1478
+#: lnd-wallet.sh:1524
 msgid "🚀 Starting BTCPay with btcpay-up.sh..."
 msgstr "🚀 Iniciando BTCPay con btcpay-up.sh..."
 
-#: lnd-wallet.sh:1479 lnd-wallet.sh:1785 lnd-wallet.sh:1820
+#: lnd-wallet.sh:1525 lnd-wallet.sh:1832 lnd-wallet.sh:1868
 msgid "btcpay-up.sh failed"
 msgstr "btcpay-up.sh falló"
 
-#: lnd-wallet.sh:1481
+#: lnd-wallet.sh:1527
 msgid "⏳ Waiting for BTCPay's LND to unlock the wallet (up to 10 minutes)..."
 msgstr "⏳ Esperando a que el LND de BTCPay desbloquee la billetera (hasta 10 minutos)..."
 
-#: lnd-wallet.sh:1484
+#: lnd-wallet.sh:1530
 msgid "BTCPay's LND did not unlock the wallet"
 msgstr "El LND de BTCPay no desbloqueó la billetera"
 
-#: lnd-wallet.sh:1487
+#: lnd-wallet.sh:1533
 msgid "BTCPay made a wallet of its own instead of using this one. Its seed is in %s/%s."
 msgstr "BTCPay creó su propia billetera en lugar de usar esta. Su semilla está en %s/%s."
 
-#: lnd-wallet.sh:1491
+#: lnd-wallet.sh:1537
 msgid "BTCPay's LND has node ID '%s', not this wallet's %s. The backup service stays off."
 msgstr "El LND de BTCPay tiene el ID del nodo '%s', no el de esta billetera, %s. El servicio de copias de seguridad sigue apagado."
 
-#: lnd-wallet.sh:1493
+#: lnd-wallet.sh:1539
 msgid "✅ BTCPay's LND unlocked the wallet (node ID %s)"
 msgstr "✅ El LND de BTCPay desbloqueó la billetera (ID del nodo %s)"
 
-#: lnd-wallet.sh:1498
+#: lnd-wallet.sh:1544
 msgid "🔧 Reinstalling the backup service for the new volume..."
 msgstr "🔧 Reinstalando el servicio de copias de seguridad para el volumen nuevo..."
 
-#: lnd-wallet.sh:1501
+#: lnd-wallet.sh:1547
 msgid "❌ The backup installer failed. Rerun %s by hand."
 msgstr "❌ El instalador de copias de seguridad falló. Vuelva a ejecutar %s a mano."
 
-#: lnd-wallet.sh:1507
+#: lnd-wallet.sh:1553
 msgid "✅ Backup service running, and asked to back up the new wallet now"
 msgstr "✅ Servicio de copias de seguridad en marcha; se le pidió respaldar la billetera nueva ahora"
 
-#: lnd-wallet.sh:1509
+#: lnd-wallet.sh:1555
 msgid "⚠️ Backup service installed, but 'check now' failed. It backs up on its next hourly check."
 msgstr "⚠️ Servicio de copias de seguridad instalado, pero falló la orden de copiar ahora. Copiará en su próxima revisión horaria."
 
-#: lnd-wallet.sh:1518
+#: lnd-wallet.sh:1564
 msgid "⚠️  Restoring channels asks every channel peer to close its channel. Your share comes back"
 msgstr "⚠️  Restaurar los canales pide al par de cada canal que lo cierre. Su parte de los fondos vuelve"
 
-#: lnd-wallet.sh:1519
+#: lnd-wallet.sh:1565
 msgid "   on-chain once the peer's close confirms. A peer that stays offline keeps that channel's"
 msgstr "   on-chain cuando se confirma el cierre del par. Si un par sigue fuera de línea, los fondos de ese canal"
 
-#: lnd-wallet.sh:1520
+#: lnd-wallet.sh:1566
 msgid "   funds stuck until it comes back. Payments in flight when LND failed can be lost."
 msgstr "   quedan bloqueados hasta que vuelva. Los pagos en curso cuando falló LND pueden perderse."
 
-#: lnd-wallet.sh:1521
+#: lnd-wallet.sh:1567
 msgid "⚠️  Make sure no other LND with this seed is running anywhere (an old server, a copy)."
 msgstr "⚠️  Asegúrese de que no haya otro LND con esta semilla en marcha en ningún lugar (un servidor viejo, una copia)."
 
-#: lnd-wallet.sh:1522
+#: lnd-wallet.sh:1568
 msgid "   Two nodes with the same channels can lose all the funds in them."
 msgstr "   Dos nodos con los mismos canales pueden perder todos los fondos de esos canales."
 
-#: lnd-wallet.sh:1523
+#: lnd-wallet.sh:1569
 msgid "Type 'NO OTHER NODE IS RUNNING' to restore the channels: "
 msgstr "Escriba 'NO OTHER NODE IS RUNNING' para restaurar los canales: "
 
-#: lnd-wallet.sh:1533
+#: lnd-wallet.sh:1579
 msgid "⚠️ Channels not restored. Run this script with option 4 to restore them later."
 msgstr "⚠️ Canales no restaurados. Ejecute este script con la opción 4 para restaurarlos más tarde."
 
-#: lnd-wallet.sh:1538
+#: lnd-wallet.sh:1584
 msgid "❌ No channel.backup opens with this wallet, so no channels can be restored."
 msgstr "❌ Ningún channel.backup se abre con esta billetera, así que no se puede restaurar ningún canal."
 
-#: lnd-wallet.sh:1545
+#: lnd-wallet.sh:1591
 msgid "⏳ Waiting for BTCPay's LND to finish starting (it syncs to the chain first)..."
 msgstr "⏳ Esperando a que el LND de BTCPay termine de iniciar (primero se sincroniza con la cadena)..."
 
-#: lnd-wallet.sh:1546
+#: lnd-wallet.sh:1592
 msgid "   Type later and Enter to stop waiting; option 4 restores the channels another time."
 msgstr "   Escriba later y presione Enter para dejar de esperar; la opción 4 restaura los canales en otro momento."
 
-#: lnd-wallet.sh:1549
+#: lnd-wallet.sh:1595
 msgid "⚠️ Channels not restored yet. Run this script with option 4 once LND has synced."
 msgstr "⚠️ Canales aún no restaurados. Ejecute este script con la opción 4 cuando LND se haya sincronizado."
 
-#: lnd-wallet.sh:1552
+#: lnd-wallet.sh:1598
 msgid "   LND state: %s"
 msgstr "   Estado de LND: %s"
 
-#: lnd-wallet.sh:1567
+#: lnd-wallet.sh:1613
 msgid "⚠️ Restoring from %s: %s"
 msgstr "⚠️ Al restaurar desde %s: %s"
 
-#: lnd-wallet.sh:1572
+#: lnd-wallet.sh:1618
 msgid "❌ Channel restore failed: %s"
 msgstr "❌ Falló la restauración de los canales: %s"
 
-#: lnd-wallet.sh:1576
+#: lnd-wallet.sh:1622
 msgid "✅ %s channels restored. LND now asks each peer to close its channel."
 msgstr "✅ %s canales restaurados. LND ahora pide al par de cada canal que lo cierre."
 
-#: lnd-wallet.sh:1591
+#: lnd-wallet.sh:1637
 msgid "ℹ️ Channels opened after the newest backup aren't restored, and LND can't see them. Look your"
 msgstr "ℹ️ Los canales abiertos después de la copia más reciente no se restauran, y LND no puede verlos. Busque su"
 
-#: lnd-wallet.sh:1592
+#: lnd-wallet.sh:1638
 msgid "   node up on a public explorer, for example https://mempool.space/lightning/node/%s"
 msgstr "   nodo en un explorador público, por ejemplo https://mempool.space/lightning/node/%s"
 
-#: lnd-wallet.sh:1593
+#: lnd-wallet.sh:1639
 msgid "   A public channel there that isn't in this list stays with its peer: ask the peer to force-close"
 msgstr "   Un canal público que aparezca allí y no esté en esta lista queda con su par: pídale al par que lo cierre a la fuerza"
 
-#: lnd-wallet.sh:1594
+#: lnd-wallet.sh:1640
 msgid "   it (your share then comes back on-chain), or see chantools (lightninglabs) for help."
 msgstr "   (su parte vuelve entonces on-chain), o consulte chantools (lightninglabs) para obtener ayuda."
 
-#: lnd-wallet.sh:1595
+#: lnd-wallet.sh:1641
 msgid "   Restored channels:"
 msgstr "   Canales restaurados:"
 
-#: lnd-wallet.sh:1605
+#: lnd-wallet.sh:1651
 msgid "What do you want to do?"
 msgstr "¿Qué desea hacer?"
 
-#: lnd-wallet.sh:1606
+#: lnd-wallet.sh:1652
 msgid "  1) New wallet"
 msgstr "  1) Billetera nueva"
 
-#: lnd-wallet.sh:1607
+#: lnd-wallet.sh:1653
 msgid "  2) Restore the wallet (on-chain funds) from its seed"
 msgstr "  2) Restaurar la billetera (fondos on-chain) desde su semilla"
 
-#: lnd-wallet.sh:1608
+#: lnd-wallet.sh:1654
 msgid "  3) Restore the wallet and the channels (seed + channel.backup)"
 msgstr "  3) Restaurar la billetera y los canales (semilla + channel.backup)"
 
-#: lnd-wallet.sh:1609
+#: lnd-wallet.sh:1655
 msgid "  4) Restore the channels into the running wallet (channel.backup only)"
 msgstr "  4) Restaurar los canales en la billetera en funcionamiento (solo channel.backup)"
 
-#: lnd-wallet.sh:1610
+#: lnd-wallet.sh:1656
 msgid "  5) Undo: put a safety backup back"
 msgstr "  5) Deshacer: restablecer una copia de resguardo"
 
-#: lnd-wallet.sh:1612
+#: lnd-wallet.sh:1658
 msgid "Choose 1-5: "
 msgstr "Elija 1-5: "
 
-#: lnd-wallet.sh:1616
+#: lnd-wallet.sh:1662
 msgid "🚀 Starting LND wallet script, option %s..."
 msgstr "🚀 Iniciando el script de billetera de LND, opción %s..."
 
-#: lnd-wallet.sh:1628
+#: lnd-wallet.sh:1674
 msgid "Could not find BTCPay's LND image (container '%s' or its compose file). Is BTCPay installed with LND?"
 msgstr "No se encontró la imagen de LND de BTCPay (contenedor '%s' o su archivo compose). ¿BTCPay está instalado con LND?"
 
-#: lnd-wallet.sh:1629
+#: lnd-wallet.sh:1675
 msgid "📦 Using LND image: %s"
 msgstr "📦 Usando la imagen de LND: %s"
 
-#: lnd-wallet.sh:1640
+#: lnd-wallet.sh:1686
 msgid "🔎 Looking for safety backups..."
 msgstr "🔎 Buscando copias de resguardo..."
 
-#: lnd-wallet.sh:1651
+#: lnd-wallet.sh:1697
 msgid " (also %s)"
 msgstr " (también %s)"
 
-#: lnd-wallet.sh:1657
+#: lnd-wallet.sh:1703
 msgid "No safety backups found in %s, on Server B or on GitHub."
 msgstr "No se encontraron copias de resguardo en %s, en el Servidor B ni en GitHub."
 
-#: lnd-wallet.sh:1658
+#: lnd-wallet.sh:1704
 msgid "Safety backups, newest first:"
 msgstr "Copias de resguardo, de la más reciente a la más antigua:"
 
-#: lnd-wallet.sh:1662
+#: lnd-wallet.sh:1708
 msgid "  %s) %s %s%s (%s)"
 msgstr "  %s) %s %s%s (%s)"
 
-#: lnd-wallet.sh:1665
+#: lnd-wallet.sh:1711
 msgid "Which one (Enter for 1): "
 msgstr "¿Cuál? (Enter para 1): "
 
-#: lnd-wallet.sh:1673
+#: lnd-wallet.sh:1719
 msgid "Could not copy %s"
 msgstr "No se pudo copiar %s"
 
-#: lnd-wallet.sh:1674
+#: lnd-wallet.sh:1720
 msgid "%s failed its check: %s"
 msgstr "%s no pasó la verificación: %s"
 
-#: lnd-wallet.sh:1676
+#: lnd-wallet.sh:1722
 msgid "%s is refused: %s"
 msgstr "%s se rechaza: %s"
 
-#: lnd-wallet.sh:1678
+#: lnd-wallet.sh:1724
 msgid "✅ %s decrypted and checked"
 msgstr "✅ %s descifrado y verificado"
 
-#: lnd-wallet.sh:1691
+#: lnd-wallet.sh:1738
 msgid "The wallet running now is the same node and has %s open and %s opening or closing channels: their state now is newer than the safety backup's."
 msgstr "La billetera en marcha ahora es el mismo nodo y tiene %s canales abiertos y %s abriéndose o cerrándose: su estado actual es más reciente que el de la copia de resguardo."
 
-#: lnd-wallet.sh:1697
+#: lnd-wallet.sh:1744
 msgid "ℹ️ The safety backup holds no channels, so no old channel state can be broadcast from it."
 msgstr "ℹ️ La copia de resguardo no tiene canales, así que no se puede difundir desde ella ningún estado de canales antiguo."
 
-#: lnd-wallet.sh:1702
+#: lnd-wallet.sh:1749
 msgid "Not searched: %s, so a newer backup there, which would show the node ran since, can't be seen."
 msgstr "No se buscó en: %s, así que no se puede ver una copia más reciente allí que mostraría que el nodo funcionó desde entonces."
 
-#: lnd-wallet.sh:1711
+#: lnd-wallet.sh:1758
 msgid "This node ran after the safety backup was made: the newest regular backup, %s, is %s."
 msgstr "Este nodo funcionó después de que se hizo la copia de resguardo: la copia de seguridad regular más reciente, %s, es %s."
 
-#: lnd-wallet.sh:1713
+#: lnd-wallet.sh:1760
 msgid "A regular backup newer than the safety backup exists (%s), and LND isn't running to tell which wallet it holds."
 msgstr "Existe una copia de seguridad regular más reciente que la copia de resguardo (%s), y LND no está en marcha para decir qué billetera contiene."
 
-#: lnd-wallet.sh:1730
+#: lnd-wallet.sh:1777
 msgid "A newer safety backup of this node exists (%s): the node ran after the one you picked."
 msgstr "Existe una copia de resguardo más reciente de este nodo (%s): el nodo funcionó después de la que eligió."
 
-#: lnd-wallet.sh:1738
+#: lnd-wallet.sh:1785
 msgid "The safety backup: made %s (signed), wallet %s"
 msgstr "La copia de resguardo: hecha %s (fecha firmada), billetera %s"
 
-#: lnd-wallet.sh:1740
+#: lnd-wallet.sh:1787
 msgid "⚠️  This safety backup was made before they carried a signed date: its date and wallet can't"
 msgstr "⚠️  Esta copia de resguardo es anterior a las copias con fecha firmada: no se pueden verificar su fecha ni"
 
-#: lnd-wallet.sh:1741
+#: lnd-wallet.sh:1788
 msgid "   be verified. Only use it if you know it is the one you want."
 msgstr "   su billetera. Úsela solo si sabe que es la que quiere."
 
-#: lnd-wallet.sh:1743
+#: lnd-wallet.sh:1790
 msgid "The wallet running now:"
 msgstr "La billetera en funcionamiento ahora:"
 
-#: lnd-wallet.sh:1746
+#: lnd-wallet.sh:1793
 msgid "⚠️  This puts back the whole LND volume as it was, channel state included. That is only safe if"
 msgstr "⚠️  Esto restablece todo el volumen de LND como estaba, con el estado de los canales. Solo es seguro si"
 
-#: lnd-wallet.sh:1747
+#: lnd-wallet.sh:1794
 msgid "   no LND has run with those channels since the safety backup was made. If channels were restored"
 msgstr "   ningún LND ha funcionado con esos canales desde que se hizo la copia de resguardo. Si entretanto se"
 
-#: lnd-wallet.sh:1748
+#: lnd-wallet.sh:1795
 msgid "   from channel.backup in between, their peers have closed them: don't put the old state back."
 msgstr "   restauraron canales desde channel.backup, sus pares ya los cerraron: no restablezca el estado anterior."
 
-#: lnd-wallet.sh:1751
+#: lnd-wallet.sh:1798
 msgid "🛑 This node may have run since this safety backup was made:"
 msgstr "🛑 Este nodo puede haber funcionado desde que se hizo esta copia de resguardo:"
 
-#: lnd-wallet.sh:1755
+#: lnd-wallet.sh:1802
 msgid "   Putting older channel state back and starting LND can broadcast it, and then the peers can take"
 msgstr "   Volver a poner un estado de canales más antiguo e iniciar LND puede difundirlo, y entonces los pares pueden quedarse con"
 
-#: lnd-wallet.sh:1756
+#: lnd-wallet.sh:1803
 msgid "   all the funds in those channels. Don't, unless you know those channels are closed and settled."
 msgstr "   todos los fondos de esos canales. No lo haga, salvo que sepa que esos canales están cerrados y liquidados."
 
-#: lnd-wallet.sh:1757
+#: lnd-wallet.sh:1804
 msgid "   To get channel funds back, restore the channels instead (options 3 and 4): that is safe with any backup."
 msgstr "   Para recuperar los fondos de los canales, restaure los canales (opciones 3 y 4): eso es seguro con cualquier copia."
 
-#: lnd-wallet.sh:1758
+#: lnd-wallet.sh:1805
 msgid "Type 'I KNOW THIS CAN LOSE THE CHANNEL FUNDS' to go on anyway: "
 msgstr "Escriba 'I KNOW THIS CAN LOSE THE CHANNEL FUNDS' para continuar de todos modos: "
 
-#: lnd-wallet.sh:1760
+#: lnd-wallet.sh:1807
 msgid "⚠️ Undo with newer channel state on this node (confirmed by user)"
 msgstr "⚠️ Deshacer con un estado de canales más reciente en este nodo (confirmado por el usuario)"
 
-#: lnd-wallet.sh:1762
+#: lnd-wallet.sh:1809
 msgid "Type 'PUT IT BACK' to replace the current wallet with this safety backup: "
 msgstr "Escriba 'PUT IT BACK' para reemplazar la billetera actual con esta copia de resguardo: "
 
-#: lnd-wallet.sh:1763
+#: lnd-wallet.sh:1810
 msgid "Aborted by user."
 msgstr "Cancelado por el usuario."
 
-#: lnd-wallet.sh:1774
+#: lnd-wallet.sh:1821
 msgid "Could not unpack the safety backup"
 msgstr "No se pudo desempaquetar la copia de resguardo"
 
-#: lnd-wallet.sh:1777
+#: lnd-wallet.sh:1824
 msgid "The safety backup holds links, special files or setuid/setgid files (%s), which a safety backup never has: not used"
 msgstr "La copia de resguardo contiene enlaces, archivos especiales o archivos setuid/setgid (%s), que una copia de resguardo nunca tiene: no se usa"
 
-#: lnd-wallet.sh:1779
+#: lnd-wallet.sh:1826
 msgid "Could not unpack the safety backup into %s"
 msgstr "No se pudo desempaquetar la copia de resguardo en %s"
 
-#: lnd-wallet.sh:1781
+#: lnd-wallet.sh:1828
 msgid "✅ Safety backup put back into %s"
 msgstr "✅ Copia de resguardo restablecida en %s"
 
-#: lnd-wallet.sh:1787
+#: lnd-wallet.sh:1834
 msgid "✅ BTCPay's LND is up (node ID %s)"
 msgstr "✅ El LND de BTCPay está en marcha (ID del nodo %s)"
 
-#: lnd-wallet.sh:1789
+#: lnd-wallet.sh:1836
 msgid "BTCPay's LND did not unlock the restored wallet"
 msgstr "El LND de BTCPay no desbloqueó la billetera restablecida"
 
-#: lnd-wallet.sh:1794
+#: lnd-wallet.sh:1841
 msgid "⚠️ Safety backup put back, but the backup service is NOT running. Rerun %s."
 msgstr "⚠️ Copia de resguardo restablecida, pero el servicio de copias de seguridad NO está en marcha. Vuelva a ejecutar %s."
 
-#: lnd-wallet.sh:1797
+#: lnd-wallet.sh:1844
 msgid "🚀 Safety backup put back."
 msgstr "🚀 Copia de resguardo restablecida."
 
-#: lnd-wallet.sh:1804
+#: lnd-wallet.sh:1851
 msgid "✅ Using %s"
 msgstr "✅ Usando %s"
 
-#: lnd-wallet.sh:1807 lnd-wallet.sh:1841
+#: lnd-wallet.sh:1854 lnd-wallet.sh:1889
 msgid "⚠️ No backup could be used"
 msgstr "⚠️ No se pudo usar ninguna copia de seguridad"
 
-#: lnd-wallet.sh:1810
+#: lnd-wallet.sh:1858
 msgid "No channel.backup found, neither in a backup nor on this server."
 msgstr "No se encontró ningún channel.backup, ni en una copia de seguridad ni en este servidor."
 
-#: lnd-wallet.sh:1812
+#: lnd-wallet.sh:1860
 msgid "BTCPay's LND isn't running with an unlocked wallet. Start BTCPay first."
 msgstr "El LND de BTCPay no está funcionando con una billetera desbloqueada. Inicie BTCPay primero."
 
-#: lnd-wallet.sh:1813
+#: lnd-wallet.sh:1861
 msgid "Aborted by user: nothing was changed."
 msgstr "Cancelado por el usuario: no se cambió nada."
 
-#: lnd-wallet.sh:1822
+#: lnd-wallet.sh:1870
 msgid "BTCPay's LND did not come back up"
 msgstr "El LND de BTCPay no volvió a funcionar"
 
-#: lnd-wallet.sh:1825
+#: lnd-wallet.sh:1873
 msgid "⚠️ Could not start %s"
 msgstr "⚠️ No se pudo iniciar %s"
 
-#: lnd-wallet.sh:1834
+#: lnd-wallet.sh:1882
 msgid "✅ Latest usable backup: %s"
 msgstr "✅ Copia de seguridad utilizable más reciente: %s"
 
-#: lnd-wallet.sh:1836
+#: lnd-wallet.sh:1884
 msgid "Use this backup? Type yes: "
 msgstr "¿Usar esta copia de seguridad? Escriba yes: "
 
-#: lnd-wallet.sh:1838
+#: lnd-wallet.sh:1886
 msgid "ℹ️ Not using a backup"
 msgstr "ℹ️ No se usa ninguna copia de seguridad"
 
-#: lnd-wallet.sh:1846
+#: lnd-wallet.sh:1895
 msgid "The backup holds the wallet's seed and password (walletunlock.json)."
 msgstr "La copia de seguridad contiene la semilla y la contraseña de la billetera (walletunlock.json)."
 
-#: lnd-wallet.sh:1847
+#: lnd-wallet.sh:1896
 msgid "Use the seed from this backup? Type yes (anything else to type the seed yourself): "
 msgstr "¿Usar la semilla de esta copia? Escriba yes (cualquier otra cosa para escribir la semilla usted mismo): "
 
-#: lnd-wallet.sh:1861
+#: lnd-wallet.sh:1910
 msgid "This backup has no seed (walletunlock.json without one), so type the seed yourself."
 msgstr "Esta copia de seguridad no tiene semilla (walletunlock.json sin ella), así que escriba la semilla usted mismo."
 
-#: lnd-wallet.sh:1867
+#: lnd-wallet.sh:1916
 msgid "Choose the wallet password."
 msgstr "Elija la contraseña de la billetera."
 
-#: lnd-wallet.sh:1883
+#: lnd-wallet.sh:1932
 msgid "Option 3 needs a channel.backup, and there is none in a backup or on this server."
 msgstr "La opción 3 necesita un channel.backup, y no hay ninguno en una copia de seguridad ni en este servidor."
 
-#: lnd-wallet.sh:1889
+#: lnd-wallet.sh:1938
 msgid "The current wallet:"
 msgstr "La billetera actual:"
 
-#: lnd-wallet.sh:1894
+#: lnd-wallet.sh:1943
 msgid "⚠️  Channels are still opening or closing. Funds from a force close are timelocked, and only"
 msgstr "⚠️  Aún hay canales abriéndose o cerrándose. Un cierre forzado bloquea los fondos por un tiempo, y solo"
 
-#: lnd-wallet.sh:1895
+#: lnd-wallet.sh:1944
 msgid "   this LND's current data (channel.db) can sweep them. channel.backup doesn't cover channels"
 msgstr "   los datos actuales de este LND (channel.db) pueden recuperarlos. channel.backup no cubre canales"
 
-#: lnd-wallet.sh:1896
+#: lnd-wallet.sh:1945
 msgid "   that are already closing. Wait until they have finished, then run this script again."
 msgstr "   que ya se están cerrando. Espere a que terminen y luego ejecute este script de nuevo."
 
-#: lnd-wallet.sh:1897
+#: lnd-wallet.sh:1946
 msgid "Aborted: channels are still opening or closing."
 msgstr "Cancelado: aún hay canales abriéndose o cerrándose."
 
-#: lnd-wallet.sh:1897
+#: lnd-wallet.sh:1946
 msgid "Type 'I ACCEPT THE RISK' to continue anyway: "
 msgstr "Escriba 'I ACCEPT THE RISK' para continuar de todos modos: "
 
-#: lnd-wallet.sh:1898
+#: lnd-wallet.sh:1947
 msgid "⚠️ Continuing with channels still opening or closing (confirmed by user)"
 msgstr "⚠️ Se continúa con canales aún abriéndose o cerrándose (confirmado por el usuario)"
 
-#: lnd-wallet.sh:1903
+#: lnd-wallet.sh:1952
 msgid "⚠️  The current wallet still holds funds or channels. After this, they are only reachable"
 msgstr "⚠️  La billetera actual aún tiene fondos o canales. Después de esto, solo se podrá acceder a ellos"
 
-#: lnd-wallet.sh:1904
+#: lnd-wallet.sh:1953
 msgid "   through its old seed (in its walletunlock.json and in the safety backup). Better: close the"
 msgstr "   con su semilla anterior (en su walletunlock.json y en la copia de resguardo). Mejor: primero cierre"
 
-#: lnd-wallet.sh:1905
+#: lnd-wallet.sh:1954
 msgid "   channels cooperatively and send the funds out first."
 msgstr "   los canales de forma cooperativa y envíe los fondos a otro lugar."
 
-#: lnd-wallet.sh:1910
+#: lnd-wallet.sh:1959
 msgid "⚠️  The current wallet has %s open channels. The seed alone doesn't bring back money in"
 msgstr "⚠️  La billetera actual tiene %s canales abiertos. La semilla sola no recupera el dinero que está en"
 
-#: lnd-wallet.sh:1911
+#: lnd-wallet.sh:1960
 msgid "   channels: it stays stuck until the channels are restored from channel.backup."
 msgstr "   canales: queda bloqueado hasta que los canales se restauren desde channel.backup."
 
-#: lnd-wallet.sh:1912 lnd-wallet.sh:2009
+#: lnd-wallet.sh:1961 lnd-wallet.sh:2058
 msgid "Restore the channels too (option 3)? Type yes: "
 msgstr "¿Restaurar también los canales (opción 3)? Escriba yes: "
 
-#: lnd-wallet.sh:1920
+#: lnd-wallet.sh:1969
 msgid "⚠️  The current wallet couldn't be read, so it's unknown what it holds. The safety backup keeps"
 msgstr "⚠️  No se pudo leer la billetera actual, así que no se sabe qué contiene. La copia de resguardo guarda"
 
-#: lnd-wallet.sh:1921
+#: lnd-wallet.sh:1970
 msgid "   everything in it."
 msgstr "   todo lo que hay en ella."
 
-#: lnd-wallet.sh:1926
+#: lnd-wallet.sh:1975
 msgid "⚠️  LND is running and its data looks intact. Option 3 closes all your channels. If LND's data"
 msgstr "⚠️  LND está funcionando y sus datos parecen intactos. La opción 3 cierra todos sus canales. Si los datos"
 
-#: lnd-wallet.sh:1927
+#: lnd-wallet.sh:1976
 msgid "   is fine, recovery is probably not what you need."
 msgstr "   de LND están bien, probablemente no necesita una recuperación."
 
-#: lnd-wallet.sh:1932
+#: lnd-wallet.sh:1981
 msgid "ℹ️ Channels not confirmed: going on as a plain restore (option 2), without channels"
 msgstr "ℹ️ Canales no confirmados: se continúa como una restauración simple (opción 2), sin canales"
 
-#: lnd-wallet.sh:1935
+#: lnd-wallet.sh:1984
 msgid "Aborted by user: nothing was changed. /wallet restore restores the wallet without channels."
 msgstr "Cancelado por el usuario: no se cambió nada. /wallet restore restaura la billetera sin canales."
 
-#: lnd-wallet.sh:1940
+#: lnd-wallet.sh:1989
 msgid "⚠️  WARNING: This will DELETE the current LND wallet in volume '%s' (a safety backup is made first)."
 msgstr "⚠️  ADVERTENCIA: Esto BORRARÁ la billetera actual de LND en el volumen '%s' (antes se hace una copia de resguardo)."
 
-#: lnd-wallet.sh:1941
+#: lnd-wallet.sh:1990
 msgid "⚠️  Type 'YES I WANT TO DELETE' to confirm: "
 msgstr "⚠️  Escriba 'YES I WANT TO DELETE' para confirmar: "
 
-#: lnd-wallet.sh:1942
+#: lnd-wallet.sh:1991
 msgid "❌ Aborted by user. You did not type the exact confirmation phrase."
 msgstr "❌ Cancelado por el usuario. No escribió la frase de confirmación exacta."
 
-#: lnd-wallet.sh:1956
+#: lnd-wallet.sh:2005
 msgid "ℹ️ TLS certificate and macaroons put back from the backup, so paired apps keep working"
 msgstr "ℹ️ Certificado TLS y macaroons restablecidos desde la copia de seguridad: las apps vinculadas siguen funcionando"
 
-#: lnd-wallet.sh:1961 serverb/serverb-watchtower-setup.sh:185
+#: lnd-wallet.sh:2010 serverb/serverb-watchtower-setup.sh:185
 msgid "LND could not make a seed"
 msgstr "LND no pudo crear una semilla"
 
-#: lnd-wallet.sh:1967
+#: lnd-wallet.sh:2016
 msgid "LND did not return a 24-word seed"
 msgstr "LND no devolvió una semilla de 24 palabras"
 
-#: lnd-wallet.sh:1969
+#: lnd-wallet.sh:2018
 msgid "!!! WRITE DOWN THIS SEED. It is the only way to restore the wallet. !!!"
 msgstr "!!! ANOTE ESTA SEMILLA. Es la única forma de restaurar la billetera. !!!"
 
-#: lnd-wallet.sh:1970
+#: lnd-wallet.sh:2019
 msgid "---------------BEGIN LND CIPHER SEED---------------"
 msgstr "---------------BEGIN LND CIPHER SEED---------------"
 
-#: lnd-wallet.sh:1975
+#: lnd-wallet.sh:2024
 msgid "---------------END LND CIPHER SEED-----------------"
 msgstr "---------------END LND CIPHER SEED-----------------"
 
-#: lnd-wallet.sh:1976 serverb/serverb-watchtower-setup.sh:192
+#: lnd-wallet.sh:2025 serverb/serverb-watchtower-setup.sh:192
 msgid "Type 'I WROTE IT DOWN' once you have: "
 msgstr "Escriba 'I WROTE IT DOWN' cuando la haya anotado: "
 
-#: lnd-wallet.sh:1981
+#: lnd-wallet.sh:2030
 msgid "ℹ️ The seed was cleared from the screen and this tmux session's scrollback."
 msgstr "ℹ️ La semilla se borró de la pantalla y del historial de desplazamiento de esta sesión de tmux."
 
-#: lnd-wallet.sh:1983
+#: lnd-wallet.sh:2032
 msgid "⚠️ Clear your terminal's scrollback too: the seed is still in it."
 msgstr "⚠️ Borre también el historial de desplazamiento de su terminal: la semilla sigue ahí."
 
-#: lnd-wallet.sh:1990
+#: lnd-wallet.sh:2039
 msgid "⚠️ The backup's macaroons don't open with this password. Making new ones (apps need pairing again)."
 msgstr "⚠️ Los macaroons de la copia de seguridad no se abren con esta contraseña. Se crean nuevos (hay que volver a vincular las apps)."
 
-#: lnd-wallet.sh:1998
+#: lnd-wallet.sh:2047
 msgid "LND refused the seed"
 msgstr "LND rechazó la semilla"
 
-#: lnd-wallet.sh:2001
+#: lnd-wallet.sh:2050
 msgid "ℹ️ New wallet's node ID: %s"
 msgstr "ℹ️ ID del nodo de la billetera nueva: %s"
 
-#: lnd-wallet.sh:2003
+#: lnd-wallet.sh:2052
 msgid "this seed gives node ID %s, but the wallet that was running had %s"
 msgstr "esta semilla da el ID del nodo %s, pero la billetera que estaba funcionando tenía %s"
 
-#: lnd-wallet.sh:2007
+#: lnd-wallet.sh:2056
 msgid "⚠️  %s lists %s channels. Option 2 leaves their funds stuck until the"
 msgstr "⚠️  %s contiene %s canales. La opción 2 deja sus fondos bloqueados hasta que"
 
-#: lnd-wallet.sh:2008
+#: lnd-wallet.sh:2057
 msgid "   channels are restored."
 msgstr "   se restauren los canales."
 
-#: lnd-wallet.sh:2014
+#: lnd-wallet.sh:2063
 msgid "no channel.backup opens with this seed (a different wallet's backup, or a damaged file)"
 msgstr "ningún channel.backup se abre con esta semilla (una copia de otra billetera, o un archivo dañado)"
 
-#: lnd-wallet.sh:2023
+#: lnd-wallet.sh:2072
 msgid "LND refused the new wallet. BTCPay is down; run the script again."
 msgstr "LND rechazó la billetera nueva. BTCPay está detenido; ejecute el script de nuevo."
 
-#: lnd-wallet.sh:2025
+#: lnd-wallet.sh:2074
 msgid "Check the seed and type it again."
 msgstr "Revise la semilla y escríbala de nuevo."
 
-#: lnd-wallet.sh:2031
+#: lnd-wallet.sh:2080
 msgid "Choose: 1) type the seed again  2) continue anyway  3) stop: "
 msgstr "Elija: 1) escribir la semilla de nuevo  2) continuar de todos modos  3) detener: "
 
-#: lnd-wallet.sh:2040
+#: lnd-wallet.sh:2089
 msgid "⚠️ Continuing without channels: no channel.backup opens with this wallet"
 msgstr "⚠️ Se continúa sin canales: ningún channel.backup se abre con esta billetera"
 
-#: lnd-wallet.sh:2043
+#: lnd-wallet.sh:2092
 msgid "⚠️ Continuing anyway (confirmed by user)"
 msgstr "⚠️ Se continúa de todos modos (confirmado por el usuario)"
 
-#: lnd-wallet.sh:2047
+#: lnd-wallet.sh:2096
 msgid "Stopped by user. BTCPay is down; run the script again, or option 5 to undo."
 msgstr "Detenido por el usuario. BTCPay está detenido; ejecute el script de nuevo, o use la opción 5 para deshacer."
 
-#: lnd-wallet.sh:2057
+#: lnd-wallet.sh:2106
 msgid "🛑 Stopping and removing the temporary LND container '%s'..."
 msgstr "🛑 Deteniendo y eliminando el contenedor temporal de LND '%s'..."
 
-#: lnd-wallet.sh:2070
+#: lnd-wallet.sh:2119
 msgid "⚠️ Channels not restored. Run this script with option 4 to try again."
 msgstr "⚠️ Canales no restaurados. Ejecute este script con la opción 4 para intentarlo de nuevo."
 
-#: lnd-wallet.sh:2077
+#: lnd-wallet.sh:2126
 msgid "✅ New wallet in volume %s, node ID %s"
 msgstr "✅ Billetera nueva en el volumen %s, ID del nodo %s"
 
-#: lnd-wallet.sh:2079
+#: lnd-wallet.sh:2128
 msgid "ℹ️ The previous wallet is kept in the safety backup %s (pre-recovery folders)."
 msgstr "ℹ️ La billetera anterior se guarda en la copia de resguardo %s (carpetas pre-recovery)."
 
-#: lnd-wallet.sh:2082
+#: lnd-wallet.sh:2131
 msgid "⚠️ The wallet is done, but the backup service is NOT running. Rerun %s."
 msgstr "⚠️ La billetera está lista, pero el servicio de copias de seguridad NO está en marcha. Vuelva a ejecutar %s."
 
-#: lnd-wallet.sh:2085
+#: lnd-wallet.sh:2134
 msgid "🚀 Wallet script completed successfully."
 msgstr "🚀 El script de billetera terminó correctamente."
 
-#: rsync_gpg_backup.sh:67 rsync_gpg_backup.sh:1507
+#: rsync_gpg_backup.sh:67 rsync_gpg_backup.sh:1516
 msgid "❌ No backup destination is on (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB in config): lnd-manager /destinations"
 msgstr "❌ Ningún destino de copias está activado (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB en config): lnd-manager /destinations"
 
-#: rsync_gpg_backup.sh:71 rsync_gpg_backup.sh:1516
+#: rsync_gpg_backup.sh:71 rsync_gpg_backup.sh:1525
 msgid "❌ BACKUP_TO_GITHUB is yes but GITHUB_REPO is empty: run setup (lnd-manager: /setup)"
 msgstr "❌ BACKUP_TO_GITHUB es yes pero GITHUB_REPO está vacío: ejecute la configuración (lnd-manager: /setup)"
 
-#: rsync_gpg_backup.sh:135 rsync_gpg_backup.sh:1316
+#: rsync_gpg_backup.sh:135 rsync_gpg_backup.sh:1325
 msgid "❌ Invalid safe_delete usage"
 msgstr "❌ Uso no válido de safe_delete"
 
-#: rsync_gpg_backup.sh:141 rsync_gpg_backup.sh:1322
+#: rsync_gpg_backup.sh:141 rsync_gpg_backup.sh:1331
 msgid "❌ Unsafe path: empty target"
 msgstr "❌ Ruta insegura: destino vacío"
 
-#: rsync_gpg_backup.sh:150 rsync_gpg_backup.sh:1331
+#: rsync_gpg_backup.sh:150 rsync_gpg_backup.sh:1340
 msgid "❌ Failed to resolve path: %s"
 msgstr "❌ No se pudo resolver la ruta: %s"
 
-#: rsync_gpg_backup.sh:156 rsync_gpg_backup.sh:1337
+#: rsync_gpg_backup.sh:156 rsync_gpg_backup.sh:1346
 msgid "❌ Unsafe path: %s"
 msgstr "❌ Ruta insegura: %s"
 
-#: rsync_gpg_backup.sh:162 rsync_gpg_backup.sh:1343
+#: rsync_gpg_backup.sh:162 rsync_gpg_backup.sh:1352
 msgid "❌ Refusing to delete outside safe bases: %s"
 msgstr "❌ Se rechaza eliminar fuera de las carpetas seguras: %s"
 
-#: rsync_gpg_backup.sh:172 rsync_gpg_backup.sh:1353
+#: rsync_gpg_backup.sh:172 rsync_gpg_backup.sh:1362
 msgid "❌ Refusing delete: the attached volume (UUID %s) is not mounted at %s"
 msgstr "❌ Se rechaza eliminar: el volumen adjunto (UUID %s) no está montado en %s"
 
-#: rsync_gpg_backup.sh:183 rsync_gpg_backup.sh:1360
+#: rsync_gpg_backup.sh:183 rsync_gpg_backup.sh:1369
 msgid "⚠️ Target not found: %s"
 msgstr "⚠️ No se encontró el destino: %s"
 
-#: rsync_gpg_backup.sh:193 rsync_gpg_backup.sh:1366
+#: rsync_gpg_backup.sh:193 rsync_gpg_backup.sh:1375
 msgid "🗑️ Safely removed: %s"
 msgstr "🗑️ Eliminado de forma segura: %s"
 
-#: rsync_gpg_backup.sh:195 rsync_gpg_backup.sh:1368
+#: rsync_gpg_backup.sh:195 rsync_gpg_backup.sh:1377
 msgid "❌ Failed to remove: %s"
 msgstr "❌ No se pudo eliminar: %s"
 
@@ -3194,7 +3250,7 @@ msgstr "❌ Carpetas seguras no confirmadas"
 msgid "✅ Safe folders confirmed: %s"
 msgstr "✅ Carpetas seguras confirmadas: %s"
 
-#: rsync_gpg_backup.sh:400 rsync_gpg_backup.sh:1378
+#: rsync_gpg_backup.sh:400 rsync_gpg_backup.sh:1387
 msgid "❌ %s is not under any SAFE_BASES entry"
 msgstr "❌ %s no está dentro de ninguna entrada de SAFE_BASES"
 
@@ -3324,15 +3380,15 @@ msgstr "✅ %s puede vigilar las carpetas de LND"
 msgid "❌ Failed to set up inotify access for %s"
 msgstr "❌ No se pudo configurar el acceso de inotify para %s"
 
-#: rsync_gpg_backup.sh:823 rsync_gpg_backup.sh:1524
+#: rsync_gpg_backup.sh:823 rsync_gpg_backup.sh:1533
 msgid "❌ Refusing to operate on invalid ATTACHED_VOLUME: %s"
 msgstr "❌ Se rechaza operar sobre un ATTACHED_VOLUME no válido: %s"
 
-#: rsync_gpg_backup.sh:829 rsync_gpg_backup.sh:1530
+#: rsync_gpg_backup.sh:829 rsync_gpg_backup.sh:1539
 msgid "❌ ATTACHED_VOLUME does not exist: %s"
 msgstr "❌ ATTACHED_VOLUME no existe: %s"
 
-#: rsync_gpg_backup.sh:835 rsync_gpg_backup.sh:1536
+#: rsync_gpg_backup.sh:835 rsync_gpg_backup.sh:1545
 msgid "❌ The attached volume (UUID %s) is not mounted at %s"
 msgstr "❌ El volumen adjunto (UUID %s) no está montado en %s"
 
@@ -3424,1055 +3480,1071 @@ msgstr "ℹ️ Modo de prueba de inotify establecido en: %s (config: %s)"
 msgid "📄 Creating rsync-folder-mirror script at %s..."
 msgstr "📄 Creando el script rsync-folder-mirror en %s..."
 
-#: rsync_gpg_backup.sh:1158
+#: rsync_gpg_backup.sh:1167
 msgid "🔍 SSH[%s] took %ss (rc=%s)"
 msgstr "🔍 SSH[%s] tardó %ss (rc=%s)"
 
-#: rsync_gpg_backup.sh:1161
+#: rsync_gpg_backup.sh:1170
 msgid "❌ SSH[%s] failed: %s"
 msgstr "❌ SSH[%s] falló: %s"
 
-#: rsync_gpg_backup.sh:1187
+#: rsync_gpg_backup.sh:1196
 msgid "💓 Heartbeat alive"
 msgstr "💓 Latido: activo"
 
-#: rsync_gpg_backup.sh:1273
+#: rsync_gpg_backup.sh:1282
 msgid "❌ No safe folders in this script. Rerun rsync_gpg_backup.sh."
 msgstr "❌ Este script no tiene carpetas seguras. Vuelva a ejecutar rsync_gpg_backup.sh."
 
-#: rsync_gpg_backup.sh:1379
+#: rsync_gpg_backup.sh:1388
 msgid "❌ Rerun rsync_gpg_backup.sh and include it in the safe folders"
 msgstr "❌ Vuelva a ejecutar rsync_gpg_backup.sh e incluya esa ruta en las carpetas seguras"
 
-#: rsync_gpg_backup.sh:1391
+#: rsync_gpg_backup.sh:1400
 msgid "❌ Server B's backup gate didn't answer"
 msgstr "❌ La compuerta de copias del Servidor B no respondió"
 
-#: rsync_gpg_backup.sh:1396
+#: rsync_gpg_backup.sh:1405
 msgid "❌ Server B answered without its backup gate. Install it there: server-b-install.sh"
 msgstr "❌ El Servidor B respondió sin su compuerta de copias. Instálela allí: server-b-install.sh"
 
-#: rsync_gpg_backup.sh:1404
+#: rsync_gpg_backup.sh:1413
 msgid "🧪 Loaded test config: %s"
 msgstr "🧪 Configuración de prueba cargada: %s"
 
-#: rsync_gpg_backup.sh:1414
+#: rsync_gpg_backup.sh:1423
 msgid "❌ Another backup process is already running. Exiting."
 msgstr "❌ Ya hay otro proceso de copia de seguridad en ejecución. Saliendo."
 
-#: rsync_gpg_backup.sh:1418
+#: rsync_gpg_backup.sh:1427
 msgid "🔒 Global lock acquired (PID %s)"
 msgstr "🔒 Bloqueo global adquirido (PID %s)"
 
-#: rsync_gpg_backup.sh:1426
+#: rsync_gpg_backup.sh:1435
 msgid "❌ %s (PID %s) died unexpectedly"
 msgstr "❌ %s (PID %s) terminó inesperadamente"
 
-#: rsync_gpg_backup.sh:1444
+#: rsync_gpg_backup.sh:1453
 msgid "❌ Failed to remove backup working file: %s"
 msgstr "❌ No se pudo eliminar el archivo de trabajo de la copia: %s"
 
-#: rsync_gpg_backup.sh:1469
+#: rsync_gpg_backup.sh:1478
 msgid "🔓 Releasing global lock on %s"
 msgstr "🔓 Liberando el bloqueo global de %s"
 
-#: rsync_gpg_backup.sh:1512
+#: rsync_gpg_backup.sh:1521
 msgid "❌ Failed to load %s. Rerun rsync_gpg_backup.sh."
 msgstr "❌ No se pudo cargar %s. Vuelva a ejecutar rsync_gpg_backup.sh."
 
-#: rsync_gpg_backup.sh:1550
+#: rsync_gpg_backup.sh:1559
 msgid "❌ Failed to remove leftover backup file: %s"
 msgstr "❌ No se pudo eliminar el archivo de copia sobrante: %s"
 
-#: rsync_gpg_backup.sh:1632
+#: rsync_gpg_backup.sh:1641
 msgid "🔍 Verifying copy stability..."
 msgstr "🔍 Verificando la estabilidad de la copia..."
 
-#: rsync_gpg_backup.sh:1638
+#: rsync_gpg_backup.sh:1647
 msgid "❌ Temp dir vanished before processing file: %s"
 msgstr "❌ La carpeta temporal desapareció antes de procesar el archivo: %s"
 
-#: rsync_gpg_backup.sh:1649
+#: rsync_gpg_backup.sh:1658
 msgid "❌ Temp dir missing right before copy: %s"
 msgstr "❌ Falta la carpeta temporal justo antes de copiar: %s"
 
-#: rsync_gpg_backup.sh:1655
+#: rsync_gpg_backup.sh:1664
 msgid "❌ Missing file during verification: %s"
 msgstr "❌ Falta un archivo durante la verificación: %s"
 
-#: rsync_gpg_backup.sh:1666
+#: rsync_gpg_backup.sh:1675
 msgid "⚠️ Source changed during read: %s"
 msgstr "⚠️ El origen cambió durante la lectura: %s"
 
-#: rsync_gpg_backup.sh:1672
+#: rsync_gpg_backup.sh:1681
 msgid "❌ Copy mismatch: %s"
 msgstr "❌ La copia no coincide: %s"
 
-#: rsync_gpg_backup.sh:1677
+#: rsync_gpg_backup.sh:1686
 msgid "✅ Verified: %s"
 msgstr "✅ Verificado: %s"
 
-#: rsync_gpg_backup.sh:1689
+#: rsync_gpg_backup.sh:1698
 msgid "❌ Cannot access file (missing or permission denied): %s"
 msgstr "❌ No se puede acceder al archivo (no existe o permiso denegado): %s"
 
-#: rsync_gpg_backup.sh:1695
+#: rsync_gpg_backup.sh:1704
 msgid "❌ Missing original hash for %s"
 msgstr "❌ Falta el hash original de %s"
 
-#: rsync_gpg_backup.sh:1704
+#: rsync_gpg_backup.sh:1713
 msgid "❌ Copied file missing: %s"
 msgstr "❌ Falta el archivo copiado: %s"
 
-#: rsync_gpg_backup.sh:1710
+#: rsync_gpg_backup.sh:1719
 msgid "❌ Failed to hash copied file: %s"
 msgstr "❌ No se pudo calcular el hash del archivo copiado: %s"
 
-#: rsync_gpg_backup.sh:1715
+#: rsync_gpg_backup.sh:1724
 msgid "❌ Hash mismatch after rsync:"
 msgstr "❌ El hash no coincide después de rsync:"
 
-#: rsync_gpg_backup.sh:1716
+#: rsync_gpg_backup.sh:1725
 msgid "   Source: %s"
 msgstr "   Origen: %s"
 
-#: rsync_gpg_backup.sh:1717
+#: rsync_gpg_backup.sh:1726
 msgid "   Copy:   %s"
 msgstr "   Copia:  %s"
 
-#: rsync_gpg_backup.sh:1722
+#: rsync_gpg_backup.sh:1731
 msgid "✅ Copied file hash verification passed"
 msgstr "✅ Verificación de hash del archivo copiado correcta"
 
-#: rsync_gpg_backup.sh:1734
+#: rsync_gpg_backup.sh:1743
 msgid "📁 Creating test directory: %s"
 msgstr "📁 Creando la carpeta de prueba: %s"
 
-#: rsync_gpg_backup.sh:1756
+#: rsync_gpg_backup.sh:1765
 msgid "🟢 start_hash_changer running in background with PID: %s"
 msgstr "🟢 start_hash_changer en ejecución en segundo plano con PID: %s"
 
-#: rsync_gpg_backup.sh:1778
+#: rsync_gpg_backup.sh:1787
 msgid "⚠️ No channel backups found in %s"
 msgstr "⚠️ No se encontraron copias de los canales en %s"
 
-#: rsync_gpg_backup.sh:1785
+#: rsync_gpg_backup.sh:1794
 msgid "⚠️ Latest backup exists but is not a valid file: %s"
 msgstr "⚠️ La copia más reciente existe, pero no es un archivo válido: %s"
 
-#: rsync_gpg_backup.sh:1866
+#: rsync_gpg_backup.sh:1875
 msgid "⏳ Waiting for files to settle (no changes for %s seconds)..."
 msgstr "⏳ Esperando a que los archivos se estabilicen (sin cambios durante %s segundos)..."
 
-#: rsync_gpg_backup.sh:1883
+#: rsync_gpg_backup.sh:1892
 msgid "❌ File never appeared: %s"
 msgstr "❌ El archivo nunca apareció: %s"
 
-#: rsync_gpg_backup.sh:1886
+#: rsync_gpg_backup.sh:1895
 msgid "⏳ Waiting for file to exist: %s"
 msgstr "⏳ Esperando a que exista el archivo: %s"
 
-#: rsync_gpg_backup.sh:1897
+#: rsync_gpg_backup.sh:1906
 msgid "❌ Timeout waiting for files to settle (%ss exceeded)"
 msgstr "❌ Tiempo agotado esperando a que los archivos se estabilicen (se superaron %ss)"
 
-#: rsync_gpg_backup.sh:1899
+#: rsync_gpg_backup.sh:1908
 msgid "⚠️ File flapping: %s (changes: %s)"
 msgstr "⚠️ Archivo que cambia sin parar: %s (cambios: %s)"
 
-#: rsync_gpg_backup.sh:1925
+#: rsync_gpg_backup.sh:1934
 msgid "🌀 Relevant file change detected: %s (count=%s)"
 msgstr "🌀 Cambio relevante detectado en un archivo: %s (count=%s)"
 
-#: rsync_gpg_backup.sh:1927
+#: rsync_gpg_backup.sh:1936
 msgid "⏩ Ignoring unrelated file: %s"
 msgstr "⏩ Se ignora un archivo no relacionado: %s"
 
-#: rsync_gpg_backup.sh:1933
+#: rsync_gpg_backup.sh:1942
 msgid "⏳ Waiting for files to settle..."
 msgstr "⏳ Esperando a que los archivos se estabilicen..."
 
-#: rsync_gpg_backup.sh:1940
+#: rsync_gpg_backup.sh:1949
 msgid "✅ Files are stable. Proceeding."
 msgstr "✅ Los archivos están estables. Continuando."
 
-#: rsync_gpg_backup.sh:1954
+#: rsync_gpg_backup.sh:1963
 msgid "⚠️ File missing: %s"
 msgstr "⚠️ Falta el archivo: %s"
 
-#: rsync_gpg_backup.sh:1960
+#: rsync_gpg_backup.sh:1969
 msgid "❌ Failed to hash file: %s"
 msgstr "❌ No se pudo calcular el hash del archivo: %s"
 
-#: rsync_gpg_backup.sh:1973
+#: rsync_gpg_backup.sh:1982
 msgid "🔄 Change detected in %s"
 msgstr "🔄 Cambio detectado en %s"
 
-#: rsync_gpg_backup.sh:1976
+#: rsync_gpg_backup.sh:1985
 msgid "⏩ No change in %s"
 msgstr "⏩ Sin cambios en %s"
 
-#: rsync_gpg_backup.sh:1990
+#: rsync_gpg_backup.sh:1999
 msgid "❌ Failed to create metadata directory: %s"
 msgstr "❌ No se pudo crear la carpeta de metadatos: %s"
 
-#: rsync_gpg_backup.sh:1997
+#: rsync_gpg_backup.sh:2006
 msgid "❌ Failed to create temporary hash file"
 msgstr "❌ No se pudo crear el archivo temporal de hashes"
 
-#: rsync_gpg_backup.sh:2007 rsync_gpg_backup.sh:2823
+#: rsync_gpg_backup.sh:2016 rsync_gpg_backup.sh:2859
 msgid "❌ Missing staged hash for: %s"
 msgstr "❌ Falta el hash preparado de: %s"
 
-#: rsync_gpg_backup.sh:2013
+#: rsync_gpg_backup.sh:2022
 msgid "❌ Failed writing hash entry for: %s"
 msgstr "❌ No se pudo escribir la entrada de hash de: %s"
 
-#: rsync_gpg_backup.sh:2021
+#: rsync_gpg_backup.sh:2030
 msgid "🧾 Stored updated file hashes"
 msgstr "🧾 Se guardaron los hashes actualizados de los archivos"
 
-#: rsync_gpg_backup.sh:2024
+#: rsync_gpg_backup.sh:2033
 msgid "❌ Failed to commit file hashes to %s"
 msgstr "❌ No se pudieron confirmar los hashes de los archivos en %s"
 
-#: rsync_gpg_backup.sh:2040 rsync_gpg_backup.sh:2058
+#: rsync_gpg_backup.sh:2049 rsync_gpg_backup.sh:2067
 msgid "❌ Failed to determine disk space for %s"
 msgstr "❌ No se pudo determinar el espacio en disco de %s"
 
-#: rsync_gpg_backup.sh:2045
+#: rsync_gpg_backup.sh:2054
 msgid "❌ Insufficient disk space in %s"
 msgstr "❌ Espacio en disco insuficiente en %s"
 
-#: rsync_gpg_backup.sh:2046 rsync_gpg_backup.sh:2064
+#: rsync_gpg_backup.sh:2055 rsync_gpg_backup.sh:2073
 msgid "Required: %s KB, Available: %s KB"
 msgstr "Requerido: %s KB, disponible: %s KB"
 
-#: rsync_gpg_backup.sh:2049
+#: rsync_gpg_backup.sh:2058
 msgid "✅ TMP space check passed (home FS): %s KB available"
 msgstr "✅ Revisión de espacio de TMP correcta (sistema de archivos de home): %s KB disponibles"
 
-#: rsync_gpg_backup.sh:2063
+#: rsync_gpg_backup.sh:2072
 msgid "❌ Insufficient disk space in ATTACHED_VOLUME"
 msgstr "❌ Espacio en disco insuficiente en ATTACHED_VOLUME"
 
-#: rsync_gpg_backup.sh:2067
+#: rsync_gpg_backup.sh:2076
 msgid "✅ ATTACHED_VOLUME space check passed: %s KB available"
 msgstr "✅ Revisión de espacio de ATTACHED_VOLUME correcta: %s KB disponibles"
 
-#: rsync_gpg_backup.sh:2077
+#: rsync_gpg_backup.sh:2086
 msgid "⏳ Skipping: debounce active"
 msgstr "⏳ Se omite: espera antirrebote activa"
 
-#: rsync_gpg_backup.sh:2087
+#: rsync_gpg_backup.sh:2096
 msgid "⏳ Skipping: failure cooldown active (%ss)"
 msgstr "⏳ Se omite: pausa tras un fallo activa (%ss)"
 
-#: rsync_gpg_backup.sh:2103
+#: rsync_gpg_backup.sh:2112
 msgid "🌀 Detected change in: %s"
 msgstr "🌀 Cambio detectado en: %s"
 
-#: rsync_gpg_backup.sh:2114
+#: rsync_gpg_backup.sh:2123
 msgid "⚠️ Snapshot empty during event — skipping"
 msgstr "⚠️ Instantánea vacía durante el evento — se omite"
 
-#: rsync_gpg_backup.sh:2119
+#: rsync_gpg_backup.sh:2128
 msgid "⏩ No meaningful changes detected, skipping backup"
 msgstr "⏩ No se detectaron cambios significativos, se omite la copia"
 
-#: rsync_gpg_backup.sh:2123
+#: rsync_gpg_backup.sh:2132
 msgid "🚀 Changes confirmed → performing backup..."
 msgstr "🚀 Cambios confirmados → realizando la copia de seguridad..."
 
-#: rsync_gpg_backup.sh:2128
+#: rsync_gpg_backup.sh:2137
 msgid "✅ Backup completed successfully"
 msgstr "✅ Copia de seguridad completada correctamente"
 
-#: rsync_gpg_backup.sh:2135
+#: rsync_gpg_backup.sh:2144
 msgid "❌ Backup failed"
 msgstr "❌ La copia de seguridad falló"
 
-#: rsync_gpg_backup.sh:2175
+#: rsync_gpg_backup.sh:2184
 msgid "▶️ Check requested"
 msgstr "▶️ Revisión solicitada"
 
-#: rsync_gpg_backup.sh:2183
+#: rsync_gpg_backup.sh:2192
 msgid "❌ remote_pending retry failed"
 msgstr "❌ Falló el reintento de remote_pending"
 
-#: rsync_gpg_backup.sh:2186
+#: rsync_gpg_backup.sh:2195
 msgid "❌ github_pending retry failed"
 msgstr "❌ Falló el reintento de github_pending"
 
-#: rsync_gpg_backup.sh:2192
+#: rsync_gpg_backup.sh:2202
 msgid "❌ milestones_pending retry failed"
 msgstr "❌ Falló el reintento de milestones_pending"
 
-#: rsync_gpg_backup.sh:2196
+#: rsync_gpg_backup.sh:2206
 msgid "🔎 Running fingerprint reconciliation..."
 msgstr "🔎 Ejecutando la conciliación por huella..."
 
-#: rsync_gpg_backup.sh:2201
+#: rsync_gpg_backup.sh:2211
 msgid "⚠️ Empty snapshot — skipping reconciliation"
 msgstr "⚠️ Instantánea vacía — se omite la conciliación"
 
-#: rsync_gpg_backup.sh:2202
+#: rsync_gpg_backup.sh:2212
 msgid "skipped: no LND files found"
 msgstr "omitida: no se encontraron archivos de LND"
 
-#: rsync_gpg_backup.sh:2211
+#: rsync_gpg_backup.sh:2221
 msgid "⚠️ Could not fingerprint LND's files this time (a file changed while being read?): next check in an hour"
 msgstr "⚠️ Esta vez no se pudo calcular la huella de los archivos de LND (¿cambió un archivo mientras se leía?): próxima revisión en una hora"
 
-#: rsync_gpg_backup.sh:2212
+#: rsync_gpg_backup.sh:2222
 msgid "skipped: files changed while being read"
 msgstr "omitida: los archivos cambiaron mientras se leían"
 
-#: rsync_gpg_backup.sh:2221
+#: rsync_gpg_backup.sh:2231
 msgid "✅ No changes detected (fingerprint match)"
 msgstr "✅ No se detectaron cambios (la huella coincide)"
 
-#: rsync_gpg_backup.sh:2222
+#: rsync_gpg_backup.sh:2232
 msgid "no changes"
 msgstr "sin cambios"
 
-#: rsync_gpg_backup.sh:2227
+#: rsync_gpg_backup.sh:2237
 msgid "🚨 Change detected via fingerprint mismatch"
 msgstr "🚨 Cambio detectado: la huella no coincide"
 
-#: rsync_gpg_backup.sh:2231
+#: rsync_gpg_backup.sh:2241
 msgid "✅ Reconciliation backup completed"
 msgstr "✅ Copia de conciliación completada"
 
-#: rsync_gpg_backup.sh:2232
+#: rsync_gpg_backup.sh:2242
 msgid "changes found, backed up"
 msgstr "cambios encontrados, copia hecha"
 
-#: rsync_gpg_backup.sh:2234
+#: rsync_gpg_backup.sh:2244
 msgid "❌ Backup failed during reconciliation"
 msgstr "❌ La copia falló durante la conciliación"
 
-#: rsync_gpg_backup.sh:2235
+#: rsync_gpg_backup.sh:2245
 msgid "changes found, backup failed"
 msgstr "cambios encontrados, la copia falló"
 
-#: rsync_gpg_backup.sh:2243
+#: rsync_gpg_backup.sh:2253
 msgid "🟢 Reconciliation loop started (PID: %s)"
 msgstr "🟢 Bucle de conciliación iniciado (PID: %s)"
 
-#: rsync_gpg_backup.sh:2295
+#: rsync_gpg_backup.sh:2308
 msgid "📦 Sending %s to Server B's backup gate..."
 msgstr "📦 Enviando %s a la compuerta de copias del Servidor B..."
 
-#: rsync_gpg_backup.sh:2304
+#: rsync_gpg_backup.sh:2317
 msgid "⚠️ Server B's backup gate is older and can't check uploads: update it there (step 1 of serverb-setup.sh, or /update scripts)"
 msgstr "⚠️ La compuerta de copias del Servidor B es más antigua y no puede verificar lo que se sube: actualícela allí (paso 1 de serverb-setup.sh, o /update scripts)"
 
-#: rsync_gpg_backup.sh:2322
+#: rsync_gpg_backup.sh:2326
+msgid "❌ Server B refused %s as dated in the future: this server's clock is ahead of Server B's. Check the time on both (timedatectl)."
+msgstr "❌ El Servidor B rechazó %s por estar fechada en el futuro: el reloj de este servidor va por delante del del Servidor B. Revise la hora en ambos (timedatectl)."
+
+#: rsync_gpg_backup.sh:2342
 msgid "✅ Stored on Server B and checked (sha256) in %ss (attempt %s/%s)"
 msgstr "✅ Guardada en el Servidor B y verificada (sha256) en %ss (intento %s/%s)"
 
-#: rsync_gpg_backup.sh:2328
+#: rsync_gpg_backup.sh:2349
 msgid "⏱️ Timeout after %ss"
 msgstr "⏱️ Tiempo agotado tras %ss"
 
-#: rsync_gpg_backup.sh:2330
+#: rsync_gpg_backup.sh:2351
 msgid "❌ Server B's checksum doesn't match this copy"
 msgstr "❌ La suma de verificación del Servidor B no coincide con esta copia"
 
-#: rsync_gpg_backup.sh:2332
+#: rsync_gpg_backup.sh:2353
 msgid "❌ Copy to Server B failed (attempt %s/%s, exit code %s): %s"
 msgstr "❌ Falló la copia al Servidor B (intento %s/%s, código de salida %s): %s"
 
-#: rsync_gpg_backup.sh:2337
+#: rsync_gpg_backup.sh:2358
 msgid "⏳ Retrying in %s seconds..."
 msgstr "⏳ Reintentando en %s segundos..."
 
-#: rsync_gpg_backup.sh:2343
+#: rsync_gpg_backup.sh:2364
 msgid "🚨 COPY TO SERVER B FAILED AFTER ALL RETRIES (exit code: %s)"
 msgstr "🚨 LA COPIA AL SERVIDOR B FALLÓ TRAS TODOS LOS REINTENTOS (código de salida: %s)"
 
-#: rsync_gpg_backup.sh:2364
+#: rsync_gpg_backup.sh:2385
 msgid "⏩ Backup running, will retry remote_pending next time"
 msgstr "⏩ Hay una copia en curso; se reintentará remote_pending la próxima vez"
 
-#: rsync_gpg_backup.sh:2373
+#: rsync_gpg_backup.sh:2394
 msgid "⚠️ remote_pending points to a missing file (%s), removing marker"
 msgstr "⚠️ remote_pending apunta a un archivo que no existe (%s), se elimina la marca"
 
-#: rsync_gpg_backup.sh:2378
+#: rsync_gpg_backup.sh:2399
 msgid "🔁 Retrying remote copy of %s"
 msgstr "🔁 Reintentando la copia remota de %s"
 
-#: rsync_gpg_backup.sh:2381
+#: rsync_gpg_backup.sh:2402
 msgid "✅ Remote copy caught up, remote_pending cleared"
 msgstr "✅ Copia remota al día, se borró remote_pending"
 
-#: rsync_gpg_backup.sh:2384
+#: rsync_gpg_backup.sh:2405
 msgid "❌ Remote copy still failing, keeping remote_pending"
 msgstr "❌ La copia remota sigue fallando, se conserva remote_pending"
 
-#: rsync_gpg_backup.sh:2398
+#: rsync_gpg_backup.sh:2419
 msgid "📌 Starting milestone capture phase..."
 msgstr "📌 Iniciando la fase de captura de hitos..."
 
-#: rsync_gpg_backup.sh:2418
+#: rsync_gpg_backup.sh:2439
 msgid "❌ Failed to create local milestone directories in %s"
 msgstr "❌ No se pudieron crear las carpetas locales de hitos en %s"
 
-#: rsync_gpg_backup.sh:2433
+#: rsync_gpg_backup.sh:2454
 msgid "⚠️ No backup found for milestone copy"
 msgstr "⚠️ No se encontró una copia para copiarla como hito"
 
-#: rsync_gpg_backup.sh:2441
+#: rsync_gpg_backup.sh:2462
 msgid "daily"
 msgstr "diario"
 
-#: rsync_gpg_backup.sh:2441
+#: rsync_gpg_backup.sh:2462
 msgid "monthly"
 msgstr "mensual"
 
-#: rsync_gpg_backup.sh:2445
+#: rsync_gpg_backup.sh:2466
 msgid "⏩ %s milestone already exists: %s"
 msgstr "⏩ Ya existe el hito %s: %s"
 
-#: rsync_gpg_backup.sh:2450
+#: rsync_gpg_backup.sh:2471
 msgid "❌ Failed to create %s milestone: %s"
 msgstr "❌ No se pudo crear el hito %s: %s"
 
-#: rsync_gpg_backup.sh:2455
+#: rsync_gpg_backup.sh:2476
 msgid "📌 Created %s milestone: %s"
 msgstr "📌 Hito %s creado: %s"
 
-#: rsync_gpg_backup.sh:2490
+#: rsync_gpg_backup.sh:2511
 msgid "⏩ Backup running, will retry GitHub next time"
 msgstr "⏩ Hay una copia en curso; se reintentará GitHub la próxima vez"
 
-#: rsync_gpg_backup.sh:2497
+#: rsync_gpg_backup.sh:2518
 msgid "⚠️ github_pending points to a missing file (%s), removing marker"
 msgstr "⚠️ github_pending apunta a un archivo que no existe (%s), se elimina la marca"
 
-#: rsync_gpg_backup.sh:2501
+#: rsync_gpg_backup.sh:2522
 msgid "🔁 Retrying the GitHub copy of %s"
 msgstr "🔁 Reintentando la copia en GitHub de %s"
 
-#: rsync_gpg_backup.sh:2506
+#: rsync_gpg_backup.sh:2527
 msgid "✅ GitHub copy caught up, github_pending cleared"
 msgstr "✅ Copia en GitHub al día, se borró github_pending"
 
-#: rsync_gpg_backup.sh:2509
+#: rsync_gpg_backup.sh:2530
 msgid "❌ GitHub copy still failing, keeping github_pending"
 msgstr "❌ La copia en GitHub sigue fallando, se conserva github_pending"
 
-#: rsync_gpg_backup.sh:2537
+#: rsync_gpg_backup.sh:2573
 msgid "🚨 Server B has a backup this server didn't send: %s. Another LND with this seed may be running (an old server, a copy): two nodes with the same channels can lose all the funds in them. Stop the other one now."
 msgstr "🚨 El Servidor B tiene una copia de seguridad que este servidor no envió: %s. Puede haber otro LND con esta semilla en marcha (un servidor viejo, una copia): dos nodos con los mismos canales pueden perder todos los fondos de esos canales. Detenga el otro ahora."
 
-#: rsync_gpg_backup.sh:2556
+#: rsync_gpg_backup.sh:2592
 msgid "⏩ Backup running, will retry milestones next time"
 msgstr "⏩ Hay una copia en curso; se reintentarán los hitos la próxima vez"
 
-#: rsync_gpg_backup.sh:2565
+#: rsync_gpg_backup.sh:2601
 msgid "⚠️ milestones_pending points to a missing file (%s), removing marker"
 msgstr "⚠️ milestones_pending apunta a un archivo que no existe (%s), se elimina la marca"
 
-#: rsync_gpg_backup.sh:2570
+#: rsync_gpg_backup.sh:2606
 msgid "🔁 Retrying milestones from %s"
 msgstr "🔁 Reintentando los hitos desde %s"
 
-#: rsync_gpg_backup.sh:2573
+#: rsync_gpg_backup.sh:2609
 msgid "✅ Milestones caught up, milestones_pending cleared"
 msgstr "✅ Hitos al día, se borró milestones_pending"
 
-#: rsync_gpg_backup.sh:2575
+#: rsync_gpg_backup.sh:2611
 msgid "❌ Milestones still failing, keeping milestones_pending"
 msgstr "❌ Los hitos siguen fallando, se conserva milestones_pending"
 
-#: rsync_gpg_backup.sh:2608
+#: rsync_gpg_backup.sh:2644
 msgid "❌ Files kept changing during the backup, giving up after %s restarts"
 msgstr "❌ Los archivos siguieron cambiando durante la copia; se abandona tras %s reinicios"
 
-#: rsync_gpg_backup.sh:2613
+#: rsync_gpg_backup.sh:2649
 msgid "🔁 Starting the backup again (restart %s of %s)"
 msgstr "🔁 Reiniciando la copia de seguridad (reinicio %s de %s)"
 
-#: rsync_gpg_backup.sh:2625
+#: rsync_gpg_backup.sh:2661
 msgid "⏩ Backup already running, skipping"
 msgstr "⏩ Ya hay una copia en curso, se omite"
 
-#: rsync_gpg_backup.sh:2635
+#: rsync_gpg_backup.sh:2671
 msgid "🔒 Function lock acquired"
 msgstr "🔒 Bloqueo de función adquirido"
 
-#: rsync_gpg_backup.sh:2642
+#: rsync_gpg_backup.sh:2678
 msgid "❌ Unsafe TMP_BACKUP_DIR"
 msgstr "❌ TMP_BACKUP_DIR inseguro"
 
-#: rsync_gpg_backup.sh:2651
+#: rsync_gpg_backup.sh:2687
 msgid "📁 Creating TMP_BACKUP_DIR: %s"
 msgstr "📁 Creando TMP_BACKUP_DIR: %s"
 
-#: rsync_gpg_backup.sh:2654
+#: rsync_gpg_backup.sh:2690
 msgid "❌ Failed to create TMP_BACKUP_DIR"
 msgstr "❌ No se pudo crear TMP_BACKUP_DIR"
 
-#: rsync_gpg_backup.sh:2663
+#: rsync_gpg_backup.sh:2699
 msgid "❌ Failed to create temporary backup directory"
 msgstr "❌ No se pudo crear la carpeta temporal de copias"
 
-#: rsync_gpg_backup.sh:2669
+#: rsync_gpg_backup.sh:2705
 msgid "❌ Failed to chown temporary backup directory"
 msgstr "❌ Falló chown en la carpeta temporal de copias"
 
-#: rsync_gpg_backup.sh:2674
+#: rsync_gpg_backup.sh:2710
 msgid "❌ Failed to chmod temporary backup directory"
 msgstr "❌ Falló chmod en la carpeta temporal de copias"
 
-#: rsync_gpg_backup.sh:2684
+#: rsync_gpg_backup.sh:2720
 msgid "⚠️ Missing file (or not readable by the helper): %s"
 msgstr "⚠️ Falta el archivo (o el ayudante no puede leerlo): %s"
 
-#: rsync_gpg_backup.sh:2690
+#: rsync_gpg_backup.sh:2726
 msgid "⚠️ No files available yet — skipping backup"
 msgstr "⚠️ Aún no hay archivos disponibles — se omite la copia"
 
-#: rsync_gpg_backup.sh:2695
+#: rsync_gpg_backup.sh:2731
 msgid "📂 Snapshot contains %s files:"
 msgstr "📂 La instantánea contiene %s archivos:"
 
-#: rsync_gpg_backup.sh:2703
+#: rsync_gpg_backup.sh:2739
 msgid "⚠️ Snapshot inconsistent (file disappeared): %s"
 msgstr "⚠️ Instantánea inconsistente (desapareció un archivo): %s"
 
-#: rsync_gpg_backup.sh:2708
+#: rsync_gpg_backup.sh:2744
 msgid "✅ All snapshot files exist"
 msgstr "✅ Existen todos los archivos de la instantánea"
 
-#: rsync_gpg_backup.sh:2717
+#: rsync_gpg_backup.sh:2753
 msgid "🔁 Backup attempt %s of %s"
 msgstr "🔁 Intento de copia %s de %s"
 
-#: rsync_gpg_backup.sh:2720
+#: rsync_gpg_backup.sh:2756
 msgid "⏳ Waiting for files to settle before backup..."
 msgstr "⏳ Esperando a que los archivos se estabilicen antes de la copia..."
 
-#: rsync_gpg_backup.sh:2724
+#: rsync_gpg_backup.sh:2760
 msgid "❌ Files did not stabilize in time"
 msgstr "❌ Los archivos no se estabilizaron a tiempo"
 
-#: rsync_gpg_backup.sh:2736
+#: rsync_gpg_backup.sh:2772
 msgid "⚠️ Snapshot changed during stabilization — retrying..."
 msgstr "⚠️ La instantánea cambió durante la estabilización — reintentando..."
 
-#: rsync_gpg_backup.sh:2748
+#: rsync_gpg_backup.sh:2784
 msgid "❌ Max attempts reached. Aborting backup."
 msgstr "❌ Se alcanzó el máximo de intentos. Se cancela la copia."
 
-#: rsync_gpg_backup.sh:2752
+#: rsync_gpg_backup.sh:2788
 msgid "✅ Files stable. Proceeding with backup..."
 msgstr "✅ Archivos estables. Continuando con la copia..."
 
-#: rsync_gpg_backup.sh:2762
+#: rsync_gpg_backup.sh:2798
 msgid "⚠️ File missing (or inaccessible) in snapshot: %s"
 msgstr "⚠️ Falta un archivo (o no es accesible) en la instantánea: %s"
 
-#: rsync_gpg_backup.sh:2767
+#: rsync_gpg_backup.sh:2803
 msgid "❌ Failed to hash file (staging phase): %s"
 msgstr "❌ No se pudo calcular el hash del archivo (fase de preparación): %s"
 
-#: rsync_gpg_backup.sh:2772
+#: rsync_gpg_backup.sh:2808
 msgid "❌ Empty hash produced (unexpected): %s"
 msgstr "❌ Se obtuvo un hash vacío (inesperado): %s"
 
-#: rsync_gpg_backup.sh:2779
+#: rsync_gpg_backup.sh:2815
 msgid "🧾 Captured source file hashes (post-stabilization)"
 msgstr "🧾 Hashes de los archivos de origen capturados (tras la estabilización)"
 
-#: rsync_gpg_backup.sh:2791
+#: rsync_gpg_backup.sh:2827
 msgid "🔍 Latest on disk: %s"
 msgstr "🔍 Más reciente en disco: %s"
 
-#: rsync_gpg_backup.sh:2792
+#: rsync_gpg_backup.sh:2828
 msgid "📦 Latest in snapshot: %s"
 msgstr "📦 Más reciente en la instantánea: %s"
 
-#: rsync_gpg_backup.sh:2795
+#: rsync_gpg_backup.sh:2831
 msgid "⚠️ Snapshot outdated vs latest backup"
 msgstr "⚠️ La instantánea es más antigua que la copia más reciente"
 
-#: rsync_gpg_backup.sh:2796
+#: rsync_gpg_backup.sh:2832
 msgid "🔁 Restarting backup to include newest channel backup"
 msgstr "🔁 Reiniciando la copia para incluir la copia de los canales más reciente"
 
-#: rsync_gpg_backup.sh:2801
+#: rsync_gpg_backup.sh:2837
 msgid "🔎 Final pre-rsync validation: ensuring all snapshot files still exist..."
 msgstr "🔎 Validación final previa a rsync: comprobando que existan todos los archivos de la instantánea..."
 
-#: rsync_gpg_backup.sh:2805
+#: rsync_gpg_backup.sh:2841
 msgid "❌ Snapshot file disappeared before rsync: %s"
 msgstr "❌ Un archivo de la instantánea desapareció antes de rsync: %s"
 
-#: rsync_gpg_backup.sh:2806
+#: rsync_gpg_backup.sh:2842
 msgid "🔁 Restarting backup due to inconsistent snapshot"
 msgstr "🔁 Reiniciando la copia porque la instantánea es inconsistente"
 
-#: rsync_gpg_backup.sh:2816
+#: rsync_gpg_backup.sh:2852
 msgid "❌ File missing in snapshot before copy: %s"
 msgstr "❌ Falta un archivo de la instantánea antes de copiar: %s"
 
-#: rsync_gpg_backup.sh:2830
+#: rsync_gpg_backup.sh:2866
 msgid "🧾 Loaded staged hashes into COPY_VERIFY_HASHES"
 msgstr "🧾 Hashes preparados cargados en COPY_VERIFY_HASHES"
 
-#: rsync_gpg_backup.sh:2834
+#: rsync_gpg_backup.sh:2870
 msgid "🔍 Snapshot fingerprint: %s"
 msgstr "🔍 Huella de la instantánea: %s"
 
-#: rsync_gpg_backup.sh:2838
+#: rsync_gpg_backup.sh:2874
 msgid "✅ Snapshot validated. All files exist."
 msgstr "✅ Instantánea validada. Todos los archivos existen."
 
-#: rsync_gpg_backup.sh:2842
+#: rsync_gpg_backup.sh:2878
 msgid "📦 Copying snapshot files to temporary directory..."
 msgstr "📦 Copiando los archivos de la instantánea a la carpeta temporal..."
 
-#: rsync_gpg_backup.sh:2851
+#: rsync_gpg_backup.sh:2887
 msgid "❌ Failed to create directory for %s"
 msgstr "❌ No se pudo crear la carpeta para %s"
 
-#: rsync_gpg_backup.sh:2860
+#: rsync_gpg_backup.sh:2896
 msgid "❌ Failed to copy %s"
 msgstr "❌ No se pudo copiar %s"
 
-#: rsync_gpg_backup.sh:2867
+#: rsync_gpg_backup.sh:2903
 msgid "❌ Failed to set timestamp on %s"
 msgstr "❌ No se pudo establecer la marca de tiempo de %s"
 
-#: rsync_gpg_backup.sh:2872
+#: rsync_gpg_backup.sh:2908
 msgid "➡️ Copied: %s → %s"
 msgstr "➡️ Copiado: %s → %s"
 
-#: rsync_gpg_backup.sh:2875
+#: rsync_gpg_backup.sh:2911
 msgid "✅ Copy phase completed"
 msgstr "✅ Fase de copia completada"
 
-#: rsync_gpg_backup.sh:2882
+#: rsync_gpg_backup.sh:2918
 msgid "❌ Copied snapshot fingerprint mismatch — retrying backup"
 msgstr "❌ La huella de la instantánea copiada no coincide — reintentando la copia"
 
-#: rsync_gpg_backup.sh:2885
+#: rsync_gpg_backup.sh:2921
 msgid "✅ Copy fingerprint verified"
 msgstr "✅ Huella de la copia verificada"
 
-#: rsync_gpg_backup.sh:2890
+#: rsync_gpg_backup.sh:2926
 msgid "❌ Copy stability check failed — retrying backup"
 msgstr "❌ Falló la revisión de estabilidad de la copia — reintentando la copia de seguridad"
 
-#: rsync_gpg_backup.sh:2898
+#: rsync_gpg_backup.sh:2934
 msgid "❌ Aborting backup due to corrupted rsync copy"
 msgstr "❌ Se cancela la copia de seguridad porque la copia hecha con rsync está dañada"
 
-#: rsync_gpg_backup.sh:2906
+#: rsync_gpg_backup.sh:2942
 msgid "🧹 Safely cleaned temporary backup directory: %s"
 msgstr "🧹 Carpeta temporal de copias limpiada de forma segura: %s"
 
-#: rsync_gpg_backup.sh:2908
+#: rsync_gpg_backup.sh:2944
 msgid "❌ Unsafe LND_TMP_BACKUP — skipping cleanup: %s"
 msgstr "❌ LND_TMP_BACKUP inseguro — se omite la limpieza: %s"
 
-#: rsync_gpg_backup.sh:2925
+#: rsync_gpg_backup.sh:2970
+msgid "⚠️ The newest backup made here is named after now (%s): the clock was ahead then. Named by the clock, which is synchronized."
+msgstr "⚠️ La copia más reciente hecha aquí tiene un nombre posterior a ahora (%s): el reloj iba adelantado entonces. Se nombra según el reloj, que está sincronizado."
+
+#: rsync_gpg_backup.sh:2973
+msgid "⚠️ The clock isn't synchronized and is behind the newest backup made here (%s): this one is named just after it. Check the time: timedatectl"
+msgstr "⚠️ El reloj no está sincronizado y va por detrás de la copia más reciente hecha aquí (%s): esta se nombra justo después de ella. Revise la hora: timedatectl"
+
+#: rsync_gpg_backup.sh:2979
+msgid "⚠️ Failed to write %s"
+msgstr "⚠️ No se pudo escribir %s"
+
+#: rsync_gpg_backup.sh:2982
 msgid "❌ Failed to create timestamped backup directory: %s"
 msgstr "❌ No se pudo crear la carpeta de copia con marca de tiempo: %s"
 
-#: rsync_gpg_backup.sh:2928
+#: rsync_gpg_backup.sh:2985
 msgid "🛠️ Created timestamped backup directory: %s"
 msgstr "🛠️ Carpeta de copia con marca de tiempo creada: %s"
 
-#: rsync_gpg_backup.sh:2931
+#: rsync_gpg_backup.sh:2988
 msgid "🛠️ Moving files to timestamped directory: %s"
 msgstr "🛠️ Moviendo los archivos a la carpeta con marca de tiempo: %s"
 
-#: rsync_gpg_backup.sh:2933
+#: rsync_gpg_backup.sh:2990
 msgid "❌ Failed to move files to timestamped directory: %s"
 msgstr "❌ No se pudieron mover los archivos a la carpeta con marca de tiempo: %s"
 
-#: rsync_gpg_backup.sh:2937
+#: rsync_gpg_backup.sh:2994
 msgid "✅ Files moved to timestamped directory: %s"
 msgstr "✅ Archivos movidos a la carpeta con marca de tiempo: %s"
 
-#: rsync_gpg_backup.sh:2939
+#: rsync_gpg_backup.sh:2996
 msgid "Using the wait_for_files_to_settle Function Before Compression..."
 msgstr "Usando la función wait_for_files_to_settle antes de comprimir..."
 
-#: rsync_gpg_backup.sh:2946
+#: rsync_gpg_backup.sh:3003
 msgid "❌ Files in %s did not settle before compression"
 msgstr "❌ Los archivos de %s no se estabilizaron antes de comprimir"
 
-#: rsync_gpg_backup.sh:2950
+#: rsync_gpg_backup.sh:3007
 msgid "⚠️ No files to wait for in %s"
 msgstr "⚠️ No hay archivos que esperar en %s"
 
-#: rsync_gpg_backup.sh:2954
+#: rsync_gpg_backup.sh:3011
 msgid "🔐 Compressing Folder into One File..."
 msgstr "🔐 Comprimiendo la carpeta en un solo archivo..."
 
-#: rsync_gpg_backup.sh:2965
+#: rsync_gpg_backup.sh:3022
 msgid "❌ Failed to compress backup directory: %s"
 msgstr "❌ No se pudo comprimir la carpeta de la copia: %s"
 
-#: rsync_gpg_backup.sh:2969
+#: rsync_gpg_backup.sh:3026
 msgid "📦 Backup compressed successfully into: %s"
 msgstr "📦 Copia comprimida correctamente en: %s"
 
-#: rsync_gpg_backup.sh:2974
+#: rsync_gpg_backup.sh:3031
 msgid "⏳ Flushing file system buffers after compression."
 msgstr "⏳ Vaciando los búferes del sistema de archivos tras comprimir."
 
-#: rsync_gpg_backup.sh:2979
+#: rsync_gpg_backup.sh:3036
 msgid "❌ Failed to chown %s"
 msgstr "❌ Falló chown en %s"
 
-#: rsync_gpg_backup.sh:2984
+#: rsync_gpg_backup.sh:3041
 msgid "❌ Failed to chmod %s"
 msgstr "❌ Falló chmod en %s"
 
-#: rsync_gpg_backup.sh:2998
+#: rsync_gpg_backup.sh:3055
 msgid "✅ SHA256 checksum created: %s"
 msgstr "✅ Suma de verificación SHA256 creada: %s"
 
-#: rsync_gpg_backup.sh:3002
+#: rsync_gpg_backup.sh:3059
 msgid "🔐 Encrypting backup with GPG..."
 msgstr "🔐 Cifrando la copia con GPG..."
 
-#: rsync_gpg_backup.sh:3007
+#: rsync_gpg_backup.sh:3064
 msgid "❌ GPG_FINGERPRINT is not set"
 msgstr "❌ GPG_FINGERPRINT no está definido"
 
-#: rsync_gpg_backup.sh:3014
+#: rsync_gpg_backup.sh:3071
 msgid "❌ GPG key with fingerprint not found: %s"
 msgstr "❌ No se encontró la clave GPG con la huella: %s"
 
-#: rsync_gpg_backup.sh:3015
+#: rsync_gpg_backup.sh:3072
 msgid "⚠️ Ensure the correct key is imported for user: %s"
 msgstr "⚠️ Asegúrese de que la clave correcta esté importada para el usuario: %s"
 
-#: rsync_gpg_backup.sh:3029
+#: rsync_gpg_backup.sh:3086
 msgid "❌ GPG_PASSPHRASE_FILE missing or not owned by %s: %s"
 msgstr "❌ GPG_PASSPHRASE_FILE no existe o no pertenece a %s: %s"
 
-#: rsync_gpg_backup.sh:3036
+#: rsync_gpg_backup.sh:3093
 msgid "❌ GPG_PASSPHRASE_FILE must have mode 600: %s"
 msgstr "❌ GPG_PASSPHRASE_FILE debe tener el modo 600: %s"
 
-#: rsync_gpg_backup.sh:3041
+#: rsync_gpg_backup.sh:3098
 msgid "🔐 Using loopback mode for GPG (passphrase file provided)"
 msgstr "🔐 Usando el modo loopback de GPG (se indicó un archivo de frase de contraseña)"
 
-#: rsync_gpg_backup.sh:3047
+#: rsync_gpg_backup.sh:3104
 msgid "🔓 No GPG passphrase file provided (assuming unprotected key or agent)"
 msgstr "🔓 No se indicó un archivo de frase de contraseña de GPG (se supone una clave sin protección o un agente)"
 
-#: rsync_gpg_backup.sh:3074
+#: rsync_gpg_backup.sh:3131
 msgid "❌ Failed to create GPG payload archive"
 msgstr "❌ No se pudo crear el archivo de contenido para GPG"
 
-#: rsync_gpg_backup.sh:3080
+#: rsync_gpg_backup.sh:3137
 msgid "❌ GPG encrypt+sign failed for backup artifacts using fingerprint: %s"
 msgstr "❌ Falló el cifrado+firma con GPG de los archivos de la copia con la huella: %s"
 
-#: rsync_gpg_backup.sh:3084
+#: rsync_gpg_backup.sh:3141
 msgid "✅ GPG encryption + signing successful: %s"
 msgstr "✅ Cifrado + firma con GPG correctos: %s"
 
-#: rsync_gpg_backup.sh:3093
+#: rsync_gpg_backup.sh:3150
 msgid "🔓 Decrypting encrypted backup for verification..."
 msgstr "🔓 Descifrando la copia cifrada para verificarla..."
 
-#: rsync_gpg_backup.sh:3102
+#: rsync_gpg_backup.sh:3159
 msgid "❌ GPG decryption failed for verification"
 msgstr "❌ Falló el descifrado con GPG para la verificación"
 
-#: rsync_gpg_backup.sh:3107
+#: rsync_gpg_backup.sh:3164
 msgid "📦 Extracting verification bundle..."
 msgstr "📦 Extrayendo el paquete de verificación..."
 
-#: rsync_gpg_backup.sh:3111
+#: rsync_gpg_backup.sh:3168
 msgid "❌ Failed to extract verification bundle"
 msgstr "❌ No se pudo extraer el paquete de verificación"
 
-#: rsync_gpg_backup.sh:3118
+#: rsync_gpg_backup.sh:3175
 msgid "🔍 Verifying checksum integrity..."
 msgstr "🔍 Verificando la integridad con la suma de verificación..."
 
-#: rsync_gpg_backup.sh:3124
+#: rsync_gpg_backup.sh:3181
 msgid "❌ Checksum verification failed! Backup corrupted!"
 msgstr "❌ ¡Falló la suma de verificación! ¡La copia de seguridad está dañada!"
 
-#: rsync_gpg_backup.sh:3129
+#: rsync_gpg_backup.sh:3186
 msgid "✅ Encrypted backup integrity verified via checksum"
 msgstr "✅ Integridad de la copia cifrada verificada con la suma de verificación"
 
-#: rsync_gpg_backup.sh:3136
+#: rsync_gpg_backup.sh:3193
 msgid "🧹 Unencrypted tar.gz removed: %s"
 msgstr "🧹 Se eliminó el tar.gz sin cifrar: %s"
 
-#: rsync_gpg_backup.sh:3142
+#: rsync_gpg_backup.sh:3199
 msgid "❌ Failed to remove unencrypted file: %s"
 msgstr "❌ No se pudo eliminar el archivo sin cifrar: %s"
 
-#: rsync_gpg_backup.sh:3146
+#: rsync_gpg_backup.sh:3203
 msgid "🧹 Unencrypted backup copies removed from %s"
 msgstr "🧹 Se eliminaron las copias sin cifrar de %s"
 
-#: rsync_gpg_backup.sh:3156
+#: rsync_gpg_backup.sh:3213
 msgid "📦 Rsync encrypted backup to %s..."
 msgstr "📦 Copiando con rsync la copia cifrada a %s..."
 
-#: rsync_gpg_backup.sh:3163
+#: rsync_gpg_backup.sh:3220
 msgid "❌ %s doesn't exist. Rerun rsync_gpg_backup.sh: it creates it on the attached volume."
 msgstr "❌ %s no existe. Vuelva a ejecutar rsync_gpg_backup.sh: la crea en el volumen adjunto."
 
-#: rsync_gpg_backup.sh:3166
+#: rsync_gpg_backup.sh:3223
 msgid "✅ Rsync completed successfully to second backup directory."
 msgstr "✅ Copia con rsync completada correctamente en la segunda carpeta de copias."
 
-#: rsync_gpg_backup.sh:3172
+#: rsync_gpg_backup.sh:3229
 msgid "❌ Rsync failed to %s. Continuing backup process."
 msgstr "❌ Falló rsync a %s. Se continúa con el proceso de copia."
 
-#: rsync_gpg_backup.sh:3181
+#: rsync_gpg_backup.sh:3238
 msgid "🎉 RSYNC STAGE CONFIRMED SUCCESS"
 msgstr "🎉 ETAPA DE RSYNC CONFIRMADA CON ÉXITO"
 
-#: rsync_gpg_backup.sh:3185
+#: rsync_gpg_backup.sh:3242
 msgid "🧾 Cleared remote_pending"
 msgstr "🧾 Se borró remote_pending"
 
-#: rsync_gpg_backup.sh:3205
+#: rsync_gpg_backup.sh:3262
 msgid "❌ The backup reached none of its destinations. Not committing hashes."
 msgstr "❌ La copia no llegó a ninguno de sus destinos. No se confirman los hashes."
 
-#: rsync_gpg_backup.sh:3214
+#: rsync_gpg_backup.sh:3271
 msgid "❌ Could not keep a copy for the retry in %s"
 msgstr "❌ No se pudo guardar una copia para el reintento en %s"
 
-#: rsync_gpg_backup.sh:3218
+#: rsync_gpg_backup.sh:3275
 msgid "🚨 Not every destination has it yet; the hourly check tries again."
 msgstr "🚨 Aún no todos los destinos la tienen; la revisión horaria vuelve a intentarlo."
 
-#: rsync_gpg_backup.sh:3221
+#: rsync_gpg_backup.sh:3278
 msgid "🔍 Proceeding to post-rsync validation"
 msgstr "🔍 Pasando a la validación posterior a rsync"
 
-#: rsync_gpg_backup.sh:3227
+#: rsync_gpg_backup.sh:3284
 msgid "🔍 Verifying final hash: %s"
 msgstr "🔍 Verificando el hash final: %s"
 
-#: rsync_gpg_backup.sh:3230
+#: rsync_gpg_backup.sh:3287
 msgid "❌ File missing before commit: %s"
 msgstr "❌ Falta el archivo antes de confirmar: %s"
 
-#: rsync_gpg_backup.sh:3235
+#: rsync_gpg_backup.sh:3292
 msgid "❌ Failed to hash file before commit: %s"
 msgstr "❌ No se pudo calcular el hash del archivo antes de confirmar: %s"
 
-#: rsync_gpg_backup.sh:3238
+#: rsync_gpg_backup.sh:3295
 msgid "❌ File disappeared: %s"
 msgstr "❌ El archivo desapareció: %s"
 
-#: rsync_gpg_backup.sh:3245
+#: rsync_gpg_backup.sh:3302
 msgid "❌ File changed since stabilization: %s"
 msgstr "❌ El archivo cambió desde la estabilización: %s"
 
-#: rsync_gpg_backup.sh:3249
+#: rsync_gpg_backup.sh:3306
 msgid "✅ Final hash verified: %s"
 msgstr "✅ Hash final verificado: %s"
 
-#: rsync_gpg_backup.sh:3254
+#: rsync_gpg_backup.sh:3311
 msgid "✅ Post-rsync hash verification complete"
 msgstr "✅ Verificación de hashes posterior a rsync completada"
 
-#: rsync_gpg_backup.sh:3256
+#: rsync_gpg_backup.sh:3313
 msgid "🧾 Starting hash commit phase"
 msgstr "🧾 Iniciando la fase de confirmación de hashes"
 
-#: rsync_gpg_backup.sh:3260
+#: rsync_gpg_backup.sh:3317
 msgid "❌ commit_file_hashes failed"
 msgstr "❌ commit_file_hashes falló"
 
-#: rsync_gpg_backup.sh:3264
+#: rsync_gpg_backup.sh:3321
 msgid "🧾 Hash commit phase complete"
 msgstr "🧾 Fase de confirmación de hashes completada"
 
-#: rsync_gpg_backup.sh:3265
+#: rsync_gpg_backup.sh:3322
 msgid "🧾 Stored source file hashes captured post-stabilization to %s"
 msgstr "🧾 Hashes de origen capturados tras la estabilización guardados en %s"
 
-#: rsync_gpg_backup.sh:3271
+#: rsync_gpg_backup.sh:3328
 msgid "🧾 Updated stored snapshot fingerprint"
 msgstr "🧾 Se actualizó la huella guardada de la instantánea"
 
-#: rsync_gpg_backup.sh:3273
+#: rsync_gpg_backup.sh:3330
 msgid "⚠️ Failed to save snapshot fingerprint to %s"
 msgstr "⚠️ No se pudo guardar la huella de la instantánea en %s"
 
-#: rsync_gpg_backup.sh:3279
+#: rsync_gpg_backup.sh:3336
 msgid "🚨 Marked for remote retry in %s: %s"
 msgstr "🚨 Se marcó para reintento remoto en %s: %s"
 
-#: rsync_gpg_backup.sh:3281 rsync_gpg_backup.sh:3288 rsync_gpg_backup.sh:3309
+#: rsync_gpg_backup.sh:3338 rsync_gpg_backup.sh:3345 rsync_gpg_backup.sh:3366
 msgid "❌ Failed to write %s"
 msgstr "❌ No se pudo escribir %s"
 
-#: rsync_gpg_backup.sh:3286
+#: rsync_gpg_backup.sh:3343
 msgid "🚨 Marked for a GitHub retry: %s"
 msgstr "🚨 Marcada para reintentar en GitHub: %s"
 
-#: rsync_gpg_backup.sh:3307
+#: rsync_gpg_backup.sh:3364
 msgid "⚠️ Milestones not complete, the hourly check will retry them from %s"
 msgstr "⚠️ Hitos incompletos; la revisión horaria los reintentará desde %s"
 
-#: rsync_gpg_backup.sh:3316
+#: rsync_gpg_backup.sh:3373
 msgid "🧹 Starting safer backup rotation in %s..."
 msgstr "🧹 Iniciando la rotación segura de copias en %s..."
 
-#: rsync_gpg_backup.sh:3343
+#: rsync_gpg_backup.sh:3400
 msgid "❌ Failed to delete old backup: %s"
 msgstr "❌ No se pudo eliminar la copia antigua: %s"
 
-#: rsync_gpg_backup.sh:3349
+#: rsync_gpg_backup.sh:3406
 msgid "🧹 Old encrypted backups cleaned in %s. Retained last 10 backups."
 msgstr "🧹 Copias cifradas antiguas limpiadas en %s. Se conservaron las 10 más recientes."
 
-#: rsync_gpg_backup.sh:3360
+#: rsync_gpg_backup.sh:3417
 msgid "🧹 Cleaning local milestone retention..."
 msgstr "🧹 Limpiando los hitos locales según la retención..."
 
-#: rsync_gpg_backup.sh:3374
+#: rsync_gpg_backup.sh:3431
 msgid "🗑️ Removed old daily milestone: %s"
 msgstr "🗑️ Se eliminó un hito diario antiguo: %s"
 
-#: rsync_gpg_backup.sh:3376
+#: rsync_gpg_backup.sh:3433
 msgid "❌ Failed to delete daily milestone: %s"
 msgstr "❌ No se pudo eliminar el hito diario: %s"
 
-#: rsync_gpg_backup.sh:3390
+#: rsync_gpg_backup.sh:3447
 msgid "🗑️ Removed old monthly milestone: %s"
 msgstr "🗑️ Se eliminó un hito mensual antiguo: %s"
 
-#: rsync_gpg_backup.sh:3392
+#: rsync_gpg_backup.sh:3449
 msgid "❌ Failed to delete monthly milestone: %s"
 msgstr "❌ No se pudo eliminar el hito mensual: %s"
 
-#: rsync_gpg_backup.sh:3398
+#: rsync_gpg_backup.sh:3455
 msgid "🧹 Local milestone cleanup complete"
 msgstr "🧹 Limpieza de hitos locales completada"
 
-#: rsync_gpg_backup.sh:3405
+#: rsync_gpg_backup.sh:3462
 msgid "❌ Failed to delete old hash file: %s"
 msgstr "❌ No se pudo eliminar el archivo de hashes antiguo: %s"
 
-#: rsync_gpg_backup.sh:3421
+#: rsync_gpg_backup.sh:3478
 msgid "✅ systemd READY notification sent"
 msgstr "✅ Notificación READY de systemd enviada"
 
-#: rsync_gpg_backup.sh:3428
+#: rsync_gpg_backup.sh:3485
 msgid "⚡ No backup yet (%s). Performing initial backup..."
 msgstr "⚡ Aún no hay ninguna copia (%s). Realizando la copia inicial..."
 
-#: rsync_gpg_backup.sh:3432
+#: rsync_gpg_backup.sh:3489
 msgid "❌ Backup failed. Exiting script."
 msgstr "❌ La copia falló. Saliendo del script."
 
-#: rsync_gpg_backup.sh:3436
+#: rsync_gpg_backup.sh:3493
 msgid "⚠️ A backup folder (encrypted_backup_*) already exists in %s, skipping initial backup."
 msgstr "⚠️ Ya existe una copia (encrypted_backup_*) en %s, se omite la copia inicial."
 
-#: rsync_gpg_backup.sh:3440
+#: rsync_gpg_backup.sh:3497
 msgid "📡 Starting file watcher..."
 msgstr "📡 Iniciando la vigilancia de archivos..."
 
-#: rsync_gpg_backup.sh:3450
+#: rsync_gpg_backup.sh:3507
 msgid "📡 Starting inotify watcher..."
 msgstr "📡 Iniciando la vigilancia con inotify..."
 
-#: rsync_gpg_backup.sh:3455
+#: rsync_gpg_backup.sh:3512
 msgid "🧪 Test mode watcher started"
 msgstr "🧪 Vigilancia en modo de prueba iniciada"
 
-#: rsync_gpg_backup.sh:3467
+#: rsync_gpg_backup.sh:3524
 msgid "📡 Running real inotifywait stream..."
 msgstr "📡 Ejecutando el flujo real de inotifywait..."
 
-#: rsync_gpg_backup.sh:3494
+#: rsync_gpg_backup.sh:3551
 msgid "🚀 Starting watcher..."
 msgstr "🚀 Iniciando la vigilancia..."
 
-#: rsync_gpg_backup.sh:3499
+#: rsync_gpg_backup.sh:3556
 msgid "📡 Starting watcher stream..."
 msgstr "📡 Iniciando el flujo de vigilancia..."
 
-#: rsync_gpg_backup.sh:3514
+#: rsync_gpg_backup.sh:3571
 msgid "🧪 Manual trigger detected"
 msgstr "🧪 Activación manual detectada"
 
-#: rsync_gpg_backup.sh:3517
+#: rsync_gpg_backup.sh:3574
 msgid "🚀 Starting hash changer"
 msgstr "🚀 Iniciando el cambiador de hash"
 
-#: rsync_gpg_backup.sh:3520
+#: rsync_gpg_backup.sh:3577
 msgid "⏩ Hash changer already running"
 msgstr "⏩ El cambiador de hash ya está en ejecución"
 
-#: rsync_gpg_backup.sh:3524
+#: rsync_gpg_backup.sh:3581
 msgid "❌ Failed to remove TEST_TRIGGER_FILE"
 msgstr "❌ No se pudo eliminar TEST_TRIGGER_FILE"
 
-#: rsync_gpg_backup.sh:3530
+#: rsync_gpg_backup.sh:3587
 msgid "❌ handle_event failed for: %s"
 msgstr "❌ handle_event falló para: %s"
 
-#: rsync_gpg_backup.sh:3540
+#: rsync_gpg_backup.sh:3597
 msgid "⚠️ The hourly check had stopped: starting it again"
 msgstr "⚠️ La revisión horaria se había detenido: se vuelve a iniciar"
 
-#: rsync_gpg_backup.sh:3550
+#: rsync_gpg_backup.sh:3607
 msgid "⚠️ Watcher crashed or exited"
 msgstr "⚠️ La vigilancia falló o terminó"
 
-#: rsync_gpg_backup.sh:3564
+#: rsync_gpg_backup.sh:3621
 msgid "⏳ Restarting watcher in %s seconds (attempt #%s)..."
 msgstr "⏳ Reiniciando la vigilancia en %s segundos (intento #%s)..."
 
-#: rsync_gpg_backup.sh:3575
+#: rsync_gpg_backup.sh:3632
 msgid "🟢 Watcher stable for %ss → resetting restart counter"
 msgstr "🟢 Vigilancia estable durante %ss → se pone a cero el contador de reinicios"
 
-#: rsync_gpg_backup.sh:3585
+#: rsync_gpg_backup.sh:3642
 msgid "ℹ️ No file changes detected in 24h (system idle)"
 msgstr "ℹ️ No se detectaron cambios en los archivos en 24 h (sistema inactivo)"
 
-#: rsync_gpg_backup.sh:3593
+#: rsync_gpg_backup.sh:3650
 msgid "❌ Generated service script has a syntax error — not installed"
 msgstr "❌ El script del servicio generado tiene un error de sintaxis — no se instaló"
 
-#: rsync_gpg_backup.sh:3640
+#: rsync_gpg_backup.sh:3697
 msgid "❌ systemctl daemon-reload failed"
 msgstr "❌ Falló systemctl daemon-reload"
 
-#: rsync_gpg_backup.sh:3643
+#: rsync_gpg_backup.sh:3700
 msgid "✅ systemctl daemon-reload completed"
 msgstr "✅ systemctl daemon-reload completado"
 
-#: rsync_gpg_backup.sh:3650 rsync_gpg_backup.sh:3655
+#: rsync_gpg_backup.sh:3707 rsync_gpg_backup.sh:3712
 msgid "❌ Failed to enable/start service: %s"
 msgstr "❌ No se pudo habilitar/iniciar el servicio: %s"
 
-#: rsync_gpg_backup.sh:3653
+#: rsync_gpg_backup.sh:3710
 msgid "✅ Service enabled; it starts after this boot step: %s"
 msgstr "✅ Servicio habilitado; se inicia después de este paso del arranque: %s"
 
-#: rsync_gpg_backup.sh:3658
+#: rsync_gpg_backup.sh:3715
 msgid "✅ Service enabled and started: %s"
 msgstr "✅ Servicio habilitado e iniciado: %s"
 
@@ -7238,387 +7310,407 @@ msgstr "¿Desea generar una nueva clave GPG para %s? (y/n): "
 msgid "🛠️ Generating new GPG key..."
 msgstr "🛠️ Generando una nueva clave GPG..."
 
-#: setup_script.sh:1124
+#: setup_script.sh:1128
 msgid "✅ GPG key generated successfully."
 msgstr "✅ La clave GPG se generó correctamente."
 
-#: setup_script.sh:1132
+#: setup_script.sh:1136
 msgid "✅ GPG private key exported to %s for backup."
 msgstr "✅ Clave privada GPG exportada a %s como copia de seguridad."
 
-#: setup_script.sh:1134
+#: setup_script.sh:1138
 msgid "❌ GPG private key export to %s failed."
 msgstr "❌ Falló la exportación de la clave privada GPG a %s."
 
-#: setup_script.sh:1138
+#: setup_script.sh:1142
 msgid "Would you like to export and view the private key (for backup)? (y/n): "
 msgstr "¿Desea exportar y ver la clave privada (como copia de seguridad)? (y/n): "
 
-#: setup_script.sh:1141 setup_script.sh:1173
+#: setup_script.sh:1145 setup_script.sh:1177
 msgid "⚠️  COPY AND STORE THIS PRIVATE KEY SECURELY:"
 msgstr "⚠️  COPIE Y GUARDE ESTA CLAVE PRIVADA EN UN LUGAR SEGURO:"
 
-#: setup_script.sh:1148 setup_script.sh:1180
+#: setup_script.sh:1152 setup_script.sh:1184
 msgid "Have you saved this GPG key securely? Type 'yes' or 'y' to continue: "
 msgstr "¿Guardó esta clave GPG en un lugar seguro? Escriba 'yes' o 'y' para continuar: "
 
-#: setup_script.sh:1153 setup_script.sh:1185
+#: setup_script.sh:1157 setup_script.sh:1189
 msgid "❗ Please type 'yes' or 'y' only when you've saved the key securely."
 msgstr "❗ Escriba 'yes' o 'y' solo cuando haya guardado la clave en un lugar seguro."
 
-#: setup_script.sh:1158
+#: setup_script.sh:1162
 msgid "❌ GPG key generation failed."
 msgstr "❌ Falló la generación de la clave GPG."
 
-#: setup_script.sh:1162
+#: setup_script.sh:1166
 msgid "❌ A GPG key is required. Exiting."
 msgstr "❌ Se requiere una clave GPG. Saliendo."
 
-#: setup_script.sh:1167
+#: setup_script.sh:1171
 msgid "🔐 GPG key for %s already exists."
 msgstr "🔐 La clave GPG de %s ya existe."
 
-#: setup_script.sh:1170
+#: setup_script.sh:1174
 msgid "Would you like to view/export the existing private key (ASCII-armored)? (y/n): "
 msgstr "¿Desea ver/exportar la clave privada existente (ASCII-armored)? (y/n): "
 
-#: setup_script.sh:1195
+#: setup_script.sh:1199
 msgid "❌ GPG key directory %s does not exist. Exiting."
 msgstr "❌ La carpeta de claves GPG %s no existe. Saliendo."
 
-#: setup_script.sh:1198
+#: setup_script.sh:1202
 msgid "✅ GPG key directory %s exists."
 msgstr "✅ La carpeta de claves GPG %s existe."
 
-#: setup_script.sh:1203
+#: setup_script.sh:1207
 msgid "❌ GPG recipient %s not found. Exiting."
 msgstr "❌ No se encontró el destinatario GPG %s. Saliendo."
 
-#: setup_script.sh:1206
+#: setup_script.sh:1210
 msgid "✅ GPG recipient %s found successfully."
 msgstr "✅ Se encontró el destinatario GPG %s."
 
-#: setup_script.sh:1219
+#: setup_script.sh:1223
 msgid "❌ GPG_FINGERPRINT in config (%s) isn't the fingerprint of a key matching %s in %s's keyring. Fix it in %s (or empty it to have it filled in)."
 msgstr "❌ GPG_FINGERPRINT en config (%s) no es la huella de una clave que coincida con %s en el llavero de %s. Corríjalo en %s (o vacíelo para que se complete solo)."
 
-#: setup_script.sh:1228
+#: setup_script.sh:1232
 msgid "❌ No fingerprint found for GPG key %s"
 msgstr "❌ No se encontró la huella de la clave GPG %s"
 
-#: setup_script.sh:1232
+#: setup_script.sh:1236
 msgid "❌ %s keys in %s's keyring match %s:"
 msgstr "❌ %s claves del llavero de %s coinciden con %s:"
 
-#: setup_script.sh:1234
+#: setup_script.sh:1238
 msgid "❌ Set GPG_FINGERPRINT in %s to the one the backups should use, or delete the others (sudo -u %s gpg --delete-secret-and-public-key <fingerprint>), then rerun setup_script.sh."
 msgstr "❌ Defina GPG_FINGERPRINT en %s con la huella que deben usar las copias, o borre las demás claves (sudo -u %s gpg --delete-secret-and-public-key <huella>), y luego vuelva a ejecutar setup_script.sh."
 
-#: setup_script.sh:1240
+#: setup_script.sh:1244
 msgid "❌ The private key for %s isn't in %s's keyring; the service needs it to sign backups."
 msgstr "❌ La clave privada de %s no está en el llavero de %s; el servicio la necesita para firmar las copias."
 
-#: setup_script.sh:1247
+#: setup_script.sh:1251
 msgid "✅ GPG key trust level set to ultimate."
 msgstr "✅ Nivel de confianza de la clave GPG establecido en absoluto (ultimate)."
 
-#: setup_script.sh:1249
+#: setup_script.sh:1253
 msgid "❌ Setting GPG key trust failed."
 msgstr "❌ No se pudo establecer la confianza de la clave GPG."
 
-#: setup_script.sh:1255
+#: setup_script.sh:1269
+msgid "⚠️  The GPG key %s expires on %s. From that day the backup service can't make backups."
+msgstr "⚠️  La clave GPG %s caduca el %s. Desde ese día el servicio de copias no puede hacer copias."
+
+#: setup_script.sh:1270
+msgid "   Removing the expiry changes only the date (gpg may ask for the key's passphrase)."
+msgstr "   Quitar la caducidad solo cambia la fecha (gpg puede pedir la contraseña de la clave)."
+
+#: setup_script.sh:1271
+msgid "Remove the expiry now? Type yes: "
+msgstr "¿Quitar la caducidad ahora? Escriba yes: "
+
+#: setup_script.sh:1276
+msgid "✅ The GPG key no longer expires. Save it again where you keep it: that copy still has the old date."
+msgstr "✅ La clave GPG ya no caduca. Vuelva a guardarla donde la tenga: esa copia todavía lleva la fecha antigua."
+
+#: setup_script.sh:1278
+msgid "⚠️ The GPG key keeps its expiry; lnd-manager warns 30 days ahead. Later: sudo -u %s gpg --quick-set-expire %s 0, then again with '*' at the end."
+msgstr "⚠️ La clave GPG conserva su caducidad; lnd-manager avisa 30 días antes. Más tarde: sudo -u %s gpg --quick-set-expire %s 0, y otra vez con '*' al final."
+
+#: setup_script.sh:1284
 msgid "Installing ACL and inotify-tools..."
 msgstr "Instalando ACL e inotify-tools..."
 
-#: setup_script.sh:1258
+#: setup_script.sh:1287
 msgid "ACL and inotify-tools installation complete."
 msgstr "Instalación de ACL e inotify-tools completa."
 
-#: setup_script.sh:1261
+#: setup_script.sh:1290
 msgid "Creating the backup log file at %s and granting full control to %s..."
 msgstr "Creando el archivo de registro de copias en %s y dando control total a %s..."
 
-#: setup_script.sh:1264
+#: setup_script.sh:1293
 msgid "Backup log file created and permissions set."
 msgstr "Archivo de registro de copias creado y permisos establecidos."
 
-#: setup_script.sh:1267
+#: setup_script.sh:1296
 msgid "Granting full control over %s to %s..."
 msgstr "Dando control total sobre %s a %s..."
 
-#: setup_script.sh:1271
+#: setup_script.sh:1300
 msgid "Permissions for %s set."
 msgstr "Permisos de %s establecidos."
 
-#: setup_script.sh:1274
+#: setup_script.sh:1303
 msgid "Removing ACL for SSH private key at %s..."
 msgstr "Quitando la ACL de la clave privada SSH en %s..."
 
-#: setup_script.sh:1282 setup_script.sh:1304
+#: setup_script.sh:1311 setup_script.sh:1333
 msgid "❌ Failed to set permissions on %s"
 msgstr "❌ No se pudieron establecer los permisos de %s"
 
-#: setup_script.sh:1284 setup_script.sh:1306
+#: setup_script.sh:1313 setup_script.sh:1335
 msgid "✅ Permissions for %s set."
 msgstr "✅ Permisos de %s establecidos."
 
-#: setup_script.sh:1287
+#: setup_script.sh:1316
 msgid "ACL for SSH key removed."
 msgstr "Se quitó la ACL de la clave SSH."
 
-#: setup_script.sh:1290
+#: setup_script.sh:1319
 msgid "Removing ACL for GPG private key at %s..."
 msgstr "Quitando la ACL de la clave privada GPG en %s..."
 
-#: setup_script.sh:1292
+#: setup_script.sh:1321
 msgid "ACL for GPG key removed."
 msgstr "Se quitó la ACL de la clave GPG."
 
-#: setup_script.sh:1295
+#: setup_script.sh:1324
 msgid "Setting ownership and permissions for the GPG key directory..."
 msgstr "Estableciendo el propietario y los permisos de la carpeta de claves GPG..."
 
-#: setup_script.sh:1298
+#: setup_script.sh:1327
 msgid "❌ Failed to set ownership on %s"
 msgstr "❌ No se pudo establecer el propietario de %s"
 
-#: setup_script.sh:1300
+#: setup_script.sh:1329
 msgid "✅ Ownership for %s set."
 msgstr "✅ Propietario de %s establecido."
 
-#: setup_script.sh:1316
+#: setup_script.sh:1345
 msgid "⚠️  %s is in the docker group, which amounts to root without a password: anything"
 msgstr "⚠️  %s está en el grupo docker, lo que equivale a root sin contraseña: cualquier cosa que"
 
-#: setup_script.sh:1317
+#: setup_script.sh:1346
 msgid "   running as %s can read the LND wallet's password and seed. These scripts don't need it."
 msgstr "   corra como %s puede leer la contraseña y la semilla de la billetera LND. Estos scripts no usan ese grupo."
 
-#: setup_script.sh:1318
+#: setup_script.sh:1347
 msgid "   Without it, use 'sudo docker ...' (asks for your password, and is logged)."
 msgstr "   Sin ese grupo, use 'sudo docker ...' (pide su contraseña y queda registrado)."
 
-#: setup_script.sh:1319
+#: setup_script.sh:1348
 msgid "   It takes effect at your next login. Anything of your own that runs docker as %s"
 msgstr "   El cambio rige desde su próximo inicio de sesión. Todo lo suyo que ejecute docker como %s"
 
-#: setup_script.sh:1320
+#: setup_script.sh:1349
 msgid "   without sudo (a cron job, a monitor) would stop working."
 msgstr "   sin sudo (una tarea de cron, un monitor) dejaría de funcionar."
 
-#: setup_script.sh:1321
+#: setup_script.sh:1350
 msgid "Type REMOVE to take %s out of the docker group (Enter to keep): "
 msgstr "Escriba REMOVE para quitar a %s del grupo docker (Enter para mantenerlo): "
 
-#: setup_script.sh:1323
+#: setup_script.sh:1352
 msgid "✅ %s removed from the docker group (from the next login)"
 msgstr "✅ Se quitó a %s del grupo docker (desde el próximo inicio de sesión)"
 
-#: setup_script.sh:1325
+#: setup_script.sh:1354
 msgid "⚠️ %s stays in the docker group"
 msgstr "⚠️ %s sigue en el grupo docker"
 
-#: setup_script.sh:1364
+#: setup_script.sh:1393
 msgid "❌ No device found with UUID %s"
 msgstr "❌ No se encontró ningún dispositivo con UUID %s"
 
-#: setup_script.sh:1367
+#: setup_script.sh:1396
 msgid "✅ Device for UUID %s is: %s"
 msgstr "✅ El dispositivo del UUID %s es: %s"
 
-#: setup_script.sh:1373
+#: setup_script.sh:1402
 msgid "❌ /etc/fstab already mounts %s at %s, not UUID=%s. Fix /etc/fstab or UUID in %s."
 msgstr "❌ /etc/fstab ya monta %s en %s, no UUID=%s. Corrija /etc/fstab o UUID en %s."
 
-#: setup_script.sh:1380
+#: setup_script.sh:1409
 msgid "⚠️  /etc/fstab mounts this disk (UUID %s) at %s. It moves to %s:"
 msgstr "⚠️  /etc/fstab monta este disco (UUID %s) en %s. Se moverá a %s:"
 
-#: setup_script.sh:1381
+#: setup_script.sh:1410
 msgid "   the backup service is stopped, the disk unmounted from the old place, the /etc/fstab line"
 msgstr "   se detiene el servicio de copias de seguridad, el disco se desmonta del lugar anterior, la línea de"
 
-#: setup_script.sh:1382
+#: setup_script.sh:1411
 msgid "   changed (old file kept as /etc/fstab.before-lnd-backups-move), and the disk mounted at the"
 msgstr "   /etc/fstab se cambia (el archivo anterior queda como /etc/fstab.before-lnd-backups-move) y el disco"
 
-#: setup_script.sh:1383
+#: setup_script.sh:1412
 msgid "   new place. The backups on it stay as they are."
 msgstr "   se monta en el nuevo lugar. Las copias que contiene quedan como están."
 
-#: setup_script.sh:1384
+#: setup_script.sh:1413
 msgid "Type MOVE to move the mount: "
 msgstr "Escriba MOVE para mover el montaje: "
 
-#: setup_script.sh:1385
+#: setup_script.sh:1414
 msgid "❌ Stopped: the mount stays at %s"
 msgstr "❌ Detenido: el montaje sigue en %s"
 
-#: setup_script.sh:1390
+#: setup_script.sh:1419
 msgid "🛑 Backup service stopped (setup's installer step starts it again)"
 msgstr "🛑 Servicio de copias de seguridad detenido (el paso del instalador lo vuelve a iniciar)"
 
-#: setup_script.sh:1393
+#: setup_script.sh:1422
 msgid "❌ Could not unmount %s: something still uses it (see: sudo lsof +f -- %s)"
 msgstr "❌ No se pudo desmontar %s: algo todavía lo usa (vea: sudo lsof +f -- %s)"
 
-#: setup_script.sh:1405
+#: setup_script.sh:1434
 msgid "📝 /etc/fstab: UUID=%s now mounts at %s"
 msgstr "📝 /etc/fstab: UUID=%s ahora se monta en %s"
 
-#: setup_script.sh:1408
+#: setup_script.sh:1437
 msgid "🧹 Removed the old mount point %s"
 msgstr "🧹 Se eliminó el punto de montaje anterior %s"
 
-#: setup_script.sh:1415
+#: setup_script.sh:1444
 msgid "❌ %s is a symlink. Remove it; the mount point must be a real folder owned by root."
 msgstr "❌ %s es un enlace simbólico. Elimínelo; el punto de montaje debe ser una carpeta real propiedad de root."
 
-#: setup_script.sh:1419
+#: setup_script.sh:1448
 msgid "📁 Creating mount point directory: %s"
 msgstr "📁 Creando la carpeta del punto de montaje: %s"
 
-#: setup_script.sh:1422
+#: setup_script.sh:1451
 msgid "📁 Mount point %s already exists."
 msgstr "📁 El punto de montaje %s ya existe."
 
-#: setup_script.sh:1436
+#: setup_script.sh:1465
 msgid "📝 /etc/fstab: mount options for %s are now %s (were %s)"
 msgstr "📝 /etc/fstab: las opciones de montaje de %s ahora son %s (eran %s)"
 
-#: setup_script.sh:1441
+#: setup_script.sh:1470
 msgid "✅ UUID %s is already in /etc/fstab at %s"
 msgstr "✅ El UUID %s ya está en /etc/fstab en %s"
 
-#: setup_script.sh:1444
+#: setup_script.sh:1473
 msgid "📝 Adding entry for UUID %s to /etc/fstab..."
 msgstr "📝 Agregando la entrada del UUID %s a /etc/fstab..."
 
-#: setup_script.sh:1458
+#: setup_script.sh:1487
 msgid "❌ %s is already mounted from %s, not %s (UUID %s). Unmount it or fix UUID in %s."
 msgstr "❌ %s ya está montado desde %s, no desde %s (UUID %s). Desmóntelo o corrija UUID en %s."
 
-#: setup_script.sh:1461
+#: setup_script.sh:1490
 msgid "📂 %s is already mounted at %s"
 msgstr "📂 %s ya está montado en %s"
 
-#: setup_script.sh:1463
+#: setup_script.sh:1492
 msgid "⛓️ Mounting %s to %s..."
 msgstr "⛓️ Montando %s en %s..."
 
-#: setup_script.sh:1472
+#: setup_script.sh:1501
 msgid "⛓️ %s is mounted without %s: remounting with %s"
 msgstr "⛓️ %s está montado sin %s: volviendo a montar con %s"
 
-#: setup_script.sh:1478
+#: setup_script.sh:1507
 msgid "✅ Successfully mounted %s at %s"
 msgstr "✅ %s se montó correctamente en %s"
 
-#: setup_script.sh:1480
+#: setup_script.sh:1509
 msgid "❌ Mounting failed. Please check the /etc/fstab file for errors."
 msgstr "❌ Falló el montaje. Revise si el archivo /etc/fstab tiene errores."
 
-#: setup_script.sh:1484
+#: setup_script.sh:1513
 msgid "✅ Mount setup complete. The device should be mounted now and will be automatically mounted on every reboot."
 msgstr "✅ Configuración del montaje completa. El dispositivo ya debería estar montado y se montará automáticamente en cada reinicio."
 
-#: setup_script.sh:1495
+#: setup_script.sh:1524
 msgid "❌ %s is a symlink. Stopping."
 msgstr "❌ %s es un enlace simbólico. Se detiene."
 
-#: setup_script.sh:1500
+#: setup_script.sh:1529
 msgid "Made %s owner of %s (%s itself stays root's)"
 msgstr "%s es ahora dueño de %s (%s sigue siendo de root)"
 
-#: setup_script.sh:1502
+#: setup_script.sh:1531
 msgid "Changing ownership of %s to %s failed."
 msgstr "Falló el cambio de propietario de %s a %s."
 
-#: setup_script.sh:1512
+#: setup_script.sh:1541
 msgid "⚠️ WARNING: You are about to perform a manual step that involves storing a copy of your LND seed."
 msgstr "⚠️ ADVERTENCIA: Está por realizar un paso manual que implica guardar una copia de su semilla de LND."
 
-#: setup_script.sh:1513
+#: setup_script.sh:1542
 msgid "To securely store the seed, follow these steps:"
 msgstr "Para guardar la semilla de forma segura, siga estos pasos:"
 
-#: setup_script.sh:1514
+#: setup_script.sh:1543
 msgid "1. Go to 'Server Settings' in your BTCpayServer dashboard."
 msgstr "1. Vaya a 'Server Settings' en su panel de BTCPay Server."
 
-#: setup_script.sh:1515
+#: setup_script.sh:1544
 msgid "2. Click on 'Services' in the menu."
 msgstr "2. Haga clic en 'Services' en el menú."
 
-#: setup_script.sh:1516
+#: setup_script.sh:1545
 msgid "3. Select 'LND Seed Backup'."
 msgstr "3. Seleccione 'LND Seed Backup'."
 
-#: setup_script.sh:1517
+#: setup_script.sh:1546
 msgid "4. Click on 'See information' to view and copy your LND seed."
 msgstr "4. Haga clic en 'See information' para ver y copiar su semilla de LND."
 
-#: setup_script.sh:1518
+#: setup_script.sh:1547
 msgid "⚠️ Make sure to store this seed in a secure location! Losing the seed means losing access to your LND wallet."
 msgstr "⚠️ ¡Asegúrese de guardar esta semilla en un lugar seguro! Perder la semilla significa perder el acceso a su billetera LND."
 
-#: setup_script.sh:1521
+#: setup_script.sh:1550
 msgid "Have you securely stored your LND seed? (y/n): "
 msgstr "¿Guardó su semilla de LND en un lugar seguro? (y/n): "
 
-#: setup_script.sh:1524
+#: setup_script.sh:1553
 msgid "✅ LND seed backup step confirmed. Proceeding with the backup process."
 msgstr "✅ Paso de la copia de la semilla de LND confirmado. Se continúa con el proceso de copias de seguridad."
 
-#: setup_script.sh:1527
+#: setup_script.sh:1556
 msgid "❌ LND seed backup step not completed. Please ensure that the seed is securely stored before proceeding."
 msgstr "❌ El paso de la copia de la semilla de LND no se completó. Asegúrese de guardar la semilla en un lugar seguro antes de continuar."
 
-#: setup_script.sh:1532
+#: setup_script.sh:1561
 msgid "Last step: the backup service (rsync_gpg_backup.sh). It watches LND's channel backup and, after"
 msgstr "Último paso: el servicio de copias de seguridad (rsync_gpg_backup.sh). Vigila la copia de los canales"
 
-#: setup_script.sh:1533
+#: setup_script.sh:1562
 msgid "every change, stores an encrypted, signed copy at the destinations you chose."
 msgstr "de LND y, tras cada cambio, guarda una copia cifrada y firmada en los destinos que usted eligió."
 
-#: setup_script.sh:1534
+#: setup_script.sh:1563
 msgid "It explains what it does first. Later: lnd-manager /install, or rerun setup."
 msgstr "Primero explica lo que hace. Más tarde: lnd-manager /install, o vuelva a ejecutar la configuración."
 
-#: setup_script.sh:1539
+#: setup_script.sh:1568
 msgid "📦 Installing the scripts and config root-owned into %s..."
 msgstr "📦 Instalando los scripts y config, propiedad de root, en %s..."
 
-#: setup_script.sh:1545
+#: setup_script.sh:1574
 msgid "❌ install-scripts.sh failed: the installed copies are not up to date"
 msgstr "❌ Falló install-scripts.sh: las copias instaladas no están actualizadas"
 
-#: setup_script.sh:1552
+#: setup_script.sh:1581
 msgid "📦 Install or update the backup service now? (y/n): "
 msgstr "📦 ¿Instalar o actualizar ahora el servicio de copias de seguridad? (y/n): "
 
-#: setup_script.sh:1554
+#: setup_script.sh:1583
 msgid "▶️ Installing the backup service (%s)..."
 msgstr "▶️ Instalando el servicio de copias de seguridad (%s)..."
 
-#: setup_script.sh:1557
+#: setup_script.sh:1586
 msgid "✅ Backup service installer finished."
 msgstr "✅ El instalador del servicio de copias de seguridad terminó."
 
-#: setup_script.sh:1559
+#: setup_script.sh:1588
 msgid "❌ The backup service installer is missing or not executable: %s"
 msgstr "❌ El instalador del servicio de copias de seguridad falta o no es ejecutable: %s"
 
-#: setup_script.sh:1562
+#: setup_script.sh:1591
 msgid "⏭️ Backup service not installed now. Later: lnd-manager /install"
 msgstr "⏭️ El servicio de copias de seguridad no se instaló ahora. Más tarde: lnd-manager /install"
 
-#: setup_script.sh:1573
+#: setup_script.sh:1602
 msgid "Writing logrotate configuration to %s..."
 msgstr "Escribiendo la configuración de logrotate en %s..."
 
-#: setup_script.sh:1586
+#: setup_script.sh:1615
 msgid "Setup complete! What's done and what's next: lnd-manager, then /checklist"
 msgstr "¡Configuración completa! Lo hecho y lo que sigue: lnd-manager, luego /checklist"
 

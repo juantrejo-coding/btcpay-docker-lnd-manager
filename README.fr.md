@@ -113,7 +113,9 @@ Le tableau de bord du serveur B :
    - **La clé SSH** que le serveur A utilise pour joindre le serveur B. La configuration la crée.
    - **La clé GPG** qui chiffre les sauvegardes. Collez une clé que vous avez déjà, ou laissez la
      configuration en créer une. **Conservez la clé privée en lieu sûr, hors de ce serveur : sans
-     elle, personne ne peut ouvrir les sauvegardes.**
+     elle, personne ne peut ouvrir les sauvegardes.** Une clé créée par la configuration n'expire
+     jamais ; si la vôtre a une date d'expiration, la configuration propose de la retirer (ce jour-là
+     le service ne pourrait plus faire de sauvegardes).
    - La confirmation que votre seed LND est notée par écrit.
    - **Le service de sauvegarde**, la dernière question. Répondez `y`.
 

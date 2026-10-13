@@ -155,7 +155,8 @@ Setup asks for the language first. Then everything is in that language, the log 
    - **The SSH key** Server A uses to reach Server B. Setup makes it.
    - **The GPG key** that encrypts the backups. Paste one you have, or let setup make one.
      **Save the private key somewhere safe, away from this server: without it nobody can open
-     the backups.**
+     the backups.** A key made by setup never expires; if yours has an expiry date, setup offers
+     to remove it (on that day the service could no longer make backups).
    - Confirming that your LND seed is written down.
    - **The backup service**, the last question. Answer `y`.
 
