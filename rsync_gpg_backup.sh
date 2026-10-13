@@ -1006,6 +1006,9 @@ TO_VOLUME="${BACKUP_TO_VOLUME:-yes}" TO_SERVER_B="${BACKUP_TO_SERVER_B:-yes}" TO
 GITHUB_PENDING_FILE="${BACKUP_METADATA_FOLDER}/github_pending"
 # A backup waiting for a retry when there is no copy on the attached volume to retry from
 OUTBOX_DIR="${BACKUP_METADATA_FOLDER}/outbox"
+# The backups this server has sent to Server B (their names), so the hourly check can tell when
+# another node with the same seed sends some too (check_foreign_backups)
+UPLOADED_NAMES_FILE="${BACKUP_METADATA_FOLDER}/uploaded_to_server_b"
 
 # === Logging Function ===
 log_message() {
@@ -2180,6 +2183,7 @@ start_reconciliation_loop() {
             if ! retry_github_pending; then
                 log_message "$(T "❌ github_pending retry failed")"
             fi
+            check_foreign_backups || true
 
             # Catch up on milestones a backup couldn't create
             if ! retry_milestones_pending; then
@@ -2277,6 +2281,14 @@ copy_to_remote_attempts() {
     local_sum=$(sha256sum -- "$file" | cut -d' ' -f1)
 
     validate_remote_backup_location || return 1
+    # Noted before the upload: an upload whose answer is lost still counts as this server's
+    if ! grep -qxF -- "$name" "$UPLOADED_NAMES_FILE" 2>/dev/null; then
+        printf '%s\n' "$name" >> "$UPLOADED_NAMES_FILE"
+        # The newest 500 are enough (Server B keeps 10)
+        if (( $(wc -l < "$UPLOADED_NAMES_FILE") > 600 )); then
+            tail -n 500 -- "$UPLOADED_NAMES_FILE" > "$UPLOADED_NAMES_FILE.new" && mv -f -- "$UPLOADED_NAMES_FILE.new" "$UPLOADED_NAMES_FILE"
+        fi
+    fi
 
     log_message "$(T "📦 Sending %s to Server B's backup gate..." "$name")"
     for ((i=1; i<=RETRY_COUNT; i++)); do
@@ -2490,6 +2502,36 @@ retry_github_pending() {
         set_status github_last_fail "$(date +%s)"
         log_message "$(T "❌ GitHub copy still failing, keeping github_pending")"
         return 1
+    fi
+}
+
+# === Another node with this seed? ===
+# Backups on Server B that this server didn't send, newer than the first one it did send: some
+# other LND with this wallet is running and backing up (an old server that came back, a copy).
+# Two nodes with the same channels can lose all the funds in them, so this is said loudly. Server
+# B only gives names; the backup service can't tell which wallet they hold.
+check_foreign_backups() {
+    [[ "$TO_SERVER_B" == yes && -s "$UPLOADED_NAMES_FILE" ]] || return 0
+    local first first_epoch names name stamp epoch foreign="" foreign_epoch=0 seen
+    first=$(head -n 1 -- "$UPLOADED_NAMES_FILE")
+    stamp="${first#encrypted_backup_}"
+    first_epoch=$(date -d "${stamp%.gpg}" +%s 2>/dev/null) || return 0
+    names=$("${SSH_COMMAND_ARR[0]}" -n -o BatchMode=yes "${SSH_COMMAND_ARR[@]:1}" "list main" 2>/dev/null) || return 0
+    while IFS= read -r name; do
+        [[ "$name" =~ ^encrypted_backup_[0-9T:+-]+\.gpg$ ]] || continue
+        grep -qxF -- "$name" "$UPLOADED_NAMES_FILE" && continue
+        stamp="${name#encrypted_backup_}"
+        epoch=$(date -d "${stamp%.gpg}" +%s 2>/dev/null) || continue
+        (( epoch > first_epoch && epoch > foreign_epoch )) && { foreign="$name"; foreign_epoch=$epoch; }
+    done <<< "$names"
+    if [[ -n "$foreign" ]]; then
+        seen=$(get_status foreign_backup_name)
+        if [[ "$seen" != "$foreign" ]]; then
+            log_message "$(T "🚨 Server B has a backup this server didn't send: %s. Another LND with this seed may be running (an old server, a copy): two nodes with the same channels can lose all the funds in them. Stop the other one now." "$foreign")"
+        fi
+        set_status foreign_backup_name "$foreign" foreign_backup_time "$foreign_epoch"
+    else
+        set_status foreign_backup_name "" foreign_backup_time ""
     fi
 }
 
@@ -3416,9 +3458,19 @@ start_watcher() {
 
     else
         log_message "$(T "📡 Running real inotifywait stream...")"
+        # LND's channel.backup itself too: LND writes it as a new file and renames it into place,
+        # and the archive copy (chan-backup-archives) doesn't always follow, so without this a
+        # channel opened just before the server died could wait up to an hour for the hourly
+        # check. Only that file from its folder: wallet.db there changes with every block.
+        local mainnet path
+        mainnet=$(dirname -- "$LND_BACKUP_ARCHIVE")
         inotifywait -m -e create,close_write,move \
             --format '%w%f' \
-            "${ACTIVE_WATCH[@]}"
+            "${ACTIVE_WATCH[@]}" "$mainnet" |
+            while IFS= read -r path; do
+                [[ "${path%/*}" == "$mainnet" && "${path##*/}" != channel.backup ]] && continue
+                printf '%s\n' "$path"
+            done
     fi
 }
 

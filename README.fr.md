@@ -195,10 +195,29 @@ sudo lnd-wallet channels     # les fonds et les canaux
 ```
 
 Ou utilisez `/wallet` dans le tableau de bord. Le script trouve la sauvegarde valide la plus
-récente sur le volume attaché ou sur le serveur B, et conserve une sauvegarde de sécurité du
-portefeuille actuel avant de modifier quoi que ce soit. Le serveur B garde jusqu'à 20 sauvegardes de
+récente sur le volume attaché, sur le serveur B et sur GitHub, et conserve une sauvegarde de sécurité
+du portefeuille actuel avant de modifier quoi que ce soit. Le serveur B garde jusqu'à 20 sauvegardes de
 sécurité (50 Go) ; quand il est plein, supprimez-y les anciennes. Restaurer les canaux demande au pair de
-chaque canal de fermer ce canal, et votre part revient on-chain.
+chaque canal de fermer ce canal, et votre part revient on-chain. Ne faites jamais tourner un nœud
+restauré tant que l'ancien tourne encore avec la même seed.
+
+Un channel backup plus ancien n'est jamais dangereux, seulement incomplet : un canal ouvert après lui
+reste chez son pair jusqu'à ce que celui-ci le ferme. Le script donc :
+- demande avant de continuer quand une destination activée ne peut pas être fouillée (elle a peut-être
+  la sauvegarde la plus récente), et signale quand la sauvegarde utilisée est plus ancienne que la plus
+  récente trouvée ;
+- restaure les canaux depuis chaque channel backup qui s'ouvre avec votre portefeuille, celui de la
+  sauvegarde et celui de ce serveur, pour qu'un canal présent dans l'un d'eux revienne ;
+- liste ensuite les canaux restaurés, avec un lien vers votre nœud sur un explorateur public : un canal
+  public qui y figure sans être dans la liste a été ouvert après la sauvegarde la plus récente, et son
+  pair doit le fermer (LND lui-même ne peut pas voir ces canaux).
+
+L'annulation (`/wallet`, option 5) est différente : elle remet tout LND tel qu'il était, état des canaux
+compris, et un ancien état de canaux peut faire perdre les fonds de ces canaux. Elle refuse quand votre
+nœud a tourné depuis la sauvegarde de sécurité, sauf si vous tapez que vous acceptez ce risque.
+
+Le tableau de bord avertit si le serveur B a une sauvegarde que ce serveur n'a pas envoyée : le signe
+qu'un autre LND avec la même seed tourne quelque part. Arrêtez-le tout de suite.
 
 ## En option : une watchtower sur le serveur B
 

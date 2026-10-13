@@ -681,6 +681,10 @@ def collect(config):
     if (destination_on(config, "BACKUP_TO_VOLUME") and destination_on(config, "BACKUP_TO_SERVER_B")
             and local_ok is not None and (remote_ok is None or local_ok - remote_ok > REMOTE_BEHIND_SECONDS)):
         problems.append(_("Server B is behind: its last copy is older than the attached volume's"))
+    if status.get("foreign_backup_name"):
+        problems.append(_("Server B has a backup this server didn't send (%s): another LND with this seed may "
+                          "be running. Two nodes with the same channels can lose all the funds in them: stop "
+                          "the other one now") % status["foreign_backup_name"][:80])
     if not destination_on(config, "BACKUP_TO_SERVER_B") and not destination_on(config, "BACKUP_TO_GITHUB"):
         problems.append(_("No copy leaves this server (only the attached volume is on): /destinations"))
 

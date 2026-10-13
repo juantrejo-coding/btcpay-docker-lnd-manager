@@ -196,10 +196,29 @@ sudo lnd-wallet channels     # das Guthaben und die Kanäle
 ```
 
 Oder verwenden Sie `/wallet` im Dashboard. Das Skript sucht das neueste gültige Backup auf dem
-angehängten Volume oder auf Server B und legt eine Sicherheitskopie der aktuellen Wallet an, bevor
-es etwas ändert. Server B behält bis zu 20 Sicherheitskopien (50 GB); ist er voll, löschen Sie dort
-die alten. Beim Wiederherstellen der Kanäle wird jeder Peer gebeten, seinen Kanal zu
-schließen, und Ihr Anteil kommt on-chain zurück.
+angehängten Volume, auf Server B und auf GitHub und legt eine Sicherheitskopie der aktuellen Wallet an,
+bevor es etwas ändert. Server B behält bis zu 20 Sicherheitskopien (50 GB); ist er voll, löschen Sie dort
+die alten. Beim Wiederherstellen der Kanäle wird jeder Peer gebeten, seinen Kanal zu schließen, und Ihr
+Anteil kommt on-chain zurück. Lassen Sie nie einen wiederhergestellten Node laufen, solange der alte mit
+demselben Seed noch läuft.
+
+Ein älteres Channel-Backup ist nie gefährlich, nur unvollständig: Ein danach geöffneter Kanal bleibt
+beim Peer, bis dieser ihn schließt. Deshalb:
+- fragt das Skript, bevor es weitermacht, wenn ein eingeschaltetes Ziel nicht durchsucht werden kann (es
+  kann das neueste Backup haben), und sagt, wenn das verwendete Backup älter ist als das neueste gefundene;
+- stellt es die Kanäle aus jedem Channel-Backup wieder her, das sich mit Ihrer Wallet öffnen lässt, dem
+  des Backups und dem eigenen dieses Servers, sodass jeder Kanal zurückkommt, der in einem davon ist;
+- listet es danach die wiederhergestellten Kanäle auf, mit einem Link zu Ihrem Node in einem
+  öffentlichen Explorer: Ein öffentlicher Kanal dort, der nicht in der Liste steht, wurde nach dem
+  neuesten Backup geöffnet, und sein Peer muss ihn schließen (LND selbst sieht diese Kanäle nicht).
+
+Rückgängig (`/wallet`, Option 5) ist etwas anderes: Es spielt das ganze LND so zurück, wie es war,
+einschließlich des Kanalzustands, und ein alter Kanalzustand kann das Guthaben dieser Kanäle kosten. Es
+verweigert das, wenn Ihr Node seit der Sicherheitskopie gelaufen ist, außer Sie tippen ein, dass Sie
+dieses Risiko annehmen.
+
+Das Dashboard warnt, wenn Server B ein Backup hat, das dieser Server nicht gesendet hat: ein Zeichen, dass
+irgendwo ein anderes LND mit demselben Seed läuft. Stoppen Sie es sofort.
 
 ## Optional: ein Watchtower auf Server B
 

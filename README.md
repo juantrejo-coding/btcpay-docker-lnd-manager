@@ -228,10 +228,27 @@ sudo lnd-wallet channels     # the funds and the channels
 ```
 
 Or use `/wallet` in the dashboard. The script finds the newest good backup on the attached
-volume or Server B, and keeps a safety copy of the current wallet before it changes anything.
-Server B keeps up to 20 safety copies (50 GB); when it is full, delete old ones there.
+volume, Server B and GitHub, and keeps a safety copy of the current wallet before it changes
+anything. Server B keeps up to 20 safety copies (50 GB); when it is full, delete old ones there.
 Restoring channels asks each channel peer to close its channel, and your share comes back
 on-chain. Never run a restored node while the old one still runs with the same seed.
+
+An older channel backup is never dangerous, only incomplete: a channel opened after it stays with
+its peer until the peer closes it. So the script:
+- asks before it goes on when a destination that is on can't be searched (it may hold the newest
+  backup), and says when the backup it uses is older than the newest one found;
+- restores the channels from every channel backup that opens with your wallet, the backup's and
+  this server's own, so a channel in any of them comes back;
+- afterwards lists the channels it restored, with a link to your node on a public explorer: a
+  public channel there that isn't in the list was opened after the newest backup, and its peer
+  has to close it (LND itself can't see those channels).
+
+Undo (`/wallet`, option 5) is different: it puts back the whole LND as it was, channel state
+included, and old channel state can lose the funds in those channels. It refuses when your node
+has run since the safety copy was made, unless you type that you accept that risk.
+
+The dashboard warns if Server B holds a backup this server didn't send: a sign that another LND
+with the same seed is running somewhere. Stop it at once.
 
 ## Optional: a watchtower on Server B
 

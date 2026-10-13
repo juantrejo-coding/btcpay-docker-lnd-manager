@@ -39,9 +39,12 @@
    5. serverb-watchtower-setup.sh  note the tower's pubkey@address:port it shows	   5. serverb-watchtower-setup.sh  notieren Sie das angezeigte pubkey@address:port des Towers
    6. on Server A: lnd-manager /tower add	   6. auf Server A: lnd-manager /tower add
    7. serverb-dashboard-setup.sh	   7. serverb-dashboard-setup.sh
+   A public channel there that isn't in this list stays with its peer: ask the peer to force-close	   Ein öffentlicher Kanal dort, der nicht in dieser Liste steht, bleibt beim Peer: Bitten Sie den Peer, ihn zwangsweise zu schließen
    A release that changes their own setup says so: then rerun that step (sudo ./serverb-setup.sh).	   Eine Version, die deren eigene Einrichtung ändert, weist darauf hin: Führen Sie dann diesen Schritt erneut aus (sudo ./serverb-setup.sh).
    Backup user:           %s	   Backup-Benutzer:            %s
+   Best: make it reachable (mount the disk, check Server B's address and SSH), then run this again.	   Am besten: Machen Sie es erreichbar (Festplatte einhängen, Adresse und SSH von Server B prüfen) und starten Sie dies erneut.
    Blockchain kept (MB):  %s	   Behaltene Blockchain (MB):  %s
+   Channels opened after it aren't in its channel.backup: their funds stay with the peer until	   Nach ihm geöffnete Kanäle sind nicht in seinem channel.backup: Ihr Guthaben bleibt beim Peer, bis
    Choose 1 (pruned on Server A) to send less, or free space on Server B.	   Wählen Sie 1 (gepruned auf Server A), um weniger zu senden, oder schaffen Sie Platz auf Server B.
    Copy:   %s	   Kopie:  %s
    Dashboard admin:       %s	   Dashboard-Admin:            %s
@@ -62,7 +65,9 @@
    Next: on Server A, lnd-manager: /chain copy. Then here: sudo bash serverb-import-chain.sh	   Als Nächstes: auf Server A lnd-manager: /chain copy. Danach hier: sudo bash serverb-import-chain.sh
    Progress is shown every 30 seconds. Type skip and Enter to stop waiting.	   Fortschritt alle 30 Sekunden. Geben Sie skip und Enter ein, um nicht weiter zu warten.
    Progress: the Server B dashboard, or journalctl -u bitcoind.	   Fortschritt: das Server-B-Dashboard oder journalctl -u bitcoind.
+   Putting older channel state back and starting LND can broadcast it, and then the peers can take	   Einen älteren Kanalzustand zurückzuspielen und LND zu starten, kann ihn senden, und dann können die Peers
    Removed the old install folder %s	   Alter Installationsordner %s entfernt
+   Restored channels:	   Wiederhergestellte Kanäle:
    Scan progress: %s	   Scan-Fortschritt: %s
    Server A's address:    %s (only it may reach the watchtower)	   Adresse von Server A:       %s (nur diese Adresse darf den Watchtower erreichen)
    Server A's key:        %s	   Schlüssel von Server A:     %s
@@ -76,6 +81,7 @@
    The import moves it to /var/lib, another disk there: %s GB needed, %s GB free.	   Der Import verschiebt sie nach /var/lib, dort ein anderer Datenträger: %s GB nötig, %s GB frei.
    The mount point should be %s (owned by root). If the disk is already	   würde ihm folgen. Der Einhängepunkt sollte %s sein (gehört root). Ist der Datenträger schon
    The old blocks are in %s; delete that folder once all is well: sudo rm -rf %s	   Die alten Blöcke liegen in %s; löschen Sie diesen Ordner, wenn alles in Ordnung ist: sudo rm -rf %s
+   To get channel funds back, restore the channels instead (options 3 and 4): that is safe with any backup.	   Um das Kanalguthaben zurückzubekommen, stellen Sie stattdessen die Kanäle wieder her (Optionen 3 und 4): Das ist mit jedem Backup sicher.
    To go back: stop bitcoind, move %s/* back into %s, start it.	   Zurück zum alten Stand: Stoppen Sie bitcoind, verschieben Sie %s/* zurück nach %s, starten Sie es.
    Two nodes with the same channels can lose all the funds in them.	   Zwei Nodes mit denselben Kanälen können das gesamte Guthaben darin verlieren.
    Type later and Enter to stop waiting; option 4 restores the channels another time.	   Geben Sie later und Enter ein, um nicht weiter zu warten; Option 4 stellt die Kanäle später her.
@@ -89,6 +95,7 @@
    account to keys, with no terminal: nobody could then log in as %s with a	   Konto auf Schlüssel, ohne Terminal: Niemand könnte sich dann als %s mit einem Passwort
    admin account, then run the copy:	   Admin-Konto, und führen Sie dann die Kopie aus:
    again: it goes on with the import, then the watchtower and the dashboard.	   erneut aus: Es fährt mit dem Import fort, dann mit dem Watchtower und dem Dashboard.
+   all the funds in those channels. Don't, unless you know those channels are closed and settled.	   das gesamte Guthaben dieser Kanäle nehmen. Tun Sie es nicht, außer Sie wissen, dass diese Kanäle geschlossen und abgewickelt sind.
    all. Every other incoming port is then closed: if this server offers anything else, say no	   alle. Alle anderen eingehenden Ports sind dann zu: Bietet dieser Server noch anderes an, geben Sie
    and add ufw rules for it yourself first.	   nicht yes ein und legen Sie zuerst selbst ufw-Regeln dafür an.
    and in %s. The wallet safety backups in	   und in %s. Die Sicherheitskopien der Wallet in
@@ -112,12 +119,15 @@
    good signature: %s  %s	   gültige Signatur: %s  %s
    installed now: %s	   jetzt installiert: %s
    is fine, recovery is probably not what you need.	   in Ordnung sind, brauchen Sie wahrscheinlich keine Wiederherstellung.
+   it (your share then comes back on-chain), or see chantools (lightninglabs) for help.	   (Ihr Anteil kommt dann on-chain zurück), oder siehe chantools (lightninglabs) für Hilfe.
+   it closes them. This server's own channel.backup is tried too, if it still has one.	   er sie schließt. Das eigene channel.backup dieses Servers wird ebenfalls versucht, falls es noch eines hat.
    it makes the backup user and its key, then offers this script.	   Es legt den Backup-Benutzer und seinen Schlüssel an und bietet dann dieses Skript an.
    itself. Keep another way into Server B (your own key or password) for later changes.	   selbst. Behalten Sie einen anderen Zugang zu Server B (eigener Schlüssel oder Passwort) für später.
    lost with it. Server B or GitHub can be turned on later: lnd-manager /destinations.	   mit ihm verloren. Server B oder GitHub lassen sich später einschalten: lnd-manager /destinations.
    mounted at the old place, setup moves the mount below (it asks again first).	   am alten Ort eingehängt, verlegt das Setup ihn weiter unten (es fragt vorher noch einmal).
    new place. The backups on it stay as they are.	   neuen Ort eingehängt. Die Backups darauf bleiben, wie sie sind.
    no LND has run with those channels since the safety backup was made. If channels were restored	   dem Erstellen der Sicherheitskopie kein LND mit diesen Kanälen lief. Wurden seither Kanäle aus
+   node up on a public explorer, for example https://mempool.space/lightning/node/%s	   Node in einem öffentlichen Explorer, zum Beispiel https://mempool.space/lightning/node/%s
    on-chain once the peer's close confirms. A peer that stays offline keeps that channel's	   on-chain zurück, sobald die Schließung bestätigt ist. Bleibt ein Peer offline, steckt das Guthaben
    password or get a shell over SSH. If a person uses this account, stop here and set	   anmelden oder per SSH eine Shell bekommen. Nutzt eine Person dieses Konto, brechen Sie hier ab
    retry pending since %s	   Wiederholung offen seit %s
@@ -234,6 +244,7 @@
 %s (%s ago)	%s (vor %s)
 %s Type %s: %s	%s %s eingeben: %s
 %s channels being opened or closed on Server A	%s Kanäle werden auf Server A geöffnet oder geschlossen
+%s days	%s Tage
 %s days old	%s Tage alt
 %s didn't restart: journalctl -u %s	%s wurde nicht neu gestartet: journalctl -u %s
 %s doesn't look like a release of these scripts	%s sieht nicht wie eine Version dieser Skripte aus
@@ -245,6 +256,7 @@
 %s holds a hard link (%s), maybe to one of %s's other files. Nothing was used or changed except the folders in %s, now root's. %s	%s enthält einen Hardlink (%s), vielleicht auf eine andere Datei von %s. Nichts wurde verwendet oder geändert außer den Ordnern in %s, die jetzt root gehören. %s
 %s holds a wallet (%s). Not used. %s	%s enthält eine Wallet (%s). Nicht verwendet. %s
 %s holds something that is neither a file nor a folder (%s). Not used; it stays root-owned in %s.	%s enthält etwas, das weder Datei noch Ordner ist (%s). Nicht verwendet; es bleibt in %s, Eigentümer root.
+%s hours	%s Stunden
 %s hours old	%s Stunden alt
 %s is a system account, or its home %s isn't its own. Server A's key must reach an account of its own: set another SERVER_B_USER on Server A.	%s ist ein Systemkonto, oder sein Home-Ordner %s gehört ihm nicht. Der Schlüssel von Server A muss ein eigenes Konto erreichen: Setzen Sie auf Server A einen anderen SERVER_B_USER.
 %s is a system folder	%s ist ein Systemordner
@@ -261,6 +273,7 @@
 %s is root, MAIN_USER or the user running this setup	%s ist root, MAIN_USER oder der Benutzer, der dieses Setup ausführt
 %s is the backup user (SERVER_A_USER)	%s ist der Backup-Benutzer (SERVER_A_USER)
 %s may run commands with sudo (sudo -l -U %s). Server A's key must reach an account of its own, without sudo: set another SERVER_B_USER on Server A.	%s darf Befehle mit sudo ausführen (sudo -l -U %s). Der Schlüssel von Server A muss ein eigenes Konto ohne sudo erreichen: Setzen Sie auf Server A einen anderen SERVER_B_USER.
+%s minutes	%s Minuten
 %s minutes old	%s Minuten alt
 %s payments in flight on Server A	%s laufende Zahlungen auf Server A
 %s removed from docker group.	%s aus der docker-Gruppe entfernt.
@@ -304,6 +317,8 @@
 === Setup complete on Server A ===	=== Setup auf Server A abgeschlossen ===
 A copy from Server A is still running. Wait until /chain copy on Server A has finished.	Eine Kopie von Server A läuft noch. Warten Sie, bis /chain copy auf Server A fertig ist.
 A copy from Server A started meanwhile, so this one may be incomplete: not used. %s	Inzwischen hat eine Kopie von Server A begonnen, daher ist diese eventuell unvollständig: nicht verwendet. %s
+A newer safety backup of this node exists (%s): the node ran after the one you picked.	Eine neuere Sicherheitskopie dieses Nodes existiert (%s): Der Node lief nach der, die Sie gewählt haben.
+A regular backup newer than the safety backup exists (%s), and LND isn't running to tell which wallet it holds.	Ein reguläres Backup, das neuer ist als die Sicherheitskopie, existiert (%s), und LND läuft nicht, um zu sagen, welche Wallet es enthält.
 A wallet operation is already running: wait for it, or /wallet attach	Es läuft schon ein Wallet-Vorgang: warten Sie oder /wallet attach
 ACL and inotify-tools installation complete.	Installation von ACL und inotify-tools abgeschlossen.
 ACL for GPG key removed.	ACL des GPG-Schlüssels entfernt.
@@ -624,6 +639,7 @@ Server B address (hostname or IP): 	Adresse von Server B (Hostname oder IP):
 Server B answers at %s, port %s	Server B antwortet unter %s, Port %s
 Server B backup user: %s	Backup-Benutzer auf Server B: %s
 Server B doesn't answer at %s, port %s: check REMOTE_SERVER and REMOTE_SSH_PORT in config, that Server B runs, and its firewall	Server B antwortet nicht unter %s, Port %s: Prüfen Sie REMOTE_SERVER und REMOTE_SSH_PORT in config, ob Server B läuft, und seine Firewall
+Server B has a backup this server didn't send (%s): another LND with this seed may be running. Two nodes with the same channels can lose all the funds in them: stop the other one now	Server B hat ein Backup, das dieser Server nicht gesendet hat (%s): Möglicherweise läuft ein anderes LND mit diesem Seed. Zwei Nodes mit denselben Kanälen können das gesamte Guthaben darin verlieren: Stoppen Sie das andere jetzt
 Server B has no ~%s/chain-incoming: serverb-bitcoind-setup.sh makes it when you choose to copy the blockchain there	Server B hat kein ~%s/chain-incoming: serverb-bitcoind-setup.sh legt es an, wenn Sie dort wählen, die Blockchain zu kopieren
 Server B is behind: its last copy is older than the attached volume's	Server B hinkt hinterher: Seine letzte Kopie ist älter als die auf dem angehängten Volume
 Server B is off (BACKUP_TO_SERVER_B)	Server B ist ausgeschaltet (BACKUP_TO_SERVER_B)
@@ -711,6 +727,7 @@ The tag %s calls itself %s: refused	Das Tag %s nennt sich selbst %s: abgelehnt
 The temporary LND stopped during the scan	Das temporäre LND hat während des Scans angehalten
 The update to %s didn't finish: journalctl -u lnd-update-wait, and %s	Das Update auf %s wurde nicht abgeschlossen: journalctl -u lnd-update-wait, und %s
 The wallet operation runs in another terminal, not in tmux: nothing to attach to	Wallet-Vorgang läuft in anderem Terminal (nicht tmux): Anhängen nicht möglich
+The wallet running now is the same node and has %s open and %s opening or closing channels: their state now is newer than the safety backup's.	Die jetzt laufende Wallet ist derselbe Node und hat %s offene und %s sich öffnende oder schließende Kanäle: Ihr jetziger Zustand ist neuer als der der Sicherheitskopie.
 The wallet running now:	Die jetzt laufende Wallet:
 The watchtower client isn't on, LND isn't running, or LND is still catching up with the chain:	Der Watchtower-Client ist aus, LND läuft nicht, oder LND holt die Blockchain noch auf:
 The watchtower's public key: serverb-watchtower-setup.sh and the Server B dashboard show it	Öffentlicher Schlüssel des Watchtowers: serverb-watchtower-setup.sh und das Server-B-Dashboard zeigen ihn
@@ -726,6 +743,7 @@ These scripts: %s -> %s	Diese Skripte: %s -> %s
 This backup has no seed (walletunlock.json without one), so type the seed yourself.	Dieses Backup hat keinen Seed (walletunlock.json ohne Seed), geben Sie den Seed also selbst ein.
 This fingerprint was fetched over the network, so it proves nothing yet.	Dieser Fingerabdruck kam über das Netzwerk, er beweist also noch nichts.
 This installs or updates the LND backup service (%s).	Hiermit wird der Backup-Dienst für LND (%s) installiert oder aktualisiert.
+This node ran after the safety backup was made: the newest regular backup, %s, is %s.	Dieser Node lief, nachdem die Sicherheitskopie erstellt wurde: Das neueste reguläre Backup, %s, ist %s.
 This update is waiting already: it installs once Server A says it is safe	Dieses Update wartet bereits: Es wird installiert, sobald Server A meldet, dass es sicher ist
 Timed out waiting for the temporary LND after wallet creation	Zeitüberschreitung beim Warten auf das temporäre LND nach der Wallet-Erstellung
 To copy again: sudo rm -rf %s; sudo -u %s mkdir -m 700 %s; then /chain copy on Server A.	Um erneut zu kopieren: sudo rm -rf %s; sudo -u %s mkdir -m 700 %s; danach /chain copy auf Server A.
@@ -742,6 +760,7 @@ Turning on %s. Setup sets up what it needs, asking before each step, then the ba
 Two passes, so BTCPay is down only for the second:	Zwei Durchgänge, damit BTCPay nur während des zweiten offline ist:
 Type 'COPY ALL' to copy it unpruned anyway: 	Geben Sie 'COPY ALL' ein, um sie trotzdem ohne Pruning zu kopieren: 
 Type 'I ACCEPT THE RISK' to continue anyway: 	Geben Sie 'I ACCEPT THE RISK' ein, um trotzdem fortzufahren: 
+Type 'I KNOW THIS CAN LOSE THE CHANNEL FUNDS' to go on anyway: 	Geben Sie 'I KNOW THIS CAN LOSE THE CHANNEL FUNDS' ein, um trotzdem fortzufahren: 
 Type 'I WROTE IT DOWN' once you have: 	Geben Sie 'I WROTE IT DOWN' ein, sobald Sie ihn aufgeschrieben haben: 
 Type 'NO OTHER NODE IS RUNNING' to restore the channels: 	Geben Sie 'NO OTHER NODE IS RUNNING' ein, um die Kanäle wiederherzustellen: 
 Type 'PUT IT BACK' to replace the current wallet with this safety backup: 	Geben Sie 'PUT IT BACK' ein, um die aktuelle Wallet durch diese Sicherheitskopie zu ersetzen: 
@@ -757,6 +776,7 @@ Type yes if Server B shows exactly this fingerprint: 	Geben Sie yes ein, wenn Se
 Type yes once it is added (or no to stop): 	Geben Sie yes ein, sobald er hinzugefügt ist (oder no zum Abbrechen): 
 Type yes to go on: 	Geben Sie yes ein, um fortzufahren: 
 Type yes to install the backup gate on Server B: 	Geben Sie yes ein, um das Backup-Gate auf Server B zu installieren: 
+Type yes to look only in the places that answered: 	Geben Sie yes ein, um nur an den Orten zu suchen, die geantwortet haben: 
 Type yes to make the scripts with these settings and go through the steps: 	Geben Sie yes ein, um die Skripte mit diesen Einstellungen zu erstellen und die Schritte durchzugehen: 
 Type yes to use these folders: 	Geben Sie yes ein, um diese Ordner zu verwenden: 
 Type yes to write the scripts and go through the steps: 	Geben Sie yes ein, um die Skripte zu schreiben und die Schritte durchzugehen: 
@@ -987,6 +1007,7 @@ support the project, license	das Projekt unterstützen, Lizenz
 synced	synchron
 syncing from the network. Server A's key may then write into ~%s/chain-incoming	Synchronisation aus dem Netz. Der Schlüssel von Server A darf dann in ~%s/chain-incoming schreiben
 the GPG backup key	der GPG-Backup-Schlüssel
+the attached volume	angehängtes Volume
 the attached volume (%s)	das angehängte Volume (%s)
 the backup service is busy (%s)	der Backup-Dienst ist beschäftigt (%s)
 the backup user isn't known here (rerun serverb-dashboard-setup.sh)	der Backup-Benutzer ist hier nicht bekannt (führen Sie serverb-dashboard-setup.sh erneut aus)
@@ -1032,6 +1053,7 @@ your LND seed	Ihr LND-Seed
 ℹ️ A wallet operation is already running in tmux session '%s'. Attaching to it...	ℹ️ In der tmux-Sitzung '%s' läuft bereits ein Wallet-Vorgang. Verbindung dazu wird hergestellt...
 ℹ️ BTCPay already uses %s	ℹ️ BTCPay verwendet bereits %s
 ℹ️ Channels not confirmed: going on as a plain restore (option 2), without channels	ℹ️ Kanäle nicht bestätigt: weiter als einfache Wiederherstellung (Option 2), ohne Kanäle
+ℹ️ Channels opened after the newest backup aren't restored, and LND can't see them. Look your	ℹ️ Nach dem neuesten Backup geöffnete Kanäle werden nicht wiederhergestellt, und LND kann sie nicht sehen. Suchen Sie Ihren
 ℹ️ From 28 on, the watchtower can read bitcoind's cookie through its group: rerun	ℹ️ Ab 28 kann der Watchtower das Cookie von bitcoind über seine Gruppe lesen: Führen Sie danach
 ℹ️ Inotify test mode set to: %s (config: %s)	ℹ️ inotify-Testmodus gesetzt auf: %s (config: %s)
 ℹ️ It is still running in tmux. Back to it: run the same command again.	ℹ️ Er läuft in tmux weiter. Zurück dorthin: Führen Sie denselben Befehl erneut aus.
@@ -1049,6 +1071,7 @@ your LND seed	Ihr LND-Seed
 ℹ️ That was the earlier wallet operation. This one (%s) was not started:	ℹ️ Das war der frühere Wallet-Vorgang. Dieser (%s) wurde nicht gestartet:
 ℹ️ The LND volume is missing or empty, so there is nothing to save in a safety backup.	ℹ️ Das LND-Volume fehlt oder ist leer, es gibt also nichts für eine Sicherheitskopie zu sichern.
 ℹ️ The previous wallet is kept in the safety backup %s (pre-recovery folders).	ℹ️ Die vorherige Wallet bleibt in der Sicherheitskopie %s erhalten (pre-recovery-Ordner).
+ℹ️ The safety backup holds no channels, so no old channel state can be broadcast from it.	ℹ️ Die Sicherheitskopie enthält keine Kanäle, daher kann aus ihr kein alter Kanalzustand gesendet werden.
 ℹ️ The seed was cleared from the screen and this tmux session's scrollback.	ℹ️ Der Seed wurde vom Bildschirm und aus dem Scrollback dieser tmux-Sitzung gelöscht.
 ℹ️ The tower's wallet exists already (it unlocks by itself)	ℹ️ Die Wallet des Towers existiert bereits (sie entsperrt sich selbst)
 ℹ️ The tower's wallet exists already (state: %s; it unlocks by itself)	ℹ️ Die Wallet des Towers existiert bereits (Zustand: %s; sie entsperrt sich selbst)
@@ -1113,6 +1136,7 @@ your LND seed	Ihr LND-Seed
 ⚠️  LND is running and its data looks intact. Option 3 closes all your channels. If LND's data	⚠️  LND läuft und seine Daten wirken intakt. Option 3 schließt alle Ihre Kanäle. Wenn die Daten von LND
 ⚠️  Make sure no other LND with this seed is running anywhere (an old server, a copy).	⚠️  Stellen Sie sicher, dass nirgends ein anderes LND mit diesem Seed läuft (alter Server, Kopie).
 ⚠️  No copy leaves this server: if it is lost, the backups are lost with it.	⚠️  Keine Kopie verlässt diesen Server: Geht er verloren, sind die Backups mit ihm verloren.
+⚠️  Not searched: %s. A newer backup may be there, with channels the others don't have.	⚠️  Nicht durchsucht: %s. Dort kann ein neueres Backup liegen, mit Kanälen, die die anderen nicht haben.
 ⚠️  Only the attached volume: no copy leaves this server. If this server is lost, the backups are	⚠️  Nur das angehängte Volume: Keine Kopie verlässt diesen Server. Geht dieser Server verloren, sind die Backups
 ⚠️  Restoring channels asks every channel peer to close its channel. Your share comes back	⚠️  Beim Wiederherstellen der Kanäle wird jeder Peer gebeten, seinen Kanal zu schließen. Ihr Anteil kommt
 ⚠️  Server B still gives this key a full shell: anyone who got %s here could delete	⚠️  Server B gibt diesem Schlüssel noch eine volle Shell: Wer %s hier erbeutet, könnte dort
@@ -1120,6 +1144,7 @@ your LND seed	Ihr LND-Seed
 ⚠️  The current wallet has %s open channels. The seed alone doesn't bring back money in	⚠️  Die aktuelle Wallet hat %s offene Kanäle. Der Seed allein holt kein Geld aus Kanälen
 ⚠️  The current wallet still holds funds or channels. After this, they are only reachable	⚠️  Die aktuelle Wallet hat noch Guthaben oder Kanäle. Danach sind diese nur noch über ihren
 ⚠️  The existing backups can be deleted now: everything in %s	⚠️  Die vorhandenen Backups können jetzt gelöscht werden: alles in %s
+⚠️  This backup is %s older than the newest one found, which couldn't be used (listed above).	⚠️  Dieses Backup ist %s älter als das neueste gefundene, das nicht verwendet werden konnte (siehe oben).
 ⚠️  This puts back the whole LND volume as it was, channel state included. That is only safe if	⚠️  Dies spielt das ganze LND-Volume zurück, wie es war, samt Kanalstatus. Das ist nur sicher, wenn seit
 ⚠️  This safety backup was made before they carried a signed date: its date and wallet can't	⚠️  Diese Sicherheitskopie stammt aus der Zeit vor signierten Datumsangaben: Datum und Wallet können
 ⚠️  Type 'YES I WANT TO DELETE' to confirm: 	⚠️  Geben Sie zur Bestätigung 'YES I WANT TO DELETE' ein: 
@@ -1177,6 +1202,7 @@ your LND seed	Ihr LND-Seed
 ⚠️ No files to wait for in %s	⚠️ Keine Dateien in %s, auf die zu warten wäre
 ⚠️ No password set: run passwd %s later	⚠️ Kein Passwort gesetzt: Führen Sie später passwd %s aus
 ⚠️ Pass 1 ended with code %s (files changing while BTCPay runs, expected). Going on to pass 2, which copies the rest.	⚠️ Durchgang 1 endete mit Code %s (Dateien ändern sich, während BTCPay läuft, das ist normal). Weiter mit Durchgang 2, der den Rest kopiert.
+⚠️ Restoring from %s: %s	⚠️ Wiederherstellung aus %s: %s
 ⚠️ Run this script again: the same option to finish, or option 5 to put the safety backup back.	⚠️ Starten Sie das Skript erneut: dieselbe Option zum Abschließen, Option 5 zum Zurückspielen.
 ⚠️ Safety backup put back, but the backup service is NOT running. Rerun %s.	⚠️ Sicherheitskopie zurückgespielt, aber der Backup-Dienst läuft NICHT. Führen Sie %s erneut aus.
 ⚠️ Scan for old funds skipped at %s	⚠️ Scan nach alten Guthaben bei %s übersprungen
@@ -1208,6 +1234,7 @@ your LND seed	Ihr LND-Seed
 ⚠️ The wallet is done, but the backup service is NOT running. Rerun %s.	⚠️ Die Wallet ist fertig, aber der Backup-Dienst läuft NICHT. Führen Sie %s erneut aus.
 ⚠️ This clone's Server B scripts differ from Server A's version. Best: the same version on	⚠️ Die Server-B-Skripte dieses Clones weichen von der Version auf Server A ab. Am besten: dieselbe Version auf
 ⚠️ This server's channel.backup is not a plain file (a symlink?), so it is not used	⚠️ Das channel.backup dieses Servers ist keine normale Datei (ein Symlink?), es wird nicht verwendet
+⚠️ Undo with newer channel state on this node (confirmed by user)	⚠️ Rückgängig mit neuerem Kanalzustand auf diesem Node (vom Benutzer bestätigt)
 ⚠️ WARNING: You are about to perform a manual step that involves storing a copy of your LND seed.	⚠️ WARNUNG: Es folgt ein manueller Schritt, bei dem Sie eine Kopie Ihres LND-Seeds aufbewahren.
 ⚠️ Watcher crashed or exited	⚠️ Überwachung abgestürzt oder beendet
 ⚠️ Your working folder %s has changes of yours, so it was left as it is. Update it yourself before you run install-scripts.sh there again: git fetch --tags && git checkout %s	⚠️ Ihr Arbeitsordner %s enthält eigene Änderungen und blieb daher unverändert. Aktualisieren Sie ihn selbst, bevor Sie install-scripts.sh dort erneut ausführen: git fetch --tags && git checkout %s
@@ -1628,10 +1655,10 @@ your LND seed	Ihr LND-Seed
 ❗ Please type 'yes' or 'y' only when you've saved the key securely.	❗ Geben Sie 'yes' oder 'y' erst ein, wenn Sie den Schlüssel sicher aufbewahrt haben.
 ➕ Adding the watchtower %s...	➕ Watchtower %s wird hinzugefügt...
 ➖ optional: the watchtower and what it needs. Once one of them is set up, all count.	➖ optional: der Watchtower und was er braucht. Sobald einer davon eingerichtet ist, zählen alle.
+➡️ All %s channel.backup files are restored: %s channels together	➡️ Alle %s channel.backup-Dateien werden wiederhergestellt: zusammen %s Kanäle
 ➡️ Copied: %s → %s	➡️ Kopiert: %s → %s
 ➡️ Next on Server A, if it isn't set up yet: lnd-manager /setup installs the backup gate.	➡️ Als Nächstes auf Server A, falls noch nicht eingerichtet: lnd-manager /setup installiert das Backup-Gate.
 ➡️ Next on Server A: lnd-manager /tower add, with the tower's pubkey@address:port shown above.	➡️ Als Nächstes auf Server A: lnd-manager /tower add, mit dem oben angezeigten pubkey@address:port des Towers.
-➡️ Using %s: it lists the most channels (%s)	➡️ %s wird verwendet: es enthält die meisten Kanäle (%s)
 🌀 Detected change in: %s	🌀 Änderung erkannt in: %s
 🌀 Relevant file change detected: %s (count=%s)	🌀 Relevante Dateiänderung erkannt: %s (count=%s)
 🎉 RSYNC STAGE CONFIRMED SUCCESS	🎉 RSYNC-SCHRITT ERFOLGREICH BESTÄTIGT
@@ -1755,12 +1782,14 @@ your LND seed	Ihr LND-Seed
 🚨 Marked for a GitHub retry: %s	🚨 Für einen neuen GitHub-Versuch markiert: %s
 🚨 Marked for remote retry in %s: %s	🚨 Für erneute Remote-Kopie vorgemerkt in %s: %s
 🚨 Not every destination has it yet; the hourly check tries again.	🚨 Noch nicht jedes Ziel hat es; die stündliche Prüfung versucht es erneut.
+🚨 Server B has a backup this server didn't send: %s. Another LND with this seed may be running (an old server, a copy): two nodes with the same channels can lose all the funds in them. Stop the other one now.	🚨 Server B hat ein Backup, das dieser Server nicht gesendet hat: %s. Möglicherweise läuft ein anderes LND mit diesem Seed (alter Server, Kopie): Zwei Nodes mit denselben Kanälen können das gesamte Guthaben darin verlieren. Stoppen Sie das andere jetzt.
 🛑 Backup service stopped (setup's installer step starts it again)	🛑 Backup-Dienst gestoppt (der Installer-Schritt des Setups startet ihn wieder)
 🛑 Stopping BTCPay (btcpay-down.sh)...	🛑 BTCPay wird gestoppt (btcpay-down.sh)...
 🛑 Stopping all BTCPay Server containers using btcpay-down.sh...	🛑 Alle Container von BTCPay Server werden mit btcpay-down.sh gestoppt...
 🛑 Stopping and removing the temporary LND container '%s'...	🛑 Der temporäre LND-Container '%s' wird gestoppt und entfernt...
 🛑 Stopping bitcoind...	🛑 bitcoind wird gestoppt...
 🛑 Stopping the backup service (it would otherwise back up the new wallet and rotate the old one's backups out)...	🛑 Backup-Dienst wird gestoppt (sonst sichert er die neue Wallet und rotiert die Backups der alten hinaus)...
+🛑 This node may have run since this safety backup was made:	🛑 Dieser Node ist seit dieser Sicherheitskopie möglicherweise gelaufen:
 🛠️ Created timestamped backup directory: %s	🛠️ Backup-Ordner mit Zeitstempel angelegt: %s
 🛠️ Generating new GPG key...	🛠️ Neuer GPG-Schlüssel wird erzeugt...
 🛠️ Moving files to timestamped directory: %s	🛠️ Dateien werden in den Ordner mit Zeitstempel verschoben: %s

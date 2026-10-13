@@ -553,10 +553,12 @@ unpack_backup() {
 MANIFEST_STATE=""
 MANIFEST_TIME=""
 MANIFEST_NODE=""
+MANIFEST_CHANNELS=""
 check_manifest() {
-    local dir="$1" expected="$2" name="$3" kind="" stamp="" node="" line name_time full_time
+    local dir="$1" expected="$2" name="$3" kind="" stamp="" node="" channels="" line name_time full_time
     MANIFEST_TIME=""
     MANIFEST_NODE=""
+    MANIFEST_CHANNELS=""
     if [[ ! -f "$dir/manifest" ]]; then
         MANIFEST_STATE=legacy
         return 0
@@ -566,6 +568,7 @@ check_manifest() {
             kind=*) kind="${line#kind=}" ;;
             time=*) stamp="${line#time=}" ;;
             node=*) node="${line#node=}" ;;
+            channels=*) channels="${line#channels=}" ;;
         esac
     done < "$dir/manifest"
     MANIFEST_STATE=bad
@@ -591,9 +594,11 @@ check_manifest() {
         return 1
     fi
     [[ "$node" =~ ^[0-9a-f]{66}$ ]] || node=""
+    [[ "$channels" =~ ^[0-9]{1,6}$ ]] || channels=""
     MANIFEST_STATE=verified
     MANIFEST_TIME="$full_time"
     MANIFEST_NODE="$node"
+    MANIFEST_CHANNELS="$channels"
 }
 
 # Decrypted backups stay in memory (/run) if they fit, with room to spare
@@ -710,6 +715,15 @@ where_on() {
     esac
 }
 
+# A length of time, roughly: "40 minutes", "5 hours", "3 days"
+duration_text() {
+    local seconds="$1"
+    if (( seconds < 7200 )); then say "%s minutes" "$(( seconds / 60 ))"
+    elif (( seconds < 172800 )); then say "%s hours" "$(( seconds / 3600 ))"
+    else say "%s days" "$(( seconds / 86400 ))"
+    fi
+}
+
 age_text() {
     local seconds=$(( $(date +%s) - $1 ))
     if (( seconds < 3600 )); then say "%s minutes old" "$(( seconds / 60 ))"
@@ -724,13 +738,36 @@ age_text() {
 # Sets BACKUP_FILES (its unpacked files) and BACKUP_LABEL; returns 1 if none works.
 BACKUP_FILES=""
 BACKUP_LABEL=""
+CHOSEN_EPOCH=0
 find_latest_backup() {
     local rank epoch where path n=0 work size pass dir
     local -a skipped=() candidates=()
     log_message "$(T "🔎 Looking for the latest backup on the attached volume, Server B and GitHub...")"
     attached_ok || log_message "$(T "⚠️ The attached volume is not mounted, so it isn't searched.")"
     $REMOTE_OK || log_message "$(T "⚠️ Server B can't be reached, so it isn't searched.")"
+    # Fetched here, not in list_backups' pipeline (a subshell), so the result is known below
+    github_fetch_once >/dev/null 2>&1 || true
     mapfile -t candidates < <(list_backups main)
+
+    # A destination that is on but couldn't be searched may hold the newest backup. Server B is
+    # the one place a broken-into Server A can't delete from, so it matters most.
+    local -a unsearched=()
+    [[ "${BACKUP_TO_VOLUME:-yes}" == yes ]] && ! attached_ok && unsearched+=("$(T "the attached volume")")
+    [[ "${BACKUP_TO_SERVER_B:-yes}" == yes ]] && ! $REMOTE_OK && unsearched+=("$(T "Server B")")
+    [[ "${BACKUP_TO_GITHUB:-no}" == yes && -z "$GITHUB_DIR" ]] && unsearched+=("$(T "GitHub")")
+    if (( ${#unsearched[@]} > 0 )); then
+        echo
+        say "⚠️  Not searched: %s. A newer backup may be there, with channels the others don't have." "$(IFS=,; echo "${unsearched[*]}" | sed 's/,/, /g')"
+        say "   Best: make it reachable (mount the disk, check Server B's address and SSH), then run this again."
+        confirm_phrase yes "$(T "Type yes to look only in the places that answered: ")" ||
+            die "$(T "Stopped: nothing was changed.")"
+    fi
+    # The newest backup found anywhere, usable or not: the one chosen is compared with it below
+    local newest_epoch=0
+    for line in "${candidates[@]}"; do
+        read -r rank epoch _ _ <<< "$line"
+        [[ "$rank" == 0 ]] && (( epoch > newest_epoch )) && newest_epoch=$epoch
+    done
 
     for pass in verified legacy; do
         for line in "${candidates[@]}"; do
@@ -757,6 +794,7 @@ find_latest_backup() {
                 continue
             fi
             BACKUP_FILES="$dir/files"
+            CHOSEN_EPOCH=$epoch
             BACKUP_LABEL=$(T "%s %s (%s)" "$(basename "$path")" "$(where_on "$where")" "$(age_text "$epoch")")
             if [[ "$rank" == "1" ]]; then
                 BACKUP_LABEL+=$(T ", a milestone: no regular backup could be used")
@@ -772,7 +810,20 @@ find_latest_backup() {
     for s in "${skipped[@]}"; do
         log_message "$(T "⚠️ Skipped %s" "$s")"
     done
-    [[ -n "$BACKUP_FILES" ]]
+    [[ -n "$BACKUP_FILES" ]] || return 1
+    BACKUP_OLDER_BY=0
+    (( newest_epoch > CHOSEN_EPOCH + 60 )) && BACKUP_OLDER_BY=$(( newest_epoch - CHOSEN_EPOCH ))
+    return 0
+}
+
+# Said right after the backup chosen is named: it is older than the newest backup there is, so
+# channels opened since aren't in it
+BACKUP_OLDER_BY=0
+warn_if_older() {
+    (( BACKUP_OLDER_BY > 0 )) || return 0
+    say "⚠️  This backup is %s older than the newest one found, which couldn't be used (listed above)." "$(duration_text "$BACKUP_OLDER_BY")"
+    say "   Channels opened after it aren't in its channel.backup: their funds stay with the peer until"
+    say "   it closes them. This server's own channel.backup is tried too, if it still has one."
 }
 
 # === LND HELPERS ===
@@ -887,9 +938,10 @@ make_safety_backup() {
     tar -czf "$BULK_DIR/backup_compressed.tar.gz" -C "$LND_DIR" . ||
         die "$(T "Could not archive %s for the safety backup" "$LND_DIR")"
     (cd "$BULK_DIR" && sha256sum backup_compressed.tar.gz > backup_compressed.tar.gz.sha256)
-    # Signed with the rest: what this is, when it was made and which wallet it holds, checked
-    # against the name when it is put back (option 5)
+    # Signed with the rest: what this is, when it was made, which wallet it holds and how many
+    # channels (when LND could tell), checked when it is put back (option 5)
     printf 'kind=pre-recovery\ntime=%s\nnode=%s\n' "$ts" "$OLD_NODE_ID" > "$BULK_DIR/manifest"
+    $OLD_READ && printf 'channels=%s\n' "$(( OLD_CHANNELS + OLD_PENDING ))" >> "$BULK_DIR/manifest"
     tar -cf "$BULK_DIR/payload.tar" -C "$BULK_DIR" backup_compressed.tar.gz backup_compressed.tar.gz.sha256 manifest
     rm -f "$BULK_DIR/backup_compressed.tar.gz" "$BULK_DIR/backup_compressed.tar.gz.sha256" "$BULK_DIR/manifest"
     gpg_as_backup_user --yes --recipient "$GPG_FINGERPRINT" --local-user "$GPG_FINGERPRINT" \
@@ -1304,10 +1356,19 @@ collect_channel_backups() {
 SCB_FILE=""
 SCB_LABEL=""
 SCB_COUNT=0
+# SCB_FILES: every one that opens with this wallet, newest first, and SCB_POINTS the channels in
+# them together. All of them are restored: an older one may list a channel the newest doesn't
+# (closed since, and harmless to restore), and the newest may list one the older doesn't (opened
+# since), so none of them alone is enough.
+SCB_FILES=()
+SCB_POINTS=()
 verify_channel_backups() {
-    local lncli_fn="$1" i out count opened=0
+    local lncli_fn="$1" i out count opened=0 point
+    local -A points=()
     SCB_FILE=""
     SCB_COUNT=0
+    SCB_FILES=()
+    SCB_POINTS=()
     for i in "${!SCB_CANDIDATES[@]}"; do
         install -m 600 "${SCB_CANDIDATES[$i]}" "$LND_DIR/$SCB_STAGING_REL"
         if out=$("$lncli_fn" verifychanbackup --multi_file="/data/$SCB_STAGING_REL" 2>&1); then
@@ -1315,6 +1376,10 @@ verify_channel_backups() {
             [[ "$count" =~ ^[0-9]+$ ]] || count=0
             log_message "$(T "✅ %s belongs to this wallet: %s channels" "${SCB_LABELS[$i]}" "$count")"
             opened=$((opened + 1))
+            SCB_FILES+=("${SCB_CANDIDATES[$i]}")
+            while IFS= read -r point; do
+                [[ "$point" =~ ^[0-9a-f]{64}:[0-9]+$ ]] && points[$point]=1
+            done < <(jq -r '.chan_points[]? // empty' <<< "$out" 2>/dev/null)
             if [[ -z "$SCB_FILE" ]] || (( count > SCB_COUNT )); then
                 SCB_FILE="${SCB_CANDIDATES[$i]}"
                 SCB_LABEL="${SCB_LABELS[$i]}"
@@ -1326,8 +1391,9 @@ verify_channel_backups() {
     done
     rm -f "$LND_DIR/$SCB_STAGING_REL"
     [[ -n "$SCB_FILE" ]] || return 1
+    SCB_POINTS=("${!points[@]}")
     if (( opened > 1 )); then
-        log_message "$(T "➡️ Using %s: it lists the most channels (%s)" "$SCB_LABEL" "$SCB_COUNT")"
+        log_message "$(T "➡️ All %s channel.backup files are restored: %s channels together" "$opened" "${#SCB_POINTS[@]}")"
     fi
 }
 
@@ -1453,17 +1519,49 @@ restore_channels() {
         done
     fi
 
-    install -m 600 "$SCB_FILE" "$LND_DIR/$SCB_STAGING_REL"
-    if ! out=$(btcpay_lncli restorechanbackup --multi_file="/data/$SCB_STAGING_REL" 2>&1); then
-        rm -f "$LND_DIR/$SCB_STAGING_REL"
+    # Each one, newest first. A channel already restored from an earlier file is LND's to skip;
+    # what matters is that every channel in any of them is restored.
+    local f n_ok=0 total=0 n counted=false
+    for f in "${SCB_FILES[@]}"; do
+        install -m 600 "$f" "$LND_DIR/$SCB_STAGING_REL"
+        if out=$(btcpay_lncli restorechanbackup --multi_file="/data/$SCB_STAGING_REL" 2>&1); then
+            n_ok=$((n_ok + 1))
+            # Older LNDs answer {} without the number
+            n=$(jq -r '.num_restored // empty' <<< "$out" 2>/dev/null || true)
+            [[ "$n" =~ ^[0-9]+$ ]] && { total=$((total + n)); counted=true; }
+        else
+            log_message "$(T "⚠️ Restoring from %s: %s" "$(basename "$f")" "$(tail -n 1 <<< "$out")")"
+        fi
+    done
+    rm -f "$LND_DIR/$SCB_STAGING_REL"
+    if (( n_ok == 0 )); then
         log_message "$(T "❌ Channel restore failed: %s" "$(tail -n 1 <<< "$out")")"
         return 1
     fi
-    rm -f "$LND_DIR/$SCB_STAGING_REL"
-    restored=$(jq -r '.num_restored // "?"' <<< "$out" 2>/dev/null || echo "?")
+    $counted && restored=$total || restored=${#SCB_POINTS[@]}
     log_message "$(T "✅ %s channels restored. LND now asks each peer to close its channel." "$restored")"
     btcpay_lncli pendingchannels 2>/dev/null |
         jq -r '"   Waiting to close: \(.waiting_close_channels | length), force closing: \(.pending_force_closing_channels | length)"' || true
+    show_channel_check
+}
+
+# Channels opened after the newest channel.backup aren't restored: their peers keep them open.
+# LND can't find them itself (it ignores the network's announcements of its own channels, so a
+# restored node's graph never shows them), but a public explorer lists the node's public channels:
+# one there that isn't restored here was opened after the newest backup.
+show_channel_check() {
+    local own point
+    own=$(btcpay_lncli getinfo 2>/dev/null | jq -r '.identity_pubkey // empty') || own=""
+    [[ "$own" =~ ^0[23][0-9a-f]{64}$ ]] || return 0
+    echo
+    say "ℹ️ Channels opened after the newest backup aren't restored, and LND can't see them. Look your"
+    say "   node up on a public explorer, for example https://mempool.space/lightning/node/%s" "$own"
+    say "   A public channel there that isn't in this list stays with its peer: ask the peer to force-close"
+    say "   it (your share then comes back on-chain), or see chantools (lightninglabs) for help."
+    say "   Restored channels:"
+    for point in "${SCB_POINTS[@]}"; do
+        echo "   - $point"
+    done
 }
 
 # === MENU ===
@@ -1506,7 +1604,9 @@ USE_BACKUP_PASSWORD=false
 # === OPTION 5: UNDO ===
 if [[ "$CHOICE" == "5" ]]; then
     log_message "$(T "🔎 Looking for safety backups...")"
-    # Each safety backup is usually in both places: list it once, the attached volume's copy first
+    # Each safety backup is usually in both places: list it once, the attached volume's copy first.
+    # GitHub fetched here first: list_backups runs in a subshell, which couldn't keep it.
+    github_fetch_once >/dev/null 2>&1 || true
     mapfile -t SAFETY_ALL < <(list_backups pre-recovery)
     SAFETY_LIST=()
     declare -A SAFETY_ALSO=()
@@ -1543,7 +1643,60 @@ if [[ "$CHOICE" == "5" ]]; then
     rm -f "$BULK_DIR/undo.gpg"
     log_message "$(T "✅ %s decrypted and checked" "$(basename "$path")")"
 
+    SAFE_NODE="$MANIFEST_NODE" SAFE_TIME="$MANIFEST_TIME" SAFE_STATE="$MANIFEST_STATE" SAFE_CHANNELS="$MANIFEST_CHANNELS"
+    SAFE_EPOCH=$(date -d "$SAFE_TIME" +%s 2>/dev/null || echo "$epoch")
+
     read_current_wallet
+    # === Has this node run since? Then its channel state is newer than the safety backup's ===
+    # Putting older channel state back and starting LND can broadcast it: the peers may then take
+    # all the funds in those channels as a penalty. The evidence: the same node is running now (with
+    # channels, or with regular backups newer than the safety backup), or a newer safety backup holds
+    # the same node. Only a typed override gets past it.
+    UNDO_RISK=()
+    if $OLD_READ && [[ -n "$SAFE_NODE" && "$OLD_NODE_ID" == "$SAFE_NODE" ]] && (( OLD_CHANNELS > 0 || OLD_PENDING > 0 )); then
+        UNDO_RISK+=("$(T "The wallet running now is the same node and has %s open and %s opening or closing channels: their state now is newer than the safety backup's." "$OLD_CHANNELS" "$OLD_PENDING")")
+    fi
+    # Whether the node ran since only matters if the safety backup holds channels: its manifest
+    # says how many (safety backups made before that, or without LND running, don't)
+    NEWER=()
+    if [[ "$SAFE_CHANNELS" == 0 ]]; then
+        say "ℹ️ The safety backup holds no channels, so no old channel state can be broadcast from it."
+    else
+        # Regular backups don't say which node made them (the backup service can't ask LND), so
+        # they count only together with what the running LND says
+        mapfile -t NEWER < <(list_backups main | awk -v t="$SAFE_EPOCH" '$1 == 0 && $2 > t + 60')
+    fi
+    if (( ${#NEWER[@]} > 0 )); then
+        read -r _ newer_epoch _ newer_path <<< "${NEWER[0]}"
+        if $OLD_READ && [[ -n "$SAFE_NODE" && "$OLD_NODE_ID" == "$SAFE_NODE" ]]; then
+            UNDO_RISK+=("$(T "This node ran after the safety backup was made: the newest regular backup, %s, is %s." "$(basename "$newer_path")" "$(age_text "$newer_epoch")")")
+        elif ! $OLD_READ; then
+            UNDO_RISK+=("$(T "A regular backup newer than the safety backup exists (%s), and LND isn't running to tell which wallet it holds." "$(basename "$newer_path")")")
+        fi
+    fi
+    # Safety backups do say which node they hold: a newer one of the same node means it ran since.
+    # The 3 newest are checked (each is decrypted).
+    checked=0
+    [[ "$SAFE_CHANNELS" == 0 ]] && checked=3
+    for line in "${SAFETY_LIST[@]}"; do
+        [[ -n "$SAFE_NODE" ]] && (( checked < 3 )) || break
+        read -r _ newer_epoch newer_where newer_path <<< "$line"
+        (( newer_epoch > SAFE_EPOCH + 60 )) || continue
+        checked=$((checked + 1))
+        newer_dir=""
+        if fetch_backup "$newer_where" "$newer_path" "$BULK_DIR/undo-newer.gpg" 2>/dev/null; then
+            newer_dir="$(dir_for_size "$(stat -c %s "$BULK_DIR/undo-newer.gpg")")/undo-newer"
+            if decrypt_bundle "$BULK_DIR/undo-newer.gpg" "$newer_dir" &&
+               check_manifest "$newer_dir" pre-recovery "$(basename "$newer_path")" &&
+               [[ "$MANIFEST_STATE" == verified && "$MANIFEST_NODE" == "$SAFE_NODE" ]]; then
+                UNDO_RISK+=("$(T "A newer safety backup of this node exists (%s): the node ran after the one you picked." "$(basename "$newer_path")")")
+                checked=3
+            fi
+        fi
+        rm -f "$BULK_DIR/undo-newer.gpg"
+        [[ -n "$newer_dir" ]] && { remove_work_path "$newer_dir" || true; }
+        MANIFEST_NODE="$SAFE_NODE" MANIFEST_TIME="$SAFE_TIME" MANIFEST_STATE="$SAFE_STATE" MANIFEST_CHANNELS="$SAFE_CHANNELS"
+    done
     echo
     if [[ "$MANIFEST_STATE" == verified ]]; then
         say "The safety backup: made %s (signed), wallet %s" "$MANIFEST_TIME" "${MANIFEST_NODE:-unknown}"
@@ -1557,6 +1710,19 @@ if [[ "$CHOICE" == "5" ]]; then
     say "⚠️  This puts back the whole LND volume as it was, channel state included. That is only safe if"
     say "   no LND has run with those channels since the safety backup was made. If channels were restored"
     say "   from channel.backup in between, their peers have closed them: don't put the old state back."
+    if (( ${#UNDO_RISK[@]} > 0 )); then
+        echo
+        say "🛑 This node may have run since this safety backup was made:"
+        for r in "${UNDO_RISK[@]}"; do
+            echo "   - $r"
+        done
+        say "   Putting older channel state back and starting LND can broadcast it, and then the peers can take"
+        say "   all the funds in those channels. Don't, unless you know those channels are closed and settled."
+        say "   To get channel funds back, restore the channels instead (options 3 and 4): that is safe with any backup."
+        confirm_phrase "I KNOW THIS CAN LOSE THE CHANNEL FUNDS" "$(T "Type 'I KNOW THIS CAN LOSE THE CHANNEL FUNDS' to go on anyway: ")" ||
+            die "$(T "Stopped: nothing was changed.")"
+        log_message "$(T "⚠️ Undo with newer channel state on this node (confirmed by user)")"
+    fi
     confirm_phrase "PUT IT BACK" "$(T "Type 'PUT IT BACK' to replace the current wallet with this safety backup: ")" ||
         die "$(T "Aborted by user.")"
 
@@ -1598,7 +1764,12 @@ fi
 
 # === OPTION 4: CHANNELS INTO THE RUNNING WALLET ===
 if [[ "$CHOICE" == "4" ]]; then
-    find_latest_backup && log_message "$(T "✅ Using %s" "$BACKUP_LABEL")" || log_message "$(T "⚠️ No backup could be used")"
+    if find_latest_backup; then
+        log_message "$(T "✅ Using %s" "$BACKUP_LABEL")"
+        warn_if_older
+    else
+        log_message "$(T "⚠️ No backup could be used")"
+    fi
     collect_channel_backups
     (( ${#SCB_CANDIDATES[@]} > 0 )) || die "$(T "No channel.backup found, neither in a backup nor on this server.")"
     [[ "$(lnd_state "$LND_CONTAINER_NAME")" =~ ^(RPC_ACTIVE|SERVER_ACTIVE)$ ]] ||
@@ -1625,6 +1796,7 @@ fi
 if [[ "$CHOICE" == "2" || "$CHOICE" == "3" ]]; then
     if find_latest_backup; then
         log_message "$(T "✅ Latest usable backup: %s" "$BACKUP_LABEL")"
+        warn_if_older
         if ! ask_yes "$(T "Use this backup? Type yes: ")"; then
             BACKUP_FILES=""
             log_message "$(T "ℹ️ Not using a backup")"

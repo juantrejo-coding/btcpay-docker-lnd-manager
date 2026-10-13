@@ -190,10 +190,28 @@ sudo lnd-wallet restore      # los fondos on-chain, desde la semilla
 sudo lnd-wallet channels     # los fondos y los canales
 ```
 
-O use `/wallet` en el panel. El script busca la copia válida más reciente en el volumen adjunto o
-en el Servidor B, y guarda una copia de resguardo de la billetera actual antes de cambiar nada.
-El Servidor B guarda hasta 20 copias de resguardo (50 GB); cuando esté lleno, borre allí las antiguas.
-Restaurar los canales le pide a cada par que cierre su canal, y su parte vuelve on-chain.
+O use `/wallet` en el panel. El script busca la copia válida más reciente en el volumen adjunto,
+en el Servidor B y en GitHub, y guarda una copia de resguardo de la billetera actual antes de cambiar
+nada. El Servidor B guarda hasta 20 copias de resguardo (50 GB); cuando esté lleno, borre allí las antiguas.
+Restaurar los canales le pide a cada par que cierre su canal, y su parte vuelve on-chain. Nunca ponga
+en marcha un nodo restaurado mientras el antiguo siga funcionando con la misma semilla.
+
+Un channel backup más antiguo nunca es peligroso, solo incompleto: un canal abierto después de él queda
+con su par hasta que este lo cierre. Por eso el script:
+- pregunta antes de seguir cuando no puede buscar en un destino que está activado (puede tener la copia
+  más reciente), y avisa cuando la copia que usa es más antigua que la más reciente encontrada;
+- restaura los canales desde cada channel backup que se abre con su billetera, el de la copia y el propio
+  de este servidor, así que vuelve cualquier canal que esté en alguno de ellos;
+- después lista los canales que restauró, con un enlace a su nodo en un explorador público: un canal
+  público que aparezca allí y no esté en la lista se abrió después de la copia más reciente, y su par
+  tiene que cerrarlo (LND mismo no puede ver esos canales).
+
+Deshacer (`/wallet`, opción 5) es distinto: vuelve a poner todo LND como estaba, incluido el estado de los
+canales, y un estado de canales antiguo puede perder los fondos de esos canales. Se niega cuando su nodo
+ha funcionado desde que se hizo la copia de resguardo, salvo que escriba que acepta ese riesgo.
+
+El panel avisa si el Servidor B tiene una copia que este servidor no envió: señal de que otro LND con la
+misma semilla está en marcha en algún lugar. Deténgalo de inmediato.
 
 ## Opcional: un watchtower en el Servidor B
 
