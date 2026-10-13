@@ -178,10 +178,15 @@ se vuelve a intentar cada hora.
 4. La configuración comprueba que la clave puede escribir, y luego el servicio de copias envía allí
    cada copia.
 
-El repositorio guarda solo las copias actuales: cada envío reemplaza su historial, así que las
-copias antiguas desaparecen de verdad y el repositorio sigue siendo pequeño (GitHub pide que los
-repositorios no pasen de 1 GB). Las copias están cifradas con su clave GPG, así que GitHub no puede
-leerlas; no guarde esa clave en GitHub.
+El repositorio guarda solo las copias actuales: cada envío reemplaza su historial, así que sigue
+siendo pequeño (GitHub pide que los repositorios no pasen de 1 GB). Las copias antiguas pueden seguir
+un tiempo del lado de GitHub. Las copias están cifradas con su clave GPG, así que GitHub no puede
+leerlas; no guarde esa clave en GitHub. GitHub sí ve cuándo se hizo cada copia, es decir, cuándo
+cambiaron sus canales.
+
+La clave debe ser una **deploy key** de ese único repositorio, nunca una clave de su cuenta de GitHub
+(que llegaría a todos sus repositorios): la configuración y el servicio de copias rechazan una clave
+de cuenta.
 
 ## Si pierde la billetera
 
@@ -211,7 +216,10 @@ canales, y un estado de canales antiguo puede perder los fondos de esos canales.
 ha funcionado desde que se hizo la copia de resguardo, salvo que escriba que acepta ese riesgo.
 
 El panel avisa si el Servidor B tiene una copia que este servidor no envió: señal de que otro LND con la
-misma semilla está en marcha en algún lugar. Deténgalo de inmediato.
+misma semilla está en marcha en algún lugar. Deténgalo de inmediato. Revise cada servidor que haya
+ejecutado este nodo (uno viejo, una copia, una máquina de pruebas). Solo cuando sepa que ninguno está
+en marcha, `/foreign ok` acepta esa copia y el aviso desaparece; una más reciente de otro lugar vuelve
+a avisar.
 
 ## Opcional: un watchtower en el Servidor B
 

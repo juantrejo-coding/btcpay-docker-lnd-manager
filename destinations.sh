@@ -6,7 +6,8 @@
 #   ./destinations.sh volume|serverb|github    turns that one on or off
 #
 # Turning one on runs setup, which sets up what it needs (the disk, Server B's key and gate, the
-# GitHub deploy key) and asks first, then reinstalls the backup service. Turning one off asks you
+# GitHub deploy key) and asks first, then reinstalls the backup service; config says it is on only
+# once setup has set it up. Turning one off asks you
 # to type TURN OFF, then reinstalls the service without it; the copies already there stay there.
 # At least one stays on.
 
@@ -132,6 +133,7 @@ else
     say "service is reinstalled with it (setup's last question: answer y)."
     read -r -p "$(T "Type yes to go on: ")" answer || exit 1
     [[ "$answer" == yes ]] || { say "Cancelled: nothing was changed."; exit 1; }
-    save_config_value "$SETTING" yes || exit 1
-    exec "$SCRIPT_DIR/setup_script.sh"
+    # Setup suggests yes for it, and saves it in config once it is set up: stopped halfway,
+    # it stays off
+    SETUP_TURN_ON="$SETTING" exec "$SCRIPT_DIR/setup_script.sh"
 fi

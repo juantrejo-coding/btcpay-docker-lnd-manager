@@ -12,7 +12,8 @@
 #   daily/, monthly/ the first backup of each day (30) and month (12)
 #   pre-recovery/    lnd-wallet.sh's safety backups (at most 20; never deleted here)
 # It keeps only the current backups: every upload is one new commit, with no history, pushed
-# with --force, so the backups rotated out are really gone and the repository stays small.
+# with --force, so the repository stays small. (GitHub may keep the commits replaced for a while
+# before its garbage collection; they are encrypted.)
 # A free private repository can't be protected against that push, so whoever has the deploy key
 # (a broken-into Server A) could also delete everything there. Server B's gate prevents that on
 # Server B: GitHub is an extra copy, not a replacement for Server B.
@@ -78,6 +79,30 @@ github_git_push_test() {
     return "$rc"
 }
 
+# Whether the key is a deploy key for GITHUB_REPO alone. GitHub greets a deploy key with the
+# repository ("Hi owner/name! You've successfully authenticated...") and a key added to an account
+# with the account ("Hi owner! ..."). An account key writes to every repository of that account,
+# so a broken-into Server A could force-push over all of them: it is never used.
+# Returns 0 (a deploy key for GITHUB_REPO), 1 (an account key, or another repository's: refused),
+# 2 (no answer, or a test repository: unknown, the push decides). Run as the backup user.
+github_key_check() {
+    local greeting who
+    [[ "$(github_url)" == "git@github.com:${GITHUB_REPO}.git" ]] || return 2
+    greeting=$(ssh -i "$(github_key_path)" -o IdentitiesOnly=yes -o BatchMode=yes -o ConnectTimeout=20 \
+               -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$(github_known_hosts)" \
+               -T git@github.com < /dev/null 2>&1 | grep -m1 -o "^Hi [^!]*!" || true)
+    [[ -n "$greeting" ]] || return 2
+    who="${greeting#Hi }"
+    who="${who%!}"
+    [[ "${who,,}" == "${GITHUB_REPO,,}" ]] && return 0
+    if [[ "$who" == */* ]]; then
+        log_message "$(T "❌ The GitHub key is a deploy key of another repository (%s), not of %s" "$who" "$GITHUB_REPO")"
+    else
+        log_message "$(T "❌ The GitHub key is added to the GitHub account %s, not as a deploy key of %s: it could write to every repository of that account. Remove it there (Settings, SSH keys) and add it to the repository's Deploy keys." "$who" "$GITHUB_REPO")"
+    fi
+    return 1
+}
+
 # The commit the repository's main branch points to, or nothing (empty repository)
 github_remote_head() {
     github_git ls-remote "$(github_url)" refs/heads/main | cut -f1
@@ -114,6 +139,10 @@ github_store() {
         log_message "$(T "❌ %s is %s MB: GitHub takes files up to 100 MB, so it isn't stored there" "$name" "$(( size / 1024 / 1024 ))")"
         return 1
     fi
+    # An account key (1) is refused; no answer (2) goes on, the push fails by itself then
+    local key_state=0
+    github_key_check || key_state=$?
+    (( key_state != 1 )) || return 1
     github_sync_work || { log_message "$(T "❌ Could not reach the GitHub repository %s with its deploy key" "${GITHUB_REPO:-?}")"; return 1; }
     dest="$GITHUB_WORK/$area/$name"
     if [[ "$area" == pre-recovery ]]; then

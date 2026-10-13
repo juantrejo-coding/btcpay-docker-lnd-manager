@@ -423,8 +423,13 @@ else
 fi
 
 # === Backup destinations (BACKUP_TO_VOLUME, BACKUP_TO_SERVER_B, BACKUP_TO_GITHUB) ===
-# Each one on or off; the answers already in config are suggested. Setup then sets up only the
-# ones that are on. At least one must be on. Later: lnd-manager /destinations.
+# Each one on or off; the answers already in config are suggested (destinations.sh <name> passes
+# SETUP_TURN_ON=<setting> to suggest yes for the one turned on). Setup then sets up only the ones
+# that are on. At least one must be on. Later: lnd-manager /destinations.
+# A destination turned on is saved in config only once setup has set it up (just before the
+# install at the end): stopped halfway, config keeps it off, so no install uses it unprepared.
+# Turned off is saved at once.
+TURNED_ON=()
 yes_no_problem() {
     [[ "$1" == yes || "$1" == no ]] || say "type yes or no"
 }
@@ -435,6 +440,7 @@ say "  2. Server B: your second server, through its backup gate. A broken-into S
 say "  3. GitHub: a private repository of yours, written with a deploy key (a key for that one"
 say "     repository). Free, but a broken-into Server A could delete the copies there."
 while :; do
+    TURNED_ON=()
     for setting in BACKUP_TO_VOLUME BACKUP_TO_SERVER_B BACKUP_TO_GITHUB; do
         case "$setting" in
             BACKUP_TO_VOLUME) prompt=$(T "1. The attached volume (yes/no): ") ;;
@@ -443,8 +449,15 @@ while :; do
         esac
         current="${!setting:-}"
         [[ "$current" == yes || "$current" == no ]] || { [[ "$setting" == BACKUP_TO_GITHUB ]] && current=no || current=yes; }
-        ask_config_value "$setting" "$prompt" yes_no_problem "$current"
-        [[ "$ASKED_VALUE" == "${!setting:-}" ]] || save_config_value "$setting" "$ASKED_VALUE" || exit 1
+        suggested="$current"
+        [[ "${SETUP_TURN_ON:-}" == "$setting" ]] && suggested=yes
+        ask_config_value "$setting" "$prompt" yes_no_problem "$suggested"
+        if [[ "$ASKED_VALUE" == yes && "$(sed -n "s/^$setting=\"\(.*\)\"$/\1/p" "$CONFIG_FILE")" != yes ]]; then
+            printf -v "$setting" '%s' yes
+            [[ " ${TURNED_ON[*]} " == *" $setting "* ]] || TURNED_ON+=("$setting")
+        elif [[ "$ASKED_VALUE" != "${!setting:-}" ]]; then
+            save_config_value "$setting" "$ASKED_VALUE" || exit 1
+        fi
     done
     if [[ "$BACKUP_TO_VOLUME" != yes && "$BACKUP_TO_SERVER_B" != yes && "$BACKUP_TO_GITHUB" != yes ]]; then
         say "❌ At least one destination must be on."
@@ -984,6 +997,14 @@ if [[ "$BACKUP_TO_GITHUB" == yes ]]; then
     if [[ "$code" == 200 ]]; then
         log_message "$(T "❌ %s is a public repository: anyone could download the backups (encrypted, but still). Make it private on GitHub (Settings, Danger Zone), then run setup again." "$GITHUB_REPO")"
         exit 1
+    elif [[ "$code" != 404 ]]; then
+        # A rate limit (403/429), GitHub's API down or no connection: it can't be told from here
+        say "⚠️  GitHub didn't answer whether %s is private (HTTP %s). Check it yourself: open" "$GITHUB_REPO" "$code"
+        say "   https://github.com/%s in a private browser window, not logged in: it must say \"Page not found\"." "$GITHUB_REPO"
+        if ! read -r -p "$(T "Type yes if it is private: ")" answer || [[ "$answer" != yes ]]; then
+            log_message "$(T "❌ Stopped: GitHub isn't set up. Run setup again to go on.")"
+            exit 1
+        fi
     fi
     github_key=$(github_key_path)
     refuse_links "$SERVER_A_USER_HOME/.ssh" "$github_key"
@@ -1017,6 +1038,30 @@ if [[ "$BACKUP_TO_GITHUB" == yes ]]; then
                 say "❌ GitHub doesn't let this key into %s yet: check the repository name and the deploy key." "$GITHUB_REPO"
             fi
         done
+    fi
+    # Never a key added to the GitHub account: it would write to every repository of that account
+    key_state=0
+    github_as_backup_user 'github_key_check' || key_state=$?
+    while (( key_state == 1 )); do
+        echo
+        say "Add the key to the repository only: remove it from your account (github.com: Settings, SSH and GPG"
+        say "keys), then add it in %s's Settings, Deploy keys, with \"Allow write access\":" "$GITHUB_REPO"
+        echo
+        sudo -u "$SERVER_A_USER" cat -- "$github_key.pub"
+        echo
+        read -r -p "$(T "Type yes once it is moved (or no to stop): ")" answer || exit 1
+        [[ "$answer" == no ]] && { log_message "$(T "❌ Stopped: GitHub isn't set up. Run setup again to go on.")"; exit 1; }
+        key_state=0
+        github_as_backup_user 'github_key_check' || key_state=$?
+        if (( key_state != 1 )) && ! github_as_backup_user 'github_git_push_test'; then
+            say "❌ The key can't write to %s: tick \"Allow write access\" for it on GitHub." "$GITHUB_REPO"
+            key_state=1
+        fi
+    done
+    if (( key_state == 0 )); then
+        log_message "$(T "✅ GitHub greets the key as a deploy key of %s alone" "$GITHUB_REPO")"
+    else
+        log_message "$(T "⚠️ GitHub didn't say which repository the key is for; the backup service checks it again before each upload")"
     fi
 fi
 
@@ -1492,6 +1537,10 @@ echo ""
 # === Root-owned install ===
 # Root runs only the copies in BACKUP_INSTALL_DIR, so the config saved above is installed first
 log_message "$(T "📦 Installing the scripts and config root-owned into %s..." "${BACKUP_INSTALL_DIR:-/usr/local/lib/btcpay-docker-lnd-manager}")"
+# The destinations turned on are set up now
+for setting in "${TURNED_ON[@]}"; do
+    save_config_value "$setting" yes || exit 1
+done
 if ! sudo "$SCRIPT_DIR/install-scripts.sh"; then
     log_message "$(T "❌ install-scripts.sh failed: the installed copies are not up to date")"
     exit 1

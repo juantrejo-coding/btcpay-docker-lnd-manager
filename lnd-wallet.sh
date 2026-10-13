@@ -499,6 +499,36 @@ gpg_as_backup_user() {
 # Usage: decrypt_bundle <file.gpg> <dir>. Leaves <dir>/backup_compressed.tar.gz, checked against its
 # checksum and signed with GPG_FINGERPRINT. On failure, DECRYPT_ERROR says why.
 DECRYPT_ERROR=""
+# gpg's status lines (file $1) say it is signed with the backup key. Only gpg's own status lines
+# count (they share the stream with its messages), and GOODSIG too: an expired or revoked key
+# gives EXPKEYSIG/REVKEYSIG instead.
+gpg_signed_ok() {
+    if ! awk -v fp="$GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fp || $NF == fp) {found = 1} END {exit !found}' "$1" ||
+       ! grep -q '^\[GNUPG:\] GOODSIG ' "$1"; then
+        DECRYPT_ERROR=$(T "it is not signed with the backup key %s" "$GPG_FINGERPRINT")
+        return 1
+    fi
+}
+
+# Only the signed manifest of a backup, with no decrypted copy kept: streamed from where it is,
+# through gpg, into tar, which keeps the manifest and reads on to the end, so gpg checks the
+# signature over all of it. Usage: read_signed_manifest <where> <path> <dir>; then check_manifest.
+read_signed_manifest() {
+    local where="$1" path="$2" dir="$3"
+    mkdir -p "$dir"
+    if ! fetch_backup "$where" "$path" /dev/stdout 2>/dev/null |
+         gpg_as_backup_user --status-fd 2 --decrypt 2> "$dir/gpg.status" |
+         tar -xf - -C "$dir" --no-same-owner manifest 2>/dev/null; then
+        DECRYPT_ERROR=$(T "its signed manifest couldn't be read")
+        return 1
+    fi
+    gpg_signed_ok "$dir/gpg.status" || return 1
+    if [[ ! -f "$dir/manifest" || -L "$dir/manifest" ]]; then
+        DECRYPT_ERROR=$(T "its signed manifest couldn't be read")
+        return 1
+    fi
+}
+
 decrypt_bundle() {
     local file="$1" dir="$2"
     mkdir -p "$dir"
@@ -507,13 +537,7 @@ decrypt_bundle() {
         DECRYPT_ERROR=$(T "GPG could not decrypt it (%s)" "$(grep -v '^\[GNUPG:\]' "$dir/gpg.status" | tail -n 1)")
         return 1
     fi
-    # Only gpg's own status lines count (they share the stream with its messages), and GOODSIG
-    # too: an expired or revoked key gives EXPKEYSIG/REVKEYSIG instead
-    if ! awk -v fp="$GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fp || $NF == fp) {found = 1} END {exit !found}' "$dir/gpg.status" ||
-       ! grep -q '^\[GNUPG:\] GOODSIG ' "$dir/gpg.status"; then
-        DECRYPT_ERROR=$(T "it is not signed with the backup key %s" "$GPG_FINGERPRINT")
-        return 1
-    fi
+    gpg_signed_ok "$dir/gpg.status" || return 1
     if ! tar -xf "$dir/bundle.tar" -C "$dir" backup_compressed.tar.gz backup_compressed.tar.gz.sha256 2>/dev/null; then
         DECRYPT_ERROR=$(T "it does not hold backup_compressed.tar.gz and its checksum")
         return 1
@@ -751,13 +775,11 @@ find_latest_backup() {
 
     # A destination that is on but couldn't be searched may hold the newest backup. Server B is
     # the one place a broken-into Server A can't delete from, so it matters most.
-    local -a unsearched=()
-    [[ "${BACKUP_TO_VOLUME:-yes}" == yes ]] && ! attached_ok && unsearched+=("$(T "the attached volume")")
-    [[ "${BACKUP_TO_SERVER_B:-yes}" == yes ]] && ! $REMOTE_OK && unsearched+=("$(T "Server B")")
-    [[ "${BACKUP_TO_GITHUB:-no}" == yes && -z "$GITHUB_DIR" ]] && unsearched+=("$(T "GitHub")")
-    if (( ${#unsearched[@]} > 0 )); then
+    local unsearched
+    unsearched=$(unsearched_places)
+    if [[ -n "$unsearched" ]]; then
         echo
-        say "⚠️  Not searched: %s. A newer backup may be there, with channels the others don't have." "$(IFS=,; echo "${unsearched[*]}" | sed 's/,/, /g')"
+        say "⚠️  Not searched: %s. A newer backup may be there, with channels the others don't have." "$unsearched"
         say "   Best: make it reachable (mount the disk, check Server B's address and SSH), then run this again."
         confirm_phrase yes "$(T "Type yes to look only in the places that answered: ")" ||
             die "$(T "Stopped: nothing was changed.")"
@@ -814,6 +836,18 @@ find_latest_backup() {
     BACKUP_OLDER_BY=0
     (( newest_epoch > CHOSEN_EPOCH + 60 )) && BACKUP_OLDER_BY=$(( newest_epoch - CHOSEN_EPOCH ))
     return 0
+}
+
+# The destinations that are on but couldn't be searched (after github_fetch_once), as one line
+# ("Server B, GitHub"); nothing if every one answered
+unsearched_places() {
+    local -a places=()
+    [[ "${BACKUP_TO_VOLUME:-yes}" == yes ]] && ! attached_ok && places+=("$(T "the attached volume")")
+    [[ "${BACKUP_TO_SERVER_B:-yes}" == yes ]] && ! $REMOTE_OK && places+=("$(T "Server B")")
+    [[ "${BACKUP_TO_GITHUB:-no}" == yes && -z "$GITHUB_DIR" ]] && places+=("$(T "GitHub")")
+    (( ${#places[@]} > 0 )) || return 0
+    local IFS=,
+    echo "${places[*]}" | sed 's/,/, /g'
 }
 
 # Said right after the backup chosen is named: it is older than the newest backup there is, so
@@ -1662,6 +1696,11 @@ if [[ "$CHOICE" == "5" ]]; then
     if [[ "$SAFE_CHANNELS" == 0 ]]; then
         say "ℹ️ The safety backup holds no channels, so no old channel state can be broadcast from it."
     else
+        # A place that didn't answer may hold the newer backup that would show it ran
+        unsearched=$(unsearched_places)
+        if [[ -n "$unsearched" ]]; then
+            UNDO_RISK+=("$(T "Not searched: %s, so a newer backup there, which would show the node ran since, can't be seen." "$unsearched")")
+        fi
         # Regular backups don't say which node made them (the backup service can't ask LND), so
         # they count only together with what the running LND says
         mapfile -t NEWER < <(list_backups main | awk -v t="$SAFE_EPOCH" '$1 == 0 && $2 > t + 60')
@@ -1683,18 +1722,15 @@ if [[ "$CHOICE" == "5" ]]; then
         read -r _ newer_epoch newer_where newer_path <<< "$line"
         (( newer_epoch > SAFE_EPOCH + 60 )) || continue
         checked=$((checked + 1))
-        newer_dir=""
-        if fetch_backup "$newer_where" "$newer_path" "$BULK_DIR/undo-newer.gpg" 2>/dev/null; then
-            newer_dir="$(dir_for_size "$(stat -c %s "$BULK_DIR/undo-newer.gpg")")/undo-newer"
-            if decrypt_bundle "$BULK_DIR/undo-newer.gpg" "$newer_dir" &&
-               check_manifest "$newer_dir" pre-recovery "$(basename "$newer_path")" &&
-               [[ "$MANIFEST_STATE" == verified && "$MANIFEST_NODE" == "$SAFE_NODE" ]]; then
-                UNDO_RISK+=("$(T "A newer safety backup of this node exists (%s): the node ran after the one you picked." "$(basename "$newer_path")")")
-                checked=3
-            fi
+        # Only its signed manifest is read (no decrypted copy of a whole LND volume kept)
+        newer_dir="$BULK_DIR/undo-newer"
+        if read_signed_manifest "$newer_where" "$newer_path" "$newer_dir" &&
+           check_manifest "$newer_dir" pre-recovery "$(basename "$newer_path")" &&
+           [[ "$MANIFEST_STATE" == verified && "$MANIFEST_NODE" == "$SAFE_NODE" ]]; then
+            UNDO_RISK+=("$(T "A newer safety backup of this node exists (%s): the node ran after the one you picked." "$(basename "$newer_path")")")
+            checked=3
         fi
-        rm -f "$BULK_DIR/undo-newer.gpg"
-        [[ -n "$newer_dir" ]] && { remove_work_path "$newer_dir" || true; }
+        remove_work_path "$newer_dir" || true
         MANIFEST_NODE="$SAFE_NODE" MANIFEST_TIME="$SAFE_TIME" MANIFEST_STATE="$SAFE_STATE" MANIFEST_CHANNELS="$SAFE_CHANNELS"
     done
     echo

@@ -117,6 +117,7 @@
    funds stuck until it comes back. Payments in flight when LND failed can be lost.	   restent bloqués jusqu'à son retour. Les paiements en cours au moment de la panne de LND peuvent être perdus.
    git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git	   git clone https://github.com/juantrejo-coding/btcpay-docker-lnd-manager.git
    good signature: %s  %s	   signature valide : %s  %s
+   https://github.com/%s in a private browser window, not logged in: it must say "Page not found".	   https://github.com/%s dans une fenêtre de navigation privée, sans être connecté : la page doit dire "Page not found".
    installed now: %s	   installée actuellement : %s
    is fine, recovery is probably not what you need.	   LND sont en bon état, une récupération n'est probablement pas ce qu'il vous faut.
    it (your share then comes back on-chain), or see chantools (lightninglabs) for help.	   (votre part revient alors on-chain), ou voyez chantools (lightninglabs) pour de l'aide.
@@ -330,6 +331,7 @@ Aborted by user: nothing was changed. /wallet restore restores the wallet withou
 Aborted: BTCPay was not stopped and nothing was changed.	Abandon : BTCPay n'a pas été arrêté et rien n'a été modifié.
 Aborted: channels are still opening or closing.	Annulé : des canaux sont encore en ouverture ou en fermeture.
 Add another folder (Enter to finish): 	Ajoutez un autre dossier (Entrée pour terminer) : 
+Add the key to the repository only: remove it from your account (github.com: Settings, SSH and GPG	Ajoutez la clé au dépôt seulement : retirez-la de votre compte (github.com : Settings, SSH and GPG
 Add this deploy key to %s on GitHub: the repository's Settings, Deploy keys, Add deploy key.	Ajoutez cette clé de déploiement (deploy key) à %s sur GitHub : dans le dépôt, Settings, Deploy keys, Add deploy key.
 Addresses to look ahead when scanning for old funds (Enter for %s): 	Nombre d'adresses à examiner d'avance lors de la recherche des anciens fonds (Entrée pour %s) : 
 Admin account for the Server B dashboard: 	Compte administrateur du tableau de bord du serveur B : 
@@ -523,6 +525,7 @@ Missing programs: %s. Install them: sudo apt-get install %s	Programmes manquants
 No %s/serverb-setup/serverb.conf. On Server A: lnd-manager /serverb send. Or: sudo %s --paste	Pas de %s/serverb-setup/serverb.conf. Sur le serveur A : lnd-manager /serverb send. Ou : sudo %s --paste
 No LND release %s	Aucune version LND %s
 No apt-get: these scripts are made for Ubuntu and Debian	Pas d'apt-get : ces scripts sont faits pour Ubuntu et Debian
+No backup from elsewhere is shown, so there is nothing to accept	Aucune sauvegarde venue d'ailleurs n'est affichée : il n'y a rien à accepter
 No blockchain in %s (BITCOIND_DIR in config)	Aucune blockchain dans %s (BITCOIND_DIR dans config)
 No channel.backup found, neither in a backup nor on this server.	Aucun channel.backup trouvé, ni dans une sauvegarde ni sur ce serveur.
 No copy leaves this server (only the attached volume is on): /destinations	Aucune copie ne quitte ce serveur (seul le volume attaché est activé) : /destinations
@@ -545,6 +548,7 @@ Not a release version: %s	Pas un numéro de version : %s
 Not a terminal. Use --once for a text status.	Pas un terminal. Utilisez --once pour un état en texte.
 Not an LND release tag: %s	Pas une étiquette de version LND : %s
 Not enough free space in /var/tmp for the safety backup (LND volume: %s bytes)	Pas assez d'espace libre dans /var/tmp pour la sauvegarde de sécurité (volume LND : %s octets)
+Not searched: %s, so a newer backup there, which would show the node ran since, can't be seen.	Pas cherché : %s, une sauvegarde plus récente qui s'y trouverait, et montrerait que le nœud a tourné depuis, ne peut donc pas être vue.
 Nothing was run	Rien n'a été lancé
 Odd SSH port from sshd -T (%s): ufw not turned on	Port SSH inattendu selon sshd -T (%s) : ufw non activé
 On Server A, run setup (lnd-manager: /setup): it installs the backup gate over this key.	Sur le serveur A, lancez la configuration (lnd-manager : /setup) : elle installe la passerelle de sauvegarde sur cette clé.
@@ -552,6 +556,7 @@ On Server B itself (its console, or an SSH session you already trust), run:	Sur 
 On Server B, as your admin account (the one with sudo):	Sur le serveur B, avec votre compte administrateur (celui qui a sudo) :
 On Server B, check them against the sha256 sums above (sha256sum serverb-*.sh). That shows the	Sur le serveur B, comparez-les aux sommes sha256 ci-dessus (sha256sum serverb-*.sh). Cela montre que la
 On-chain:          %s sat confirmed, %s sat unconfirmed	On-chain :             %s sat confirmés, %s sat non confirmés
+Only once you know no other LND with this seed runs: an old server you have switched off for good, a test. The backup service then ignores that one backup on Server B and the warning goes; a newer one from elsewhere warns again. Changes nothing on Server B. If you aren't sure, find and stop the other node first: two nodes with the same channels can lose all the funds in them.	Seulement quand vous savez qu'aucun autre LND avec cette seed ne tourne : un ancien serveur arrêté pour de bon, un test. Le service de sauvegarde ignore alors cette sauvegarde du serveur B et l'avertissement disparaît ; une plus récente venue d'ailleurs avertit de nouveau. Ne change rien sur le serveur B. En cas de doute, trouvez et arrêtez d'abord l'autre nœud : deux nœuds avec les mêmes canaux peuvent perdre tous les fonds de ces canaux.
 Open channels:     %s (your share: %s sat)	Canaux ouverts :       %s (votre part : %s sat)
 Opening/closing:   %s channels, %s sat waiting in closes (limbo)	Ouverture/fermeture :  %s canaux, %s sat en attente de fermeture (limbo)
 Opens the whole backup log in less (q comes back here). Read only.	Ouvre tout le journal des sauvegardes dans less (q revient ici). Lecture seule.
@@ -600,6 +605,7 @@ Runs setup_script.sh: the backup user, the SSH key for Server B, the GPG backup 
 Runs sudo lnd-update: gets the newest release from GitHub, checks its signature against the release key installed with the scripts, and asks you to type UPDATE. It installs it when no backup, wallet operation or /chain or /tower operation runs (else it waits up to 24 hours, then at the next boot), and reinstalls the backup service. LND and BTCPay keep running.	Lance sudo lnd-update : récupère la dernière version sur GitHub, vérifie sa signature avec la clé de publication installée avec les scripts, et vous demande de taper UPDATE. Il l'installe quand aucune sauvegarde, opération de portefeuille ni opération /chain ou /tower n'est en cours (sinon il attend jusqu'à 24 heures, puis l'installe au prochain démarrage), et réinstalle le service de sauvegarde. LND et BTCPay continuent de tourner.
 SERVER_A_KEY doesn't look like an SSH public key	SERVER_A_KEY ne ressemble pas à une clé publique SSH
 SERVER_A_USER is not set in config. The backup service runs as its own user; choose its name.	SERVER_A_USER n'est pas défini dans config. Le service de sauvegarde a son propre utilisateur ; choisissez son nom.
+SERVER_A_USER or BACKUP_METADATA_FOLDER is empty in config	SERVER_A_USER ou BACKUP_METADATA_FOLDER est vide dans config
 SERVER_B_ADMIN_USER (%s) is not a usable user name	SERVER_B_ADMIN_USER (%s) n'est pas un nom d'utilisateur utilisable
 SERVER_B_ADMIN_USER can't be %s: that account has another job	SERVER_B_ADMIN_USER ne peut pas être %s : ce compte a un autre rôle
 SERVER_B_KNOWN_HOST_FINGERPRINT is not set in config.	SERVER_B_KNOWN_HOST_FINGERPRINT n'est pas défini dans config.
@@ -639,7 +645,7 @@ Server B address (hostname or IP): 	Adresse du serveur B (nom d'hôte ou IP) :
 Server B answers at %s, port %s	Le serveur B répond à %s, port %s
 Server B backup user: %s	Utilisateur de sauvegarde du serveur B : %s
 Server B doesn't answer at %s, port %s: check REMOTE_SERVER and REMOTE_SSH_PORT in config, that Server B runs, and its firewall	Le serveur B ne répond pas à %s, port %s : vérifiez REMOTE_SERVER et REMOTE_SSH_PORT dans config, que le serveur B est en marche, et son pare-feu
-Server B has a backup this server didn't send (%s): another LND with this seed may be running. Two nodes with the same channels can lose all the funds in them: stop the other one now	Le Serveur B a une sauvegarde que ce serveur n'a pas envoyée (%s) : un autre LND avec cette seed tourne peut-être. Deux nœuds avec les mêmes canaux peuvent perdre tous les fonds de ces canaux : arrêtez l'autre maintenant
+Server B has a backup this server didn't send (%s): another LND with this seed may be running. Two nodes with the same channels can lose all the funds in them: stop the other one now (/foreign ok once you know it is safe)	Le Serveur B a une sauvegarde que ce serveur n'a pas envoyée (%s) : un autre LND avec cette seed tourne peut-être. Deux nœuds avec les mêmes canaux peuvent perdre tous les fonds de ces canaux : arrêtez l'autre maintenant (/foreign ok une fois que vous savez qu'il n'y a pas de danger)
 Server B has no ~%s/chain-incoming: serverb-bitcoind-setup.sh makes it when you choose to copy the blockchain there	Le serveur B n'a pas de ~%s/chain-incoming : serverb-bitcoind-setup.sh le crée quand vous choisissez d'y copier la blockchain
 Server B is behind: its last copy is older than the attached volume's	Le serveur B est en retard : sa dernière copie est plus ancienne que celle du volume attaché
 Server B is off (BACKUP_TO_SERVER_B)	Le serveur B est désactivé (BACKUP_TO_SERVER_B)
@@ -773,7 +779,9 @@ Type REMOVE to take %s out of the docker group (Enter to keep): 	Tapez REMOVE po
 Type TURN OFF to turn it off: 	Tapez TURN OFF pour la désactiver : 
 Type UPDATE to get it and install it when it is safe: 	Tapez UPDATE pour la récupérer et l'installer dès que c'est sûr : 
 Type yes if Server B shows exactly this fingerprint: 	Tapez yes si le serveur B affiche exactement cette empreinte : 
+Type yes if it is private: 	Tapez yes s'il est privé : 
 Type yes once it is added (or no to stop): 	Tapez yes une fois qu'elle est ajoutée (ou no pour arrêter) : 
+Type yes once it is moved (or no to stop): 	Tapez yes une fois qu'elle est déplacée (ou no pour arrêter) : 
 Type yes to go on: 	Tapez yes pour continuer : 
 Type yes to install the backup gate on Server B: 	Tapez yes pour installer la passerelle de sauvegarde sur le serveur B : 
 Type yes to look only in the places that answered: 	Tapez yes pour chercher seulement dans les endroits qui ont répondu : 
@@ -833,6 +841,7 @@ a few minutes, while btcpay-setup.sh applies %s	quelques minutes, pendant que bt
 a few minutes, while btcpay-setup.sh turns on the watchtower client	quelques minutes, pendant que btcpay-setup.sh active le client watchtower
 a few minutes, while the rest of the blockchain is copied	quelques minutes, pendant la copie du reste de la blockchain
 a wallet operation (lnd-wallet) is running	une opération de portefeuille (lnd-wallet) est en cours
+accept the backup on Server B this server didn't send	accepter la sauvegarde du serveur B que ce serveur n'a pas envoyée
 activating	en démarrage
 active	actif
 after Bitcoin Core: copy it from Server A (/chain copy), or let it sync	après Bitcoin Core : copiez-la depuis le serveur A (/chain copy), ou laissez-la se synchroniser
@@ -915,9 +924,11 @@ its "Filled in on Server A" settings at the top. Then run each with sudo bash, i
 its archive could not be unpacked	son archive n'a pas pu être décompressée
 its checksum does not match (the file is damaged)	sa somme de contrôle ne correspond pas (le fichier est endommagé)
 its name doesn't match the time in its signed manifest (%s): it was renamed	son nom ne correspond pas à l'heure de son manifeste signé (%s) : elle a été renommée
+its signed manifest couldn't be read	son manifeste signé n'a pas pu être lu
 its signed manifest has no valid time	son manifeste signé ne contient pas d'heure valide
 its signed manifest says it is a '%s' backup, not '%s'	son manifeste signé indique une sauvegarde '%s', et non '%s'
 keeps (for example when importing an old wallet). Do it only if you have no old transactions to	à ce qu'il conserve (par ex. à l'import d'un ancien portefeuille). À faire seulement sans anciennes
+keys), then add it in %s's Settings, Deploy keys, with "Allow write access":	keys), puis ajoutez-la dans Settings, Deploy keys de %s, avec "Allow write access" :
 leave the dashboard	quitter le tableau de bord
 less than 5 GiB free while ~/chain-incoming is open	moins de 5 GiB libres tant que ~/chain-incoming est ouvert
 letters and digits only	lettres et chiffres uniquement
@@ -1132,6 +1143,7 @@ your LND seed	votre seed LND
 ⚠️  CHECK SERVER B'S FINGERPRINT YOURSELF BEFORE YOU CONTINUE	⚠️  VÉRIFIEZ VOUS-MÊME L'EMPREINTE DU SERVEUR B AVANT DE CONTINUER
 ⚠️  COPY AND STORE THIS PRIVATE KEY SECURELY:	⚠️  COPIEZ CETTE CLÉ PRIVÉE ET CONSERVEZ-LA EN LIEU SÛR :
 ⚠️  Channels are still opening or closing. Funds from a force close are timelocked, and only	⚠️  Des canaux sont encore en ouverture ou en fermeture. Les fonds d'une fermeture forcée sont
+⚠️  GitHub didn't answer whether %s is private (HTTP %s). Check it yourself: open	⚠️  GitHub n'a pas répondu si %s est privé (HTTP %s). Vérifiez-le vous-même : ouvrez
 ⚠️  It isn't pruned: all of it would be copied (hundreds of GB). Prune it first: /chain prune.	⚠️  Elle n'est pas élaguée : elle serait copiée en entier (des centaines de GB). Élaguez-la d'abord : /chain prune.
 ⚠️  LND is running and its data looks intact. Option 3 closes all your channels. If LND's data	⚠️  LND tourne et ses données semblent intactes. L'option 3 ferme tous vos canaux. Si les données de
 ⚠️  Make sure no other LND with this seed is running anywhere (an old server, a copy).	⚠️  Assurez-vous qu'aucun autre LND avec cette seed ne tourne nulle part (un ancien serveur, une copie).
@@ -1186,6 +1198,7 @@ your LND seed	votre seed LND
 ⚠️ File flapping: %s (changes: %s)	⚠️ Fichier instable : %s (changements : %s)
 ⚠️ File missing (or inaccessible) in snapshot: %s	⚠️ Fichier absent (ou inaccessible) dans l'instantané : %s
 ⚠️ File missing: %s	⚠️ Fichier absent : %s
+⚠️ GitHub didn't say which repository the key is for; the backup service checks it again before each upload	⚠️ GitHub n'a pas dit pour quel dépôt est la clé ; le service de sauvegarde le vérifie de nouveau avant chaque envoi
 ⚠️ LND container '%s' is stopped. Starting BTCPay to read the current wallet...	⚠️ Le conteneur LND '%s' est arrêté. Démarrage de BTCPay pour lire le portefeuille actuel...
 ⚠️ LND is not synced to the chain, so these numbers may be out of date.	⚠️ LND n'est pas synchronisé avec la chaîne : ces chiffres peuvent donc être dépassés.
 ⚠️ LND's REST interface doesn't answer: journalctl -u lnd-watchtower	⚠️ L'interface REST de LND ne répond pas : journalctl -u lnd-watchtower
@@ -1311,6 +1324,7 @@ your LND seed	votre seed LND
 ✅ GPG private key exported to %s for backup.	✅ Clé privée GPG exportée dans %s comme sauvegarde.
 ✅ GPG recipient %s found successfully.	✅ Destinataire GPG %s trouvé.
 ✅ GitHub copy caught up, github_pending cleared	✅ Copie vers GitHub rattrapée, github_pending effacé
+✅ GitHub greets the key as a deploy key of %s alone	✅ GitHub salue la clé comme clé de déploiement de %s seulement
 ✅ Host fingerprint matches expected value.	✅ L'empreinte d'hôte correspond à la valeur attendue.
 ✅ Installed %s	✅ %s installé
 ✅ Installed %s/lnd-backup-gate and %s/lnd-backup-rotate	✅ %s/lnd-backup-gate et %s/lnd-backup-rotate installés
@@ -1610,6 +1624,8 @@ your LND seed	votre seed LND
 ❌ Stopped: the mount stays at %s	❌ Arrêté : le montage reste sur %s
 ❌ Temp dir missing right before copy: %s	❌ Dossier temporaire absent juste avant la copie : %s
 ❌ Temp dir vanished before processing file: %s	❌ Le dossier temporaire a disparu avant le traitement du fichier : %s
+❌ The GitHub key is a deploy key of another repository (%s), not of %s	❌ La clé GitHub est une clé de déploiement d'un autre dépôt (%s), pas de %s
+❌ The GitHub key is added to the GitHub account %s, not as a deploy key of %s: it could write to every repository of that account. Remove it there (Settings, SSH keys) and add it to the repository's Deploy keys.	❌ La clé GitHub est ajoutée au compte GitHub %s, et non comme clé de déploiement de %s : elle pourrait écrire dans tous les dépôts de ce compte. Retirez-la de là (Settings, SSH keys) et ajoutez-la aux Deploy keys du dépôt.
 ❌ The GitHub repository holds %s safety backups already: delete old ones there first	❌ Le dépôt GitHub contient déjà %s sauvegardes de sécurité : supprimez-y d'abord les anciennes
 ❌ The attached volume (UUID %s) is not mounted at %s	❌ Le volume attaché (UUID %s) n'est pas monté sur %s
 ❌ The backup installer failed. Rerun %s by hand.	❌ L'installateur du service de sauvegarde a échoué. Relancez %s à la main.
@@ -1617,6 +1633,7 @@ your LND seed	votre seed LND
 ❌ The backup service installer failed: lnd-manager /install shows why.	❌ L'installateur du service de sauvegarde a échoué : lnd-manager /install indique pourquoi.
 ❌ The backup service installer is missing or not executable: %s	❌ L'installateur du service de sauvegarde est absent ou non exécutable : %s
 ❌ The key can read %s but not write: tick "Allow write access" for it on GitHub.	❌ La clé peut lire %s mais pas y écrire : cochez "Allow write access" pour elle sur GitHub.
+❌ The key can't write to %s: tick "Allow write access" for it on GitHub.	❌ La clé ne peut pas écrire dans %s : cochez "Allow write access" pour elle sur GitHub.
 ❌ The private key for %s isn't in %s's keyring; the service needs it to sign backups.	❌ La clé privée de %s n'est pas dans le trousseau de %s ; le service en a besoin pour signer les sauvegardes.
 ❌ Timeout waiting for files to settle (%ss exceeded)	❌ Délai dépassé en attendant la stabilisation des fichiers (%ss)
 ❌ Unknown destination: %s (volume, serverb or github)	❌ Destination inconnue : %s (volume, serverb ou github)

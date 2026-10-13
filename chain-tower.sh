@@ -273,31 +273,48 @@ SIDE_COPIED_FILES=2
 # Hard links of BTCPay's block files into the side copy, real copies of the newest ones, of the
 # block index and of the chainstate. With BTCPay running (pass 1) or stopped (pass 2, which makes
 # it consistent: rsync replaces changed files with new ones, never writing into a linked one).
+# On another disk than BTCPay's blockchain links can't be made: every block file is copied then.
+# Each step is checked here: callers use "if ! side_copy", where bash doesn't stop on errors.
 side_copy() {
-    local kind f n=0 i
+    local kind f n i src dst same=false
     local -a files
-    install -d -o root -g root -m 700 "$SIDE_DIR" "$SIDE_DIR/blocks"
+    install -d -o root -g root -m 700 "$SIDE_DIR" "$SIDE_DIR/blocks" || return 1
+    [[ "$(stat -c %d -- "$SIDE_DIR/blocks")" == "$(stat -c %d -- "$BITCOIND_DIR/blocks")" ]] && same=true
     for kind in blk rev; do
         mapfile -t files < <(find "$BITCOIND_DIR/blocks" -maxdepth 1 -type f -name "${kind}[0-9]*.dat" -printf '%f\n' | sort)
         n=${#files[@]}
         for (( i = 0; i < n; i++ )); do
-            f="${files[$i]}"
-            if (( i >= n - SIDE_COPIED_FILES )); then
-                # Its own copy, never a link to BTCPay's file
-                cp --remove-destination -- "$BITCOIND_DIR/blocks/$f" "$SIDE_DIR/blocks/$f.new"
-                mv -f -- "$SIDE_DIR/blocks/$f.new" "$SIDE_DIR/blocks/$f"
-            elif [[ ! -e "$SIDE_DIR/blocks/$f" ]]; then
-                ln -- "$BITCOIND_DIR/blocks/$f" "$SIDE_DIR/blocks/$f"
+            f="${files[$i]}" src="$BITCOIND_DIR/blocks/${files[$i]}" dst="$SIDE_DIR/blocks/${files[$i]}"
+            if (( i < n - SIDE_COPIED_FILES )) && $same; then
+                # A finished file: a link. One that was copied in pass 1 (it was among the newest
+                # then) is replaced too: BTCPay may have written more blocks into it since.
+                [[ "$dst" -ef "$src" ]] && continue
+                ln -f -- "$src" "$dst" || return 1
+            elif (( i < n - SIDE_COPIED_FILES )) && [[ -f "$dst" ]] &&
+                 [[ "$(stat -c '%s %Y' -- "$dst")" == "$(stat -c '%s %Y' -- "$src")" ]]; then
+                # Another disk: a finished file copied already, unchanged since
+                continue
+            else
+                # The newest ones (bitcoind may still write to them), or another disk: its own
+                # copy, never a link to BTCPay's file
+                { cp -p --remove-destination -- "$src" "$dst.new" && mv -f -- "$dst.new" "$dst"; } || {
+                    rm -f -- "$dst.new"
+                    return 1
+                }
             fi
         done
     done
     # Block files BTCPay pruned meanwhile
     for f in "$SIDE_DIR"/blocks/blk*.dat "$SIDE_DIR"/blocks/rev*.dat; do
-        [[ -e "$f" && ! -e "$BITCOIND_DIR/blocks/${f##*/}" ]] && rm -f -- "$f"
+        if [[ -e "$f" && ! -e "$BITCOIND_DIR/blocks/${f##*/}" ]]; then
+            rm -f -- "$f" || return 1
+        fi
     done
-    [[ -f "$BITCOIND_DIR/blocks/xor.dat" ]] && cp -- "$BITCOIND_DIR/blocks/xor.dat" "$SIDE_DIR/blocks/xor.dat"
-    rsync -a --delete -- "$BITCOIND_DIR/blocks/index/" "$SIDE_DIR/blocks/index/"
-    rsync -a --delete -- "$BITCOIND_DIR/chainstate/" "$SIDE_DIR/chainstate/"
+    if [[ -f "$BITCOIND_DIR/blocks/xor.dat" ]]; then
+        cp -- "$BITCOIND_DIR/blocks/xor.dat" "$SIDE_DIR/blocks/xor.dat" || return 1
+    fi
+    rsync -a --delete -- "$BITCOIND_DIR/blocks/index/" "$SIDE_DIR/blocks/index/" || return 1
+    rsync -a --delete -- "$BITCOIND_DIR/chainstate/" "$SIDE_DIR/chainstate/" || return 1
 }
 
 # Prunes the side copy with a bitcoind of its own: BTCPay's image (the same version), no network

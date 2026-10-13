@@ -183,10 +183,15 @@ Ein Ziel, bei dem etwas fehlschlägt, wird jede Stunde erneut versucht.
 4. Das Setup prüft, ob der Schlüssel schreiben kann; danach sendet der Backup-Dienst jedes Backup
    dorthin.
 
-Das Repository behält nur die aktuellen Backups: Jeder Upload ersetzt seine Historie, alte Backups
-sind also wirklich weg, und das Repository bleibt klein (GitHub bittet darum, dass Repositories
-unter 1 GB bleiben). Die Backups sind mit Ihrem GPG-Schlüssel verschlüsselt, daher kann GitHub sie
-nicht lesen; legen Sie diesen Schlüssel nicht auf GitHub ab.
+Das Repository behält nur die aktuellen Backups: Jeder Upload ersetzt seine Historie, daher bleibt
+es klein (GitHub bittet darum, dass Repositories unter 1 GB bleiben). Alte Backups können auf
+GitHubs Seite noch eine Weile liegen bleiben. Die Backups sind mit Ihrem GPG-Schlüssel verschlüsselt,
+daher kann GitHub sie nicht lesen; legen Sie diesen Schlüssel nicht auf GitHub ab. GitHub sieht aber,
+wann jedes Backup erstellt wurde, also wann sich Ihre Kanäle geändert haben.
+
+Der Schlüssel muss ein **Deploy-Key** dieses einen Repositorys sein, nie ein Schlüssel Ihres
+GitHub-Kontos (der alle Ihre Repositorys erreichen würde): Setup und Backup-Dienst lehnen einen
+Kontoschlüssel ab.
 
 ## Wenn Sie die Wallet verlieren
 
@@ -218,7 +223,10 @@ verweigert das, wenn Ihr Node seit der Sicherheitskopie gelaufen ist, außer Sie
 dieses Risiko annehmen.
 
 Das Dashboard warnt, wenn Server B ein Backup hat, das dieser Server nicht gesendet hat: ein Zeichen, dass
-irgendwo ein anderes LND mit demselben Seed läuft. Stoppen Sie es sofort.
+irgendwo ein anderes LND mit demselben Seed läuft. Stoppen Sie es sofort. Prüfen Sie jeden Server, auf
+dem dieser Node je lief (ein alter, eine Kopie, ein Testrechner). Erst wenn Sie wissen, dass keiner
+davon läuft, akzeptiert `/foreign ok` dieses eine Backup und die Warnung verschwindet; ein neueres von
+anderswo warnt erneut.
 
 ## Optional: ein Watchtower auf Server B
 

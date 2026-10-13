@@ -1009,6 +1009,8 @@ OUTBOX_DIR="${BACKUP_METADATA_FOLDER}/outbox"
 # The backups this server has sent to Server B (their names), so the hourly check can tell when
 # another node with the same seed sends some too (check_foreign_backups)
 UPLOADED_NAMES_FILE="${BACKUP_METADATA_FOLDER}/uploaded_to_server_b"
+# Names on Server B accepted as not another node's (lnd-manager: /foreign ok)
+FOREIGN_OK_FILE="${BACKUP_METADATA_FOLDER}/foreign_backups_ok"
 
 # === Logging Function ===
 log_message() {
@@ -2457,14 +2459,18 @@ copy_milestones() {
 
 # Removes the backups in OUTBOX_DIR that no retry needs any more
 clean_outbox() {
-    local f keep=()
+    local f k needed keep=()
     [[ -d "$OUTBOX_DIR" ]] || return 0
     [[ -f "$REMOTE_PENDING_FILE" ]] && keep+=("$(<"$REMOTE_PENDING_FILE")")
     [[ -f "$GITHUB_PENDING_FILE" ]] && keep+=("$(<"$GITHUB_PENDING_FILE")")
     for f in "$OUTBOX_DIR"/*.gpg; do
         [[ -f "$f" ]] || continue
-        [[ " ${keep[*]} " == *" $f "* ]] && continue
-        safe_delete "$f" || true
+        # Each kept path compared whole (a folder name may hold spaces)
+        needed=false
+        for k in "${keep[@]}"; do
+            [[ "$k" == "$f" ]] && needed=true
+        done
+        $needed || safe_delete "$f" || true
     done
 }
 
@@ -2520,6 +2526,7 @@ check_foreign_backups() {
     while IFS= read -r name; do
         [[ "$name" =~ ^encrypted_backup_[0-9T:+-]+\.gpg$ ]] || continue
         grep -qxF -- "$name" "$UPLOADED_NAMES_FILE" && continue
+        grep -qxF -- "$name" "$FOREIGN_OK_FILE" 2>/dev/null && continue
         stamp="${name#encrypted_backup_}"
         epoch=$(date -d "${stamp%.gpg}" +%s 2>/dev/null) || continue
         (( epoch > first_epoch && epoch > foreign_epoch )) && { foreign="$name"; foreign_epoch=$epoch; }

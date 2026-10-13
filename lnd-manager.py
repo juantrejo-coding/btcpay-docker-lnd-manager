@@ -113,7 +113,8 @@ DESTINATIONS = [("volume", "BACKUP_TO_VOLUME", "yes"), ("serverb", "BACKUP_TO_SE
 CONFIG_VARS = ["STATUS_FILE", "RSYNC_BACKUP_SERVICE_NAME", "LIGHTNING_BACKUP_LOG_FILE",
                "BACKUP_SCRIPTS_FOLDER", "BACKUP_INSTALL_DIR", "ATTACHED_VOLUME", "WATCHTOWER_PUBKEY",
                "SUPPORT_BTC_ADDRESS", "SUPPORT_URL", "UI_LANGUAGE", "BACKUP_TO_VOLUME",
-               "BACKUP_TO_SERVER_B", "BACKUP_TO_GITHUB", "SECOND_BACKUP_DIR"] + SETUP_VARS
+               "BACKUP_TO_SERVER_B", "BACKUP_TO_GITHUB", "SECOND_BACKUP_DIR",
+               "BACKUP_METADATA_FOLDER"] + SETUP_VARS
 # BTCPay's settings, readable by everyone: which fragments (opt-lnd-wtclient) it runs with
 BTCPAY_ENV = "/etc/profile.d/btcpay-env.sh"
 
@@ -180,6 +181,11 @@ COMMANDS = [
      "(owner/name), makes a deploy key and shows it to add on GitHub with write access, then "
      "reinstalls the backup service. Off: new backups no longer go there (type TURN OFF); its "
      "copies stay. A broken-into server could delete the copies on GitHub: Server B's can't.")),
+    ("/foreign ok", N_("accept the backup on Server B this server didn't send"), "foreign ok",
+     N_("Only once you know no other LND with this seed runs: an old server you have switched off for "
+     "good, a test. The backup service then ignores that one backup on Server B and the warning goes; "
+     "a newer one from elsewhere warns again. Changes nothing on Server B. If you aren't sure, find "
+     "and stop the other node first: two nodes with the same channels can lose all the funds in them.")),
     ("/serverb send", N_("send Server B its settings (and the scripts, if you choose)"), "serverb send",
      N_("Runs serverb-scripts.sh send: asks for settings config doesn't have yet, then sends Server B "
      "serverb.conf through the backup gate, and, if you choose, serverb-install.sh with all the "
@@ -684,7 +690,7 @@ def collect(config):
     if status.get("foreign_backup_name"):
         problems.append(_("Server B has a backup this server didn't send (%s): another LND with this seed may "
                           "be running. Two nodes with the same channels can lose all the funds in them: stop "
-                          "the other one now") % status["foreign_backup_name"][:80])
+                          "the other one now (/foreign ok once you know it is safe)") % status["foreign_backup_name"][:80])
     if not destination_on(config, "BACKUP_TO_SERVER_B") and not destination_on(config, "BACKUP_TO_GITHUB"):
         problems.append(_("No copy leaves this server (only the attached volume is on): /destinations"))
 
@@ -890,6 +896,16 @@ def do_action(stdscr, action, config, info, styles):
         command = [os.path.join(working, "destinations.sh")]
         if action != "destinations":
             command.append(action.split(" ", 1)[1])
+    elif action == "foreign ok":
+        name = (read_status(config.get("STATUS_FILE", "")) or {}).get("foreign_backup_name", "")
+        user, metadata = config.get("SERVER_A_USER", ""), config.get("BACKUP_METADATA_FOLDER", "")
+        if not re.fullmatch(r"encrypted_backup_[0-9T:+-]+\.gpg", name):
+            return _("No backup from elsewhere is shown, so there is nothing to accept")
+        if not user or not metadata:
+            return _("SERVER_A_USER or BACKUP_METADATA_FOLDER is empty in config")
+        # As the backup user, whose folder it is; the name goes in as data, never through a shell
+        command = ["sudo", "-u", user, "--", "sh", "-c", 'printf "%s\\n" "$1" >> "$2"', "_", name,
+                   os.path.join(metadata, "foreign_backups_ok")]
     elif action == "serverb send":
         working = config.get("BACKUP_SCRIPTS_FOLDER", "")
         if not working or not os.path.isfile(os.path.join(working, "serverb-scripts.sh")):
@@ -943,6 +959,12 @@ def do_action(stdscr, action, config, info, styles):
     name = shown(command[1:] if command[0] == "sudo" else command)
     if action == "update":
         UPDATES.start(force=True)
+    if action == "foreign ok" and code == 0:
+        # The warning goes with the next check: run it now
+        if active:
+            subprocess.run(["sudo", "-n", "systemctl", "kill", "-s", "SIGUSR1", "--kill-whom=main", service],
+                           stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        return _("✅ Accepted %s: the warning goes with the next check") % command[-2]
     if code == 0:
         return _("✅ %s: done") % name
     if is_wallet and code == WALLET_STILL_RUNNING:

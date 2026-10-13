@@ -216,9 +216,13 @@ and restoring still looks everywhere. A destination that fails is tried again ev
    server.
 4. Setup checks the key can write, then the backup service sends each backup there.
 
-The repository keeps only the current backups: each upload replaces its history, so old backups
-are really gone and the repository stays small (GitHub asks that repositories stay under 1 GB).
-The backups are encrypted with your GPG key, so GitHub can't read them; keep that key off GitHub.
+The repository keeps only the current backups: each upload replaces its history, so it stays small
+(GitHub asks that repositories stay under 1 GB). Old backups may still linger on GitHub's side for a
+while after that. The backups are encrypted with your GPG key, so GitHub can't read them; keep that
+key off GitHub. GitHub does see when each backup was made, which is when your channels changed.
+
+The key must be a **deploy key** of that one repository, never a key on your GitHub account (which
+would reach all your repositories): setup and the backup service refuse an account key.
 
 ## If you lose the wallet
 
@@ -248,7 +252,9 @@ included, and old channel state can lose the funds in those channels. It refuses
 has run since the safety copy was made, unless you type that you accept that risk.
 
 The dashboard warns if Server B holds a backup this server didn't send: a sign that another LND
-with the same seed is running somewhere. Stop it at once.
+with the same seed is running somewhere. Stop it at once. Check every server that ever ran this
+node (an old one, a copy, a test machine). Only once you know none of them runs, `/foreign ok`
+accepts that one backup and the warning goes; a newer one from elsewhere warns again.
 
 ## Optional: a watchtower on Server B
 

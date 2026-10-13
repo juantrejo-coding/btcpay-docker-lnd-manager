@@ -182,10 +182,15 @@ toujours partout. Une destination en échec est réessayée toutes les heures.
 4. La configuration vérifie que la clé peut écrire, puis le service de sauvegarde y envoie chaque
    sauvegarde.
 
-Le dépôt ne conserve que les sauvegardes actuelles : chaque envoi remplace son historique, les
-anciennes sauvegardes disparaissent donc vraiment et le dépôt reste petit (GitHub demande que les
-dépôts restent sous 1 Go). Les sauvegardes sont chiffrées avec votre clé GPG, GitHub ne peut donc
-pas les lire ; gardez cette clé hors de GitHub.
+Le dépôt ne conserve que les sauvegardes actuelles : chaque envoi remplace son historique, le dépôt
+reste donc petit (GitHub demande que les dépôts restent sous 1 Go). Les anciennes sauvegardes peuvent
+encore subsister un moment du côté de GitHub. Les sauvegardes sont chiffrées avec votre clé GPG,
+GitHub ne peut donc pas les lire ; gardez cette clé hors de GitHub. GitHub voit en revanche quand
+chaque sauvegarde a été faite, c'est-à-dire quand vos canaux ont changé.
+
+La clé doit être une **clé de déploiement** de ce seul dépôt, jamais une clé de votre compte GitHub
+(qui atteindrait tous vos dépôts) : la configuration et le service de sauvegarde refusent une clé de
+compte.
 
 ## Si vous perdez le portefeuille
 
@@ -217,7 +222,10 @@ compris, et un ancien état de canaux peut faire perdre les fonds de ces canaux.
 nœud a tourné depuis la sauvegarde de sécurité, sauf si vous tapez que vous acceptez ce risque.
 
 Le tableau de bord avertit si le serveur B a une sauvegarde que ce serveur n'a pas envoyée : le signe
-qu'un autre LND avec la même seed tourne quelque part. Arrêtez-le tout de suite.
+qu'un autre LND avec la même seed tourne quelque part. Arrêtez-le tout de suite. Vérifiez chaque
+serveur qui a fait tourner ce nœud (un ancien, une copie, une machine de test). Seulement quand vous
+savez qu'aucun ne tourne, `/foreign ok` accepte cette sauvegarde et l'avertissement disparaît ; une
+plus récente venue d'ailleurs avertit de nouveau.
 
 ## En option : une watchtower sur le serveur B
 
